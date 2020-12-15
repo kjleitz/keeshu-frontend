@@ -1,6 +1,6 @@
 <template>
-  <div class="about-view">
-    <h1>This is an about page</h1>
+  <div class="map-view">
+    whoa it's a map
   </div>
 </template>
 

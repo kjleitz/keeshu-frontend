@@ -1,7 +1,5 @@
 <template>
-  <div class="about-view">
-    <h1>This is an about page</h1>
-  </div>
+  <div class="us-view">hey it's us</div>
 </template>
 
 <script lang="ts">
