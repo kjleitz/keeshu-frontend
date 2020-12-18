@@ -1,5 +1,6 @@
 <template>
   <div class="home-view">
+    <div class="background"></div>
     <div class="our-names-obviously">
       <div class="surprise-its-a-name name-aishu">Aishu</div>
       <div class="surprise-its-a-name name-and">&amp;</div>
@@ -23,7 +24,19 @@ export default Vue.extend({
 
 <style lang="scss">
 .home-view {
+  .background {
+    width: 100vw;
+    height: 100vh;
+    background-image: url("~@/assets/picnic_tree_with_you_and_me.png");
+    background-color: #D8F5FA;
+    background-origin: border-box;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1000;
+  }
   .our-names-obviously {
+    text-shadow: 0 0 10px #D8F5FA;
     position: fixed;
     top: 0;
     left: 0;
