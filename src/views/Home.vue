@@ -27,7 +27,7 @@ export default Vue.extend({
   .background {
     width: 100vw;
     height: 100vh;
-    background-image: url("~@/assets/picnic_tree_with_you_and_me_2.png");
+    background-image: url("~@/assets/picnic_tree_with_you_and_me_3.png");
     background-color: #D8F5FA;
     background-origin: border-box;
     background-position: center;
