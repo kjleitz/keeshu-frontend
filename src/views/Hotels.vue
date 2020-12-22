@@ -1,0 +1,161 @@
+<template>
+  <div class="hotels-view">
+    <HotelItem
+      v-for="hotel in hotels"
+      :key="hotel.title"
+      :hotel="hotel"
+    />
+  </div>
+</template>
+
+<script lang="ts">
+import Vue from 'vue';
+import HotelDeets from '@/types/HotelDeets';
+import HotelItem from '@/components/HotelItem.vue';
+
+// TODO: call numbers to verify they work
+const HOTELS: HotelDeets[] = [
+  {
+    title: "Comfort Inn & Suites",
+    address1: "16 Tracy Road",
+    address2: "",
+    city: "Dayville",
+    state: "CT",
+    zipcode: "06241",
+    phone: "1 (860) 779-3200",
+    email: "",
+    website: "https://www.choicehotels.com/connecticut/dayville/comfort-inn-hotels/ct141",
+    description: "The Comfort Inn & Suites features comfortin' _en suites_ and little refuge from bad wordplay.",
+    distance: "~8 min.",
+  },
+  {
+    title: "Holiday Inn Express",
+    address1: "10-12 Johnson Street",
+    address2: "",
+    city: "Auburn",
+    state: "MA",
+    zipcode: "01501",
+    phone: "1 (508) 832-2500",
+    email: "",
+    website: "https://www.ihg.com/holidayinnexpress/hotels/us/en/auburn/orhma/hoteldetail",
+    description: "Make no mistake: this is **not** just a Holiday Inn with additional branding. It's a Holiday Inn to go, to stay! But also there's an emphasis on business needs, and... relaxation? Consider this option if you are a fan of ambiguity and quick breakfasts.",
+    distance: "~16 min.",
+  },
+  {
+    title: "Fairfield Inn & Suites",
+    address1: "718 Southbridge Street",
+    address2: "",
+    city: "Auburn",
+    state: "MA",
+    zipcode: "01501",
+    phone: "1 (508) 832-9500",
+    email: "",
+    website: "https://www.marriott.com/hotels/travel/bosaw-fairfield-inn-and-suites-worcester-auburn/",
+    description: "With rooms described by some as _\"airy,\"_ this hotel features free breathing room for all guests. The indoor pool is easily among the top five hotel pools in the area, when compared with the nearest five hotels that have pools.",
+    distance: "~17 min.",
+  },
+  {
+    title: "Hampton Inn",
+    address1: "736 Southbridge Street",
+    address2: "",
+    city: "Auburn",
+    state: "MA",
+    zipcode: "01501",
+    phone: "1 (774) 221-0055",
+    email: "",
+    website: "https://www.hilton.com/en/hotels/orhmahx-hampton-auburn/",
+    description: "Normally, guests have access to a pool. Unfortunately, it's currently closed for _\"renovation.\"_ They promise a hefty 60-65% reduction in urine content when it opens back up, placing the Hampton Inn just a _hair_ ahead of the nearby Holiday Inn Express in the regional hotel-pool-cleanliness championship. You can do it, Hampton Inn!",
+    distance: "~18 min.",
+  },
+  {
+    title: "Mansion at Bald Hill",
+    address1: "29 Plaine Hill Road",
+    address2: "",
+    city: "Woodstock",
+    state: "CT",
+    zipcode: "06281",
+    phone: "1 (860) 974-3456",
+    email: "",
+    website: "https://www.mansionatbaldhill.com/",
+    description: "The last four digits of their phone number are consecutive integers. Need I say more?",
+    distance: "~14 min.",
+  },
+  {
+    title: "The Inn at Woodstock Hill",
+    address1: "94 Plaine Hill Road",
+    address2: "",
+    city: "Woodstock",
+    state: "CT",
+    zipcode: "06281",
+    phone: "1 (860) 928-0528",
+    email: "",
+    website: "https://www.woodstockhill.com/",
+    description: "An elegant country inn featuring _\"television\"_ and _\"telephones.\"_ Six of the rooms are advertised to have beds, and eight more apparently have gas fireplaces. It's not clear if that's an either-or scenario, but who doesn't like a little gamble?",
+    distance: "~13 min.",
+  },
+  {
+    title: "Southbridge Hotel & Conference Center",
+    address1: "14 Mechanic Street",
+    address2: "",
+    city: "Southbridge",
+    state: "MA",
+    zipcode: "01550",
+    phone: "1 (508) 765-8000",
+    email: "",
+    website: "https://www.southbridgehotel.com/",
+    description: "A restored red brick factory six miles from Old Sturbridge Village. We've been assured that, despite the proximity, the butter is pasteurized and pre-churned. Rooms come with free Wi-Fi and a 24,000 ft^2 conference center.",
+    distance: "~19 min.",
+  },
+  {
+    title: "La Quinta Inn",
+    address1: "446 Southbridge Street",
+    address2: "",
+    city: "Auburn",
+    state: "MA",
+    zipcode: "01501",
+    phone: "1 (508) 832-7000",
+    email: "",
+    website: "https://www.wyndhamhotels.com/laquinta/auburn-massachusetts/la-quinta-inn-auburn-worcester/overview",
+    description: "Simple rooms, excellent microwaves. Kids 18 and under stay free, as long as they're with a parent or grandparent. Important note: it would seem from the language that they do NOT stay free if they are with great-grandparents or other more venerable elders. Continental breakfast and parking included, but continental parking is extra.",
+    distance: "~18 min.",
+  },
+  {
+    title: "Foxwoods Hotel & Casino",
+    address1: "350 Trolley Line Boulevard",
+    address2: "",
+    city: "Ledyard",
+    state: "CT",
+    zipcode: "06338",
+    phone: "1 (800) 369-9663",
+    email: "",
+    website: "https://www.foxwoods.com/",
+    description: "You know what it is, and you most certainly know what it do.",
+    distance: "~40 min.",
+  },
+  {
+    title: "Mohegan Sun Resort & Casino",
+    address1: "1 Mohegan Sun Boulevard",
+    address2: "",
+    city: "Uncasville",
+    state: "CT",
+    zipcode: "06382",
+    phone: "1 (888) 777-7922",
+    email: "",
+    website: "https://mohegansun.com/",
+    description: "Mohegan is the only word that rhymes with Keegan. Unfortunately, it's a proper noun so it really shouldn't count. Then again, so is _\"Keegan,\"_ so why am I concerned? It still seems like a hacky rhyme, though, so in a non-limerick setting I might go with _\"something something speakin'\"_ instead, or maybe _\"about a league in[land]\"_ Needs some work, but you get the point.",
+    distance: "~40 min.",
+  },
+];
+
+export default Vue.extend({
+  components: {
+    HotelItem,
+  },
+
+  computed: {
+    hotels(): HotelDeets[] {
+      return HOTELS;
+    },
+  },
+});
+</script>

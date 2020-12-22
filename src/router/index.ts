@@ -25,6 +25,11 @@ const routes: RouteConfig[] = [
     name: 'Map',
     component: () => import(/* webpackChunkName: "map" */ '@/views/Map.vue'),
   },
+  {
+    path: '/hotels',
+    name: 'Hotels',
+    component: () => import(/* webpackChunkName: "hotels" */ '@/views/Hotels.vue'),
+  },
 ];
 
 const router = new VueRouter({

@@ -24,15 +24,19 @@ export default Vue.extend({
 
 <style lang="scss">
 .home-view {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #D8F5FA;
   .background {
-    width: 100vw;
-    height: 100vh;
+    // width: 90%;
+    height: 100%;
+    margin: 0 5% 0 0;
     background-image: url("~@/assets/picnic_tree_with_you_and_me_4.png");
-    background-color: #D8F5FA;
     background-origin: border-box;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: contain;
     z-index: -1000;
   }
   .our-names-obviously {

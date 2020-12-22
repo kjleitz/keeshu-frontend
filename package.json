@@ -10,12 +10,16 @@
     "deploy": "yarn build && aws --profile keeshu-deployer s3 sync ./dist s3://keeshu --delete"
   },
   "dependencies": {
+    "@types/dompurify": "^2.0.4",
+    "@types/marked": "^1.2.1",
     "@types/underscore": "^1.10.24",
     "@vue/cli": "^4.5.9",
     "axios": "^0.21.0",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.20.0",
     "core-js": "^3.6.5",
+    "dompurify": "^2.2.6",
+    "marked": "^1.2.7",
     "underscore": "^1.12.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
