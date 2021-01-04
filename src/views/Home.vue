@@ -1,6 +1,10 @@
 <template>
   <div class="home-view">
-    <div class="background"></div>
+    <div class="background">
+      <div class="painting grass"></div>
+      <div class="painting tree"></div>
+      <div class="painting picnic-table"></div>
+    </div>
     <div class="our-names-obviously">
       <div class="surprise-its-a-name name-aishu">Aishu</div>
       <div class="surprise-its-a-name name-and">&amp;</div>
@@ -29,18 +33,36 @@ export default Vue.extend({
   height: 100vh;
   background-color: #D8F5FA;
   .background {
-    // width: 90%;
     height: 100%;
-    margin: 0 5% 0 0;
-    background-image: url("~@/assets/picnic_tree_with_you_and_me_6.png");
-    background-origin: border-box;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
+    width: 100%;
     z-index: -1000;
+    .painting {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 100vh;
+      width: 100vw;
+      background-origin: border-box;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    .grass {
+      background-image: url("~@/assets/grass.png");
+      background-position: center;
+    }
+    .picnic-table {
+      background-image: url("~@/assets/picnic_table_with_us.png");
+      background-position: center left 40%;
+    }
+    .tree {
+      background-image: url("~@/assets/tree.png");
+      background-position: center right 40%;
+    }
   }
   .our-names-obviously {
-    text-shadow: 0 0 10px #D8F5FA;
+    color: rgb(0, 30, 0);
     position: fixed;
     top: 0;
     left: 0;
@@ -49,14 +71,17 @@ export default Vue.extend({
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    justify-content: space-evenly;
-    height: 100vh;
-    // font-size: 15vh;
+    justify-content: flex-end;
     font-size: min(15vh, 15vw);
-    padding: 15vh 0;
-    line-height: 15vh;
-    padding-right: 5vw;
+    line-height: 1em;
     font-family: 'Emilys Candy', sans-serif;
+    .surprise-its-a-name, .tagline {
+      background-color: rgba(216, 245, 250, 0.5);
+      border-radius: 50% 1em;
+      box-shadow: 0px 0px 10px 10px rgba(216, 245, 250, 0.5);
+      padding: 0em 0.25em;
+      margin: 0em 0.25em 0.4em 0em;
+    }
     .surprise-its-a-name {
       text-transform: uppercase;
     }
