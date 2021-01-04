@@ -32,7 +32,7 @@ export default Vue.extend({
     // width: 90%;
     height: 100%;
     margin: 0 5% 0 0;
-    background-image: url("~@/assets/picnic_tree_with_you_and_me_4.png");
+    background-image: url("~@/assets/picnic_tree_with_you_and_me_6.png");
     background-origin: border-box;
     background-position: center;
     background-repeat: no-repeat;
