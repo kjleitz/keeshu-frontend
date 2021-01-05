@@ -1,24 +1,24 @@
 <template>
   <div id="app">
-    <MainNav :vertical="navVertical"/>
+    <!-- <MainNav :vertical="navVertical"/> -->
     <router-view/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import MainNav from '@/components/MainNav.vue';
+// import MainNav from '@/components/MainNav.vue';
 
 export default Vue.extend({
-  components: {
-    MainNav,
-  },
+  // components: {
+  //   MainNav,
+  // },
 
-  computed: {
-    navVertical(): boolean {
-      return this.$route.name === 'Home';
-    },
-  },
+  // computed: {
+  //   navVertical(): boolean {
+  //     return this.$route.name === 'Home';
+  //   },
+  // },
 });
 </script>
 

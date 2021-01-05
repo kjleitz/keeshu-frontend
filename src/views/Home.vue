@@ -1,5 +1,6 @@
 <template>
   <div class="home-view">
+    <MainNav vertical/>
     <div class="background">
       <div class="painting grass"></div>
       <div class="painting tree"></div>
@@ -16,10 +17,16 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import MainNav from '@/components/MainNav.vue';
 // import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
 export default Vue.extend({
   name: 'Home',
+
+  components: {
+    MainNav,
+  },
+
   // components: {
   //   HelloWorld,
   // },
@@ -32,6 +39,8 @@ export default Vue.extend({
   width: 100vw;
   height: 100vh;
   background-color: #D8F5FA;
+  // .main-nav {
+  // }
   .background {
     height: 100%;
     width: 100%;
@@ -80,7 +89,7 @@ export default Vue.extend({
       border-radius: 50% 1em;
       box-shadow: 0px 0px 10px 10px rgba(216, 245, 250, 0.5);
       padding: 0em 0.25em;
-      margin: 0em 0.25em 0.4em 0em;
+      margin: 0em 0.25em 0.3em 0em;
     }
     .surprise-its-a-name {
       text-transform: uppercase;

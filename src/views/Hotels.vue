@@ -1,10 +1,18 @@
 <template>
   <div class="hotels-view">
-    <HotelItem
-      v-for="hotel in hotels"
-      :key="hotel.title"
-      :hotel="hotel"
-    />
+    <MainNav/>
+    <b-container>
+      <b-row>
+        <b-col
+          v-for="hotel in hotels"
+          :key="hotel.title"
+          md="6"
+          class="hotel-item-container"
+        >
+          <HotelItem :hotel="hotel"/>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -12,6 +20,7 @@
 import Vue from 'vue';
 import HotelDeets from '@/types/HotelDeets';
 import HotelItem from '@/components/HotelItem.vue';
+import MainNav from '@/components/MainNav.vue';
 
 // TODO: call numbers to verify they work
 const HOTELS: HotelDeets[] = [
@@ -149,6 +158,7 @@ const HOTELS: HotelDeets[] = [
 
 export default Vue.extend({
   components: {
+    MainNav,
     HotelItem,
   },
 
@@ -159,3 +169,26 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss">
+.hotels-view {
+  // padding-top: 8rem;
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(20, 0, 20, 0.8),
+    #FFFEC6 1vh,
+    #FFFEC6 5vh,
+  );
+  // border-left: 1vh groove rgba(100, 100, 0, 0.8);
+  // border-right: 1vh groove rgba(100, 100, 0, 0.8);
+  border-left: 1vh groove rgba(100, 100, 0, 0.8);
+  border-right: 1vh ridge rgba(100, 100, 0, 0.8);
+  .main-nav {
+    position: sticky;
+  }
+  .hotel-item-container {
+    overflow: hidden;
+  }
+}
+</style>

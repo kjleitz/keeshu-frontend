@@ -1,5 +1,15 @@
 <template>
-  <b-nav v-bind="$attrs" class="main-nav" v-on="$listeners">
+  <!-- <b-nav
+    v-bind="$attrs"
+    :vertical="vertical"
+    :class="['main-nav', $route.name, { vertical }]"
+    v-on="$listeners"
+  > -->
+  <b-nav
+    v-bind="$attrs"
+    :class="['main-nav', $route.name]"
+    v-on="$listeners"
+  >
     <b-nav-item :to="{ name: 'Home' }">
       Home
     </b-nav-item>
@@ -19,7 +29,12 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  
+  // props: {
+  //   vertical: {
+  //     type: Boolean,
+  //     default: false,
+  //   },
+  // },
 });
 </script>
 
@@ -29,10 +44,14 @@ export default Vue.extend({
   position: fixed;
   top: 0;
   left: 0;
-  display: inline-block;
+  // display: inline-block;
   padding: 30px;
   z-index: 1000;
   font-size: 1.5rem;
+
+  // &:not(.vertical) {
+  //   position: sticky;
+  // }
 
   a {
     font-weight: bold;
