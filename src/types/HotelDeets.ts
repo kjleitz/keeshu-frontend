@@ -11,5 +11,5 @@ export default interface HotelDeets {
   email: string;
   website: string;
   description: string;
-  distance: string;
+  minutesAway: number;
 }

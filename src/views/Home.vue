@@ -35,6 +35,13 @@ export default Vue.extend({
 
 <style lang="scss">
 .home-view {
+  .main-nav {
+    font-family: "Source Serif Pro", serif;
+    .nav-link {
+      font-size: 2rem;
+    }
+  }
+
   position: relative;
   width: 100vw;
   height: 100vh;
