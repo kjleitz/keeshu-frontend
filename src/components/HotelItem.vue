@@ -2,7 +2,7 @@
   <div class="hotel-item">
     <div class="title-container">
       <a class="title" :href="hotel.website">
-        <b-icon icon="link45deg"></b-icon>
+        <b-icon icon="link45deg" class="link-icon"></b-icon>
         {{ hotel.title }}
       </a>
       <span class="minutes-away">~{{ hotel.minutesAway }} min.</span>
@@ -65,13 +65,15 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+@import "@/styles/breakpoints";
+
 .hotel-item {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  // font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans", sans-serif;
   // font-family: "Lato", sans-serif;
-  font-family: "Lato", serif;
+  // font-family: "Lato", serif;
   font-weight: 600;
   padding: 1rem 2rem;
   // border: 3px double rgb(100, 50, 0);
@@ -82,16 +84,31 @@ export default Vue.extend({
   box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 
+  @include media-breakpoint-down(sm) {
+    padding: 0.5rem 1rem;
+  }
+
   .title-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    margin-left: 1.1em;
     // flex-wrap: wrap;
+
+    .link-icon {
+      position: absolute;
+      left: -1.1em;
+      top: 53%;
+      transform: translateY(-47%);
+      font-size: 0.8em;
+    }
 
     .title {
       font-family: "Lobster";
       font-weight: normal;
       font-size: 1.5rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
     }
 
     .minutes-away {
@@ -107,6 +124,8 @@ export default Vue.extend({
   .address-container,
   .contact-container {
     text-align: center;
+    // font-family: "Lato", serif;
+    font-family: "Open Sans", serif;
   }
 
   .description-container {
@@ -114,7 +133,6 @@ export default Vue.extend({
     display: flex;
     justify-content: stretch;
     align-items: center;
-    // font-size: 0.8rem;
     font-weight: 500;
     margin-top: 1rem;
     // font-family: "Cormorant Garamond", serif;
@@ -123,6 +141,14 @@ export default Vue.extend({
     // text-align: center;
     // font-style: italic;
     // color:
+  }
+
+  @include media-breakpoint-down(sm) {
+    .address-container,
+    .contact-container,
+    .description-container {
+      font-size: 0.875em;
+    }
   }
 }
 </style>

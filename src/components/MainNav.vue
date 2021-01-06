@@ -14,7 +14,7 @@
       Home
     </b-nav-item>
     <b-nav-item :to="{ name: 'Hotels' }">
-      Hotels
+      Hotel<span class="hotels-last-letter">s</span>
     </b-nav-item>
     <b-nav-item :to="{ name: 'Us' }">
       Us

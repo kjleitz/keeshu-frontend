@@ -34,6 +34,9 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+$full-height: 100vh;
+// $full-height: 100%;
+
 .home-view {
   .main-nav {
     font-family: "Source Serif Pro", serif;
@@ -44,7 +47,7 @@ export default Vue.extend({
 
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: $full-height;
   background-color: #D8F5FA;
   // .main-nav {
   // }
@@ -57,7 +60,7 @@ export default Vue.extend({
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      height: 100vh;
+      height: $full-height;
       width: 100vw;
       background-origin: border-box;
       background-position: center;
@@ -66,7 +69,7 @@ export default Vue.extend({
     }
     .grass {
       background-image: url("~@/assets/grass.png");
-      background-position: center;
+      background-position: center left 60%;
     }
     .picnic-table {
       background-image: url("~@/assets/picnic_table_with_us.png");
@@ -83,7 +86,7 @@ export default Vue.extend({
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: $full-height;
     display: flex;
     flex-direction: column;
     align-items: flex-end;

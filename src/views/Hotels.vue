@@ -2,10 +2,10 @@
   <div class="hotels-view">
     <div class="nav-area">
       <div class="no-vacancy-sign">
-        <div class="no-vacancy-neon"></div>
+        <div :class="['no-vacancy-neon', { 'no-is-lit': noIsLit }]"></div>
       </div>
       <div class="nav-sign">
-        <MainNav/>
+        <MainNav :class="{ scrolled }"/>
       </div>
     </div>
     <b-container>
@@ -133,7 +133,7 @@ const HOTELS: HotelDeets[] = [
     phone: "1 (508) 832-7000",
     email: "",
     website: "https://www.wyndhamhotels.com/laquinta/auburn-massachusetts/la-quinta-inn-auburn-worcester/overview",
-    description: "Simple rooms, excellent microwaves. Kids 18 and under stay free, as long as they're with a parent or grandparent. Important note: it would seem from the language that they do NOT stay free if they are with great-grandparents or other more venerable elders. Continental breakfast and parking included, but continental parking is extra.",
+    description: "Simple rooms, excellent microwaves. Kids 18 and under stay free, as long as they're with a parent or grandparent. Important note: it would seem from the language that they do NOT stay free if they are with great-grandparents or other, more venerable, elders. Continental breakfast and parking included, but continental parking is extra.",
     minutesAway: 18,
   },
   {
@@ -159,10 +159,14 @@ const HOTELS: HotelDeets[] = [
     phone: "1 (888) 777-7922",
     email: "",
     website: "https://mohegansun.com/",
-    description: "Mohegan is the only word that rhymes with Keegan. Unfortunately, it's a proper noun so it really shouldn't count. Then again, so is _\"Keegan,\"_ so why am I concerned? It still seems like a hacky rhyme, though, so in a non-limerick setting I might go with _\"something something speakin'\"_ instead, or maybe _\"about a league in[land]\"_ Needs some work, but you get the point.",
+    description: "Mohegan is the only word that rhymes with Keegan. Unfortunately, it's a proper noun so it really shouldn't count. Then again, so is _\"Keegan,\"_ so why am I concerned? It still seems like a hacky rhyme, though, so in a non-limerick setting I might go with _\"something something speakin'\"_ instead, or maybe _\"about a league in[land].\"_ Needs some work, but you get the point.",
     minutesAway: 40,
   },
 ];
+
+let syncScrolled = _.noop;
+let flickerTimeout = 0;
+let toggleTimeout = 0;
 
 export default Vue.extend({
   components: {
@@ -173,12 +177,70 @@ export default Vue.extend({
   data() {
     return {
       sortField: 'minutesAway' as keyof HotelDeets,
+      scrolled: false,
+      noIsLit: false,
     };
   },
 
   computed: {
     sortedHotels(): HotelDeets[] {
       return _.sortBy(HOTELS, this.sortField);
+    },
+  },
+
+  mounted(): void {
+    this.addListeners();
+    this.addIntervals();
+  },
+
+  beforeDestroy(): void {
+    this.removeListeners();
+  },
+
+  beforeRouteUpdate(_to, _from, next): void {
+    this.addListeners();
+    this.addIntervals();
+    next();
+  },
+
+  beforeRouteLeave(_to, _from, next): void {
+    this.removeListeners();
+    next();
+  },
+
+  methods: {
+    removeListeners(): void {
+      window.removeEventListener('scroll', syncScrolled);
+    },
+
+    addListeners(): void {
+      this.removeListeners();
+
+      syncScrolled = _.throttle(() => {
+        this.scrolled = window.scrollY > 100;
+      }, 300);
+
+      syncScrolled();
+      window.addEventListener('scroll', syncScrolled);
+    },
+
+    addIntervals(): void {
+      const toggle = (count = 0): void => {
+        this.noIsLit = !this.noIsLit;
+        if (count < 6) {
+          window.clearTimeout(flickerTimeout);
+          flickerTimeout = window.setTimeout(() => {
+            toggle(count + 1);
+          }, 200 / (count + 1));
+        } else {
+          window.clearTimeout(toggleTimeout);
+          toggleTimeout = window.setTimeout(() => {
+            toggle(0);
+          }, 3000);
+        }
+      };
+
+      toggle();
     },
   },
 });
@@ -194,16 +256,23 @@ $sign-margin: 0.5rem;
 .hotels-view {
   // padding-top: 8rem;
   width: 100%;
-  background-image: repeating-linear-gradient(
-    180deg,
-    rgba(20, 0, 20, 0.8),
-    #FFFEC6 1vh,
-    #FFFEC6 5vh,
-  );
+  // background-image: repeating-linear-gradient(
+  //   180deg,
+  //   rgba(20, 0, 20, 0.8),
+  //   #FFFEC6 1vh,
+  //   #FFFEC6 5vh,
+  // );
+  // background: repeating-linear-gradient(180deg, rgba(20, 0, 20, 0.8), #FFFEC6 1vh, #FFFEC6 3vh, #FFFFD9 5vh);
+  background: repeating-linear-gradient(180deg, rgba(30, 15, 0, 0.8), #FFFEC6 1vh, #FFFEC6 3vh, #FFFFD9 5vh);
   // border-left: 1vh groove rgba(100, 100, 0, 0.8);
+  // border-right: 1vh ridge rgba(100, 100, 0, 0.8);
+  // border-left: 1vh ridge rgba(100, 100, 0, 0.8);
   // border-right: 1vh groove rgba(100, 100, 0, 0.8);
-  border-left: 1vh groove rgba(100, 100, 0, 0.8);
-  border-right: 1vh ridge rgba(100, 100, 0, 0.8);
+  // border-left: 1vh solid rgba(100, 100, 0, 0.8);
+  // border-right: 1vh solid rgba(100, 100, 0, 0.8);
+  // box-shadow: inset 0 3px 3px rgba(20, 0, 20, 0.8);
+  // box-shadow: inset 0 0 3px rgba(20, 0, 20, 0.8);
+  box-shadow: inset 0 0 1vh rgba(30, 15, 0, 0.8);
 
   a {
     color: rgb(0, 75, 170);
@@ -251,12 +320,16 @@ $sign-margin: 0.5rem;
       // }
 
       .no-vacancy-neon {
-        background-image: url("~@/assets/no_vacancy.png");
+        background-image: url("~@/assets/vacancy.png");
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
         width: 100%;
         height: 100%;
+
+        &.no-is-lit {
+          background-image: url("~@/assets/no_vacancy.png");
+        }
       }
     }
 
@@ -273,10 +346,11 @@ $sign-margin: 0.5rem;
       align-items: center;
       box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.5);
 
-      // @include media-breakpoint-down(sm) {
-      //   position: sticky;
-      //   top: 0;
-      // }
+      @include media-breakpoint-down(sm) {
+        position: sticky;
+        top: 0;
+        padding: 0 0;
+      }
 
       .main-nav {
         position: relative;
@@ -284,12 +358,47 @@ $sign-margin: 0.5rem;
         padding: 1rem;
         font-family: "Chonburi", serif;
         text-transform: uppercase;
+        display: flex;
+        align-items: center;
 
         @include media-breakpoint-down(sm) {
-          font-size: 1.25rem;
+          // font-size: 1.25rem;
+          font-size: 1em;
 
-          .nav-link {
+          a.nav-link {
             padding: 0.25rem 0.5rem;
+          }
+        }
+
+        a.nav-link {
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+          &.router-link-exact-active {
+            color: #182D3E;
+            font-size: 1.25em;
+          }
+        }
+
+        .hotels-last-letter {
+          display: inline-block;
+          height: 1em;
+          line-height: 1em;
+          transform-origin: top right;
+          transform: rotate(0deg) translate(0em, 0em);
+          // transition: transform 0.3s;
+          // transition: transform 1s cubic-bezier(0, 1.5, 0.5, 1);
+          // transition: transform 0.2s cubic-bezier(0, 1.5, 0.5, 1);
+          // transition: transform 0.5s cubic-bezier(0, 1.5, 0.5, 1);
+          transition: transform 0.2s;
+          transition-timing-function: ease-in;
+        }
+
+        &.scrolled {
+          .hotels-last-letter {
+            transform: rotate(-25deg) translate(-0.1em, -0.1em);
+            transition: transform 0.5s;
+            transition-timing-function: cubic-bezier(0.5, 3, 0.5, 1);
+            // transform: rotate(25deg) translate(-0.1em, 0em);
+            // transform-origin: bottom left;
           }
         }
       }
@@ -304,6 +413,7 @@ $sign-margin: 0.5rem;
 
     .hotel-item {
       margin-bottom: 1rem;
+      width: 100%;
     }
   }
 }
