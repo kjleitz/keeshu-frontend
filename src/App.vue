@@ -28,6 +28,16 @@ html, body {
   padding: 0;
 }
 
+// body {
+//   min-height: 100vh;
+//   min-height: -webkit-fill-available;
+// }
+
+// html {
+//   // min-height: 100vh;
+//   height: -webkit-fill-available;
+// }
+
 #app {
   font-family: 'Avenir', sans-serif;
   -webkit-font-smoothing: antialiased;

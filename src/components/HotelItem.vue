@@ -123,7 +123,7 @@ export default Vue.extend({
 
   .address-container,
   .contact-container {
-    text-align: center;
+    // text-align: center;
     // font-family: "Lato", serif;
     font-family: "Open Sans", serif;
   }

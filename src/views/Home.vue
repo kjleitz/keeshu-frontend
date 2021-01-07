@@ -35,9 +35,15 @@ export default Vue.extend({
 
 <style lang="scss">
 $full-height: 100vh;
+// $full-height: fill-available;
 // $full-height: 100%;
 
 .home-view {
+  position: relative;
+  width: 100vw;
+  height: $full-height;
+  background-color: #D8F5FA;
+
   .main-nav {
     font-family: "Source Serif Pro", serif;
     .nav-link {
@@ -45,16 +51,11 @@ $full-height: 100vh;
     }
   }
 
-  position: relative;
-  width: 100vw;
-  height: $full-height;
-  background-color: #D8F5FA;
-  // .main-nav {
-  // }
   .background {
     height: 100%;
     width: 100%;
     z-index: -1000;
+
     .painting {
       position: absolute;
       top: 0;
@@ -67,19 +68,23 @@ $full-height: 100vh;
       background-repeat: no-repeat;
       background-size: cover;
     }
+
     .grass {
       background-image: url("~@/assets/grass.png");
       background-position: center left 60%;
     }
+
     .picnic-table {
       background-image: url("~@/assets/picnic_table_with_us.png");
-      background-position: center left 40%;
+      background-position: center left 45%;
     }
+
     .tree {
       background-image: url("~@/assets/tree.png");
-      background-position: center right 40%;
+      background-position: center right 45%;
     }
   }
+
   .our-names-obviously {
     color: rgb(0, 30, 0);
     position: fixed;
@@ -94,6 +99,7 @@ $full-height: 100vh;
     font-size: min(15vh, 15vw);
     line-height: 1em;
     font-family: 'Emilys Candy', sans-serif;
+
     .surprise-its-a-name, .tagline {
       background-color: rgba(216, 245, 250, 0.5);
       border-radius: 50% 1em;
@@ -101,9 +107,11 @@ $full-height: 100vh;
       padding: 0em 0.25em;
       margin: 0em 0.25em 0.3em 0em;
     }
+
     .surprise-its-a-name {
       text-transform: uppercase;
     }
+
     .tagline {
       font-size: min(9vh, 9vw);
     }
