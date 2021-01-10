@@ -195,6 +195,7 @@ export default Vue.extend({
 
   beforeDestroy(): void {
     this.removeListeners();
+    this.removeIntervals();
   },
 
   beforeRouteUpdate(_to, _from, next): void {
@@ -205,6 +206,7 @@ export default Vue.extend({
 
   beforeRouteLeave(_to, _from, next): void {
     this.removeListeners();
+    this.removeIntervals();
     next();
   },
 
@@ -222,6 +224,11 @@ export default Vue.extend({
 
       syncScrolled();
       window.addEventListener('scroll', syncScrolled);
+    },
+
+    removeIntervals(): void {
+      window.clearTimeout(flickerTimeout);
+      window.clearTimeout(toggleTimeout);
     },
 
     addIntervals(): void {
