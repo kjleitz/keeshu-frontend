@@ -4,6 +4,11 @@
     <div class="background">
       <div :style="nightStyles" class="sky night"></div>
       <div :style="dayStyles" class="sky day"></div>
+      <div class="sun-container">
+        <div class="sun-corona">
+          <div class="sun"></div>
+        </div>
+      </div>
       <div class="painting grass"></div>
       <div class="painting tree"></div>
       <div class="painting picnic-table"></div>
@@ -26,6 +31,7 @@ import Vue from 'vue';
 import moment from 'moment';
 import MainNav from '@/components/MainNav.vue';
 import _ from 'underscore';
+import { bound } from '@/lib/utils';
 // import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
 const calcDayElapsed = (): number => {
@@ -62,27 +68,15 @@ export default Vue.extend({
       return Math.sqrt((this.clientWidth ** 2) + (this.clientHeight ** 2));
     },
 
-    skyStyles(): Partial<CSSStyleDeclaration> {
-      const { skyCircleDiameter, dayElapsedPercent } = this;
-      const dayElapsedDegrees = (dayElapsedPercent * 360) - 45;
-      return {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        width: `${skyCircleDiameter}px`,
-        height: `${skyCircleDiameter}px`,
-        transform: `translate(-50%, -50%) rotate(${dayElapsedDegrees.toFixed(2)}deg`,
-      };
+    skyDegrees(): number {
+      return this.dayElapsedPercent * 360;
     },
 
-    nightStyles(): Partial<CSSStyleDeclaration> {
-      return {
-        ...this.skyStyles,
-        zIndex: '-100',
-      };
+    starMapDegrees(): number {
+      return (this.dayElapsedPercent * 360) - 45;
     },
 
-    dayStyles(): Partial<CSSStyleDeclaration> {
+    sunlightPercent(): number {
       const { dayElapsedPercent } = this;
 
       // sun is completely down for the first 10% and last 10% of the day
@@ -98,27 +92,68 @@ export default Vue.extend({
       const tilMidnight = sunMaxPercent - tilNoon;
 
       // 1.0 at noon, 0.0 anywhere between 10% til midnight and 10% after midnight
-      const sunlightPercent = (tilMidnight - sunMinPercent) / (sunMaxPercent - sunMinPercent);
+      const rawSunlightPercent = (tilMidnight - sunMinPercent) / (sunMaxPercent - sunMinPercent);
 
       // rises quickly and slows down close to noon, falls slowly after noon and
       // accelerates toward midnight (picture the >0 portion of a sin wave crest)
-      const sunlightSinusoidalPercent = Math.sin(sunlightPercent * (Math.PI / 2));
+      return Math.sin(rawSunlightPercent * (Math.PI / 2));
+    },
 
+    sunlightRedValue(): number {
       const redMin = -300; // wanna start without any red at all
       const redMax = 150;
-      const red = Math.max(redMin + (sunlightSinusoidalPercent * (redMax - redMin)), 0);
+      return this.sunlightColorValue(redMin, redMax);
+    },
 
+    sunlightGreenValue(): number {
       const greenMin = -200; // wanna start without any green at all (but have it come sooner than red)
       const greenMax = 240;
-      const green = Math.max(greenMin + (sunlightSinusoidalPercent * (greenMax - greenMin)), 0);
+      return this.sunlightColorValue(greenMin, greenMax);
+    },
 
+    sunlightBlueValue(): number {
       const blueMin = 100;
       const blueMax = 255;
-      const blue = Math.max(blueMin + (sunlightSinusoidalPercent * (blueMax - blueMin)), 0);
+      return this.sunlightColorValue(blueMin, blueMax);
+    },
 
+    sunlightOpacity(): number {
+      return this.sunlightPercent;
+    },
+
+    sunlightRgba(): string {
+      const red = this.sunlightRedValue.toFixed(2);
+      const green = this.sunlightGreenValue.toFixed(2);
+      const blue = this.sunlightBlueValue.toFixed(2);
+      const opacity = this.sunlightOpacity.toFixed(2);
+      return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+    },
+
+    skyStyles(): Partial<CSSStyleDeclaration> {
+      const { skyCircleDiameter, skyDegrees } = this;
+      return {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: `${skyCircleDiameter}px`,
+        height: `${skyCircleDiameter}px`,
+        transform: `translate(-50%, -50%) rotate(${skyDegrees.toFixed(2)}deg`,
+      };
+    },
+
+    nightStyles(): Partial<CSSStyleDeclaration> {
       return {
         ...this.skyStyles,
-        backgroundColor: `rgba(${red.toFixed(2)}, ${green.toFixed(2)}, ${blue.toFixed(2)}, ${sunlightSinusoidalPercent.toFixed(2)})`,
+        zIndex: '-100',
+        // So that the Milky Way isn't at a regular angle...
+        transform: `translate(-50%, -50%) rotate(${this.starMapDegrees.toFixed(2)}deg`,
+      };
+    },
+
+    dayStyles(): Partial<CSSStyleDeclaration> {
+      return {
+        ...this.skyStyles,
+        backgroundColor: this.sunlightRgba,
         zIndex: '-99',
       };
     },
@@ -173,22 +208,19 @@ export default Vue.extend({
         this.dayElapsedPercent = calcDayElapsed();
       }, 2000);
     },
+
+    sunlightColorValue(atMidnight: number, atNoon: number): number {
+      const { sunlightPercent } = this;
+      const value = atMidnight + (sunlightPercent * (atNoon - atMidnight));
+      return bound(value, [0, 255]);
+    },
   },
 });
 </script>
 
 <style lang="scss">
-// $full-height: 100vh;
-// $full-height: fill-available;
-// $full-height: 100%;
-
 .home-view {
-  // position: relative;
-  // width: 100vw;
-  // max-width: 100vw;
-  // max-height: 100vh;
   overflow: hidden;
-  // height: $full-height;
   width: 100%;
   height: 100%;
   // background-color: #D8F5FA;
@@ -201,6 +233,8 @@ export default Vue.extend({
     top: 0;
     left: 0;
     width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .main-nav {
@@ -225,6 +259,15 @@ export default Vue.extend({
       background-position: center;
       background-size: cover;
       background-repeat: repeat;
+    }
+
+    .sun-container {
+      position
+      .sun-corona {
+        .sun {
+
+        }
+      }
     }
 
     .painting {
