@@ -212,18 +212,18 @@ export default Vue.extend({
 
   methods: {
     removeListeners(): void {
-      window.removeEventListener('scroll', syncScrolled);
+      document.body.removeEventListener('scroll', syncScrolled);
     },
 
     addListeners(): void {
       this.removeListeners();
 
       syncScrolled = _.throttle(() => {
-        this.scrolled = window.scrollY > 100;
+        this.scrolled = document.body.scrollTop > 100;
       }, 300);
 
       syncScrolled();
-      window.addEventListener('scroll', syncScrolled);
+      document.body.addEventListener('scroll', syncScrolled);
     },
 
     removeIntervals(): void {

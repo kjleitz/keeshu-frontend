@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <!-- <MainNav :vertical="navVertical"/> -->
-    <router-view/>
+    <keep-alive>
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
@@ -24,21 +26,20 @@ export default Vue.extend({
 
 <style lang="scss">
 html, body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
+  overflow-y: scroll;
 }
 
-// body {
-//   min-height: 100vh;
-//   min-height: -webkit-fill-available;
-// }
-
-// html {
-//   // min-height: 100vh;
-//   height: -webkit-fill-available;
-// }
-
 #app {
+  width: 100%;
+  height: 100%;
   font-family: 'Avenir', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

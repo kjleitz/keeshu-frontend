@@ -3,7 +3,7 @@
     :src="mapSrc"
     frameborder="0"
     allowfullscreen
-    class="map"
+    class="google-map"
   ></iframe>
 </template>
 

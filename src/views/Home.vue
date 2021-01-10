@@ -48,23 +48,13 @@ export default Vue.extend({
 
   data() {
     return {
-      // Setting width and height in JS because 100vw/100vh act weird with the
-      // disappearing address bar on mobile, and they don't play nicely with
-      // scrollbars... sucks, but them's the breaks.
-      clientWidth: document.documentElement.clientWidth,
-      clientHeight: document.documentElement.clientHeight,
+      clientWidth: window.innerWidth,
+      clientHeight: window.innerHeight,
       dayElapsedPercent: calcDayElapsed(),
     };
   },
 
   computed: {
-    homeStyles(): Partial<CSSStyleDeclaration> {
-      return {
-        width: `${this.clientWidth}px`,
-        height: `${this.clientHeight}px`,
-      };
-    },
-
     skyCircleDiameter(): number {
       // The star map image rotates, so the element's smallest dimension (width
       // or height) must equal (or exceed) the diameter of the imaginary circle
@@ -180,7 +170,7 @@ export default Vue.extend({
     addIntervals(): void {
       this.dayElapsedPercent = calcDayElapsed();
       dayElapsedInterval = window.setInterval(() => {
-        // this.dayElapsedPercent = calcDayElapsed();
+        this.dayElapsedPercent = calcDayElapsed();
       }, 2000);
     },
   },
@@ -188,17 +178,19 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-$full-height: 100vh;
+// $full-height: 100vh;
 // $full-height: fill-available;
 // $full-height: 100%;
 
 .home-view {
-  position: relative;
+  // position: relative;
   // width: 100vw;
-  max-width: 100vw;
-  max-height: 100vh;
+  // max-width: 100vw;
+  // max-height: 100vh;
   overflow: hidden;
-  height: $full-height;
+  // height: $full-height;
+  width: 100%;
+  height: 100%;
   // background-color: #D8F5FA;
   // background-color: #c8f7ff;
 
@@ -228,7 +220,8 @@ $full-height: 100vh;
     // }
 
     .night {
-      background-image: url("~@/assets/starmap_2020_4k_gal_retina.jpg");
+      // background-image: url("~@/assets/starmap_2020_4k_gal_retina.jpg");
+      background-image: url("~@/assets/starmap_square.jpg");
       background-position: center;
       background-size: cover;
       background-repeat: repeat;
@@ -239,8 +232,8 @@ $full-height: 100vh;
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      height: $full-height;
-      width: 100vw;
+      height: 100%;
+      width: 100%;
       background-origin: border-box;
       background-position: center;
       background-repeat: no-repeat;
@@ -268,8 +261,8 @@ $full-height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: $full-height;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
