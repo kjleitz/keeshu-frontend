@@ -26,13 +26,18 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 
 export default Vue.extend({
   // props: {
-  //   vertical: {
-  //     type: Boolean,
-  //     default: false,
+  //   linkStyles: {
+  //     type: Object as PropType<Partial<CSSStyleDeclaration>>,
+  //     default: (): Partial<CSSStyleDeclaration> => ({}),
+  //   },
+
+  //   linkActiveStyles: {
+  //     type: Object as PropType<Partial<CSSStyleDeclaration>>,
+  //     default: (): Partial<CSSStyleDeclaration> => ({}),
   //   },
   // },
 });
