@@ -1,9 +1,10 @@
 <template>
   <div id="app">
     <!-- <MainNav :vertical="navVertical"/> -->
-    <keep-alive>
+    <router-view/>
+    <!-- <keep-alive>
       <router-view/>
-    </keep-alive>
+    </keep-alive> -->
   </div>
 </template>
 
@@ -25,16 +26,24 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+// html, body {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   min-height: 100%;
+//   margin: 0;
+//   padding: 0;
+//   overflow-y: scroll;
+// }
 html, body {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100%;
   min-height: 100%;
   margin: 0;
   padding: 0;
-  overflow-y: scroll;
 }
 
 #app {

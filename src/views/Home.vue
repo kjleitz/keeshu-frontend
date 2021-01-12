@@ -441,9 +441,12 @@ export default Vue.extend({
 
 <style lang="scss">
 .home-view {
+  position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
+  min-height: 100%;
+  max-height: 100%;
 
   .title-font {
     position: absolute;
@@ -492,6 +495,7 @@ export default Vue.extend({
     height: 100%;
     width: 100%;
     z-index: -1000;
+    overflow: hidden;
 
     // .day {
     //   background-color: #c8f7ff;
