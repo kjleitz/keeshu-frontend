@@ -1,15 +1,22 @@
 <template>
   <!-- <div tabindex="0" class="home-view" @keyup.left.exact.prevent="fontIndex -= 1" @keyup.right.exact.prevent="fontIndex += 1"> -->
-  <div class="home-view">
-    <MainNav :style="navStyles" vertical/>
+  <div :style="styleVariables" class="home-view">
+    <h1 class="sr-only">Home</h1>
+    <MainNav vertical/>
+    <!-- <MainNav :style="navStyles" vertical/> -->
     <div class="background">
       <div :style="nightStyles" class="sky night"></div>
       <div :style="dayStyles" class="sky day"></div>
-      <div class="sun-container">
-        <div class="sun-corona">
-          <div class="sun"></div>
+      <!-- <div class="sun-corona">
+        <div class="sun-chromosphere">
+          <div class="sun-photosphere"></div>
         </div>
-      </div>
+      </div> -->
+      <div class="sun-corona"></div>
+      <div class="sun-chromosphere"></div>
+      <div class="sun-photosphere"></div>
+      <div class="moon-aura"></div>
+      <div class="moon-surface"></div>
       <div class="painting grass"></div>
       <div class="painting tree"></div>
       <div class="painting picnic-table"></div>
@@ -32,7 +39,8 @@
       </div>
     </div>
     <div v-if="debugMode" class="day-control">
-      <b-form-input v-model="dayElapsedPercent" type="range" min="0" max="1" step="0.01"></b-form-input>
+      <!-- <b-form-input v-model.number="dayElapsedPercent" type="range" min="0" max="1" step="0.001"></b-form-input> -->
+      <b-form-input v-model.number="dayElapsedPercent" type="range" min="0" max="1" step="0.001"></b-form-input>
       Hours after midnight: {{ Math.floor(dayElapsedPercent * 24) }}h{{ Math.floor(((dayElapsedPercent * 24) % 1) * 60) }}m
       <br>
       Sunlight color: {{ sunlightRgba }}
@@ -40,6 +48,14 @@
       Title color: {{ titleRgba }}
       <br>
       Active link color: {{ navLinkActiveRgba }}
+      <br>
+      Sun coords: { x: {{ sunPercentX.toFixed(2) }}, y: {{ sunPercentY.toFixed(2) }} }
+      <br>
+      Day elapsed percent: {{ dayElapsedPercent.toFixed(2) }}
+      <br>
+      Moon coords: { x: {{ moonPercentX.toFixed(2) }}, y: {{ moonPercentY.toFixed(2) }} }
+      <br>
+      Night elapsed percent: {{ nightElapsedPercent.toFixed(2) }}
     </div>
     <div v-if="debugMode" class="title-font">
       Font: {{ titleFont }}
@@ -106,6 +122,10 @@ export default Vue.extend({
   },
 
   computed: {
+    nightElapsedPercent(): number {
+      return (this.dayElapsedPercent + 0.5) % 1;
+    },
+
     skyCircleDiameter(): number {
       // The star map image rotates, so the element's smallest dimension (width
       // or height) must equal (or exceed) the diameter of the imaginary circle
@@ -170,6 +190,40 @@ export default Vue.extend({
       return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
     },
 
+    sunPercentX(): number {
+      const appearTime = 0.3; // appears `appearTime` after midnight, disappears `appearTime` before midnight
+      const elapsedAfterAppearance = this.dayElapsedPercent - appearTime;
+      const totalTimeInSky = 1 - (2 * appearTime);
+      return elapsedAfterAppearance / totalTimeInSky;
+    },
+
+    sunPercentY(): number {
+      const x = this.sunPercentX;
+
+      // travels a circular path
+      const rawY = 2 * (1 - (Math.sqrt((0.5 ** 2) - ((x - 0.5) ** 2)) + 0.5));
+
+      // if it's NaN or less than 33% from the bottom, put it waaay off screen
+      return rawY < 0.67 ? rawY : -100;
+    },
+
+    moonPercentX(): number {
+      const appearTime = 0.3; // appears `appearTime` before midnight, disappears `appearTime` after midnight
+      const elapsedAfterAppearance = this.nightElapsedPercent - appearTime;
+      const totalTimeInSky = 1 - (2 * appearTime);
+      return elapsedAfterAppearance / totalTimeInSky;
+    },
+
+    moonPercentY(): number {
+      const x = this.moonPercentX;
+
+      // travels a circular path
+      const rawY = 2 * (1 - (Math.sqrt((0.5 ** 2) - ((x - 0.5) ** 2)) + 0.5));
+
+      // if it's NaN or less than 33% from the bottom, put it waaay off screen
+      return rawY < 0.67 ? rawY : -100;
+    },
+
     titleFont(): string {
       if (!this.debugMode) return FONTS[0];
 
@@ -179,17 +233,14 @@ export default Vue.extend({
     },
 
     titleRedValue(): number {
-      // return this.sunlightColorValue(151, 255);
       return this.sunlightColorValue(180, 255);
     },
 
     titleGreenValue(): number {
-      // return this.sunlightColorValue(180, 255);
       return this.sunlightColorValue(230, 255);
     },
 
     titleBlueValue(): number {
-      // return this.sunlightColorValue(220, 255);
       return this.sunlightColorValue(235, 255);
     },
 
@@ -214,27 +265,14 @@ export default Vue.extend({
     },
 
     navLinkActiveRedValue(): number {
-      // return this.sunlightColorValue(151, 255);
-      // return this.sunlightColorValue(0, 40);
-      // return this.sunlightColorValue(-100, 40);
-      // return this.sunlightColorValue(-100, 60);
       return this.sunlightColorValue(0, 60);
     },
 
     navLinkActiveGreenValue(): number {
-      // return this.sunlightColorValue(180, 255);
-      // return this.sunlightColorValue(170, 200);
-      // return this.sunlightColorValue(170, 255);
-      // return this.sunlightColorValue(170, 200);
-      // return this.sunlightColorValue(200, 150);
-      // return this.sunlightColorValue(180, 150);
       return this.sunlightColorValue(180, 140);
     },
 
     navLinkActiveBlueValue(): number {
-      // return this.sunlightColorValue(220, 255);
-      // return this.sunlightColorValue(-100, 40);
-      // return this.sunlightColorValue(-100, 60);
       return this.sunlightColorValue(0, 60);
     },
 
@@ -290,12 +328,15 @@ export default Vue.extend({
       };
     },
 
-    navStyles(): Record<string, string> {
+    styleVariables(): Record<string, string> {
       return {
         '--nav-font-family': `"${this.navLinkFont}", serif`,
         '--nav-font-color': this.navLinkRgba,
         '--nav-font-color-active': this.navLinkActiveRgba,
-        // '--nav-font-shadow-active': `0px 0px 20px rgba(255, 255, 255, ${this.navLinkActiveShadowOpacity})`,
+        '--sun-position-x': `${(this.sunPercentX * 100).toFixed(2)}%`,
+        '--sun-position-y': `${(this.sunPercentY * 100).toFixed(2)}%`,
+        '--moon-position-x': `${(this.moonPercentX * 100).toFixed(2)}%`,
+        '--moon-position-y': `${(this.moonPercentY * 100).toFixed(2)}%`,
       };
     },
   },
@@ -364,16 +405,11 @@ export default Vue.extend({
   overflow: hidden;
   width: 100%;
   height: 100%;
-  // background-color: #222;
-  // background-color: #D8F5FA;
-  // background-color: #c8f7ff;
 
   .title-font {
     position: absolute;
     left: 0;
     bottom: 0;
-    // color: #bbb;
-    // background-color: rgba(0, 0, 0, 0.5);
     background-color: rgba(255, 255, 255, 0.5);
   }
 
@@ -386,11 +422,12 @@ export default Vue.extend({
     width: calc(100% - 20rem);
     max-width: 100%;
     overflow: hidden;
+    line-height: 0.8rem;
+    font-size: 0.8rem;
   }
 
   .main-nav {
-    // font-family: "Source Serif Pro", serif;
-    // font-family: "Glass Antiqua", serif;
+    z-index: 1000;
     .nav-link {
       font-size: 2rem;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
@@ -401,18 +438,9 @@ export default Vue.extend({
       transition: padding 0.3s;
 
       &.router-link-exact-active {
-        // text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
-        // text-shadow: none;
-        // color: #42b983;
-        // color: rgb(76, 195, 121);
         color: var(--nav-font-color-active);
         font-size: 2em;
-        // -webkit-text-stroke: 1px var(--nav-font-color);
-        // text-shadow: 0px 0px 1px black;
-        // text-shadow: 0px 0px 1px rgba(255, 255, 255, 1);
         text-shadow: 0px 0px 1px rgba(150, 240, 255, 1);
-        // text-shadow: 0px 0px 1px black;
-        // line-height: 1em;
       }
 
       &:hover {
@@ -432,20 +460,96 @@ export default Vue.extend({
 
     .night {
       background-color: #222;
-      // background-image: url("~@/assets/starmap_2020_4k_gal_retina.jpg");
       background-image: url("~@/assets/starmap_square.jpg");
       background-position: center;
       background-size: cover;
       background-repeat: repeat;
     }
 
-    .sun-container {
-      position
-      .sun-corona {
-        .sun {
+    $sun-photosphere-size: min(10vw, 10vh);
+    $sun-chromosphere-size: calc(1.5 * #{$sun-photosphere-size});
+    $sun-corona-size: calc(1.5 * #{$sun-chromosphere-size});
 
-        }
-      }
+    .sun-corona {
+      position: absolute;
+      top: var(--sun-position-y);
+      left: var(--sun-position-x);
+      width: $sun-corona-size;
+      height: $sun-corona-size;
+      background-color: rgba(255, 255, 200, 0.3);
+      border-radius: 50%;
+      box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
+      transform: translate(-50%, -50%);
+      z-index: 100;
+    }
+
+    .sun-chromosphere {
+      position: absolute;
+      top: var(--sun-position-y);
+      left: var(--sun-position-x);
+      width: $sun-chromosphere-size;
+      height: $sun-chromosphere-size;
+      background-color: rgba(255, 255, 250, 0.3);
+      border-radius: 50%;
+      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
+      box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.3);
+      transform: translate(-50%, -50%);
+      z-index: 100;
+    }
+
+    .sun-photosphere {
+      position: absolute;
+      top: var(--sun-position-y);
+      left: var(--sun-position-x);
+      width: $sun-photosphere-size;
+      height: $sun-photosphere-size;
+      background-color: rgba(255, 255, 250, 1);
+      border-radius: 50%;
+      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
+      box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.7);
+      transform: translate(-50%, -50%);
+    }
+
+    $moon-surface-size: min(10vw, 10vh);
+    $moon-aura-size: calc(1.5 * #{$moon-surface-size});
+    // --moon-position-x: 150px;
+    // --moon-position-y: 250px;
+
+    .moon-aura {
+      position: absolute;
+      top: var(--moon-position-y);
+      left: var(--moon-position-x);
+      width: $moon-aura-size;
+      height: $moon-aura-size;
+      // background-color: rgba(255, 255, 250, 0.3);
+      // background-color: rgba(210, 210, 255, 0.3);
+      // background-color: rgba(210, 210, 255, 0.2);
+      background-color: rgba(210, 210, 255, 0.1);
+      border-radius: 50%;
+      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
+      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.3);
+      // box-shadow: 0px 0px 10px 10px rgba(240, 240, 255, 0.3);
+      // box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.3);
+      // box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.2);
+      box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.1);
+      transform: translate(-50%, -50%);
+      z-index: 100;
+    }
+
+    .moon-surface {
+      position: absolute;
+      top: var(--moon-position-y);
+      left: var(--moon-position-x);
+      width: $moon-surface-size;
+      height: $moon-surface-size;
+      background-color: rgba(255, 255, 250, 1);
+      // background-color: rgba(252, 252, 255, 1);
+      border-radius: 50%;
+      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
+      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.7);
+      // box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.7);
+      box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.3);
+      transform: translate(-50%, -50%);
     }
 
     .painting {
@@ -479,8 +583,6 @@ export default Vue.extend({
 
   .our-names-obviously {
     color: rgb(0, 30, 0);
-    // overflow: hidden;
-    // -webkit-text-stroke: 1px white;
     position: fixed;
     top: 0;
     left: 0;
@@ -491,26 +593,15 @@ export default Vue.extend({
     flex-direction: column;
     align-items: flex-end;
     justify-content: flex-end;
-    // font-size: min(15vh, 15vw);
     font-size: min(20vh, 20vw);
     line-height: 1em;
-    // font-family: 'Emilys Candy', sans-serif;
     font-family: 'Glass Antiqua', serif;
     outline: none;
-    // padding-bottom: 0.5em;
 
     .surprise-its-a-name, .tagline {
       display: inline-block;
-      // background-color: rgba(216, 245, 250, 0.5);
-      // border-radius: 50% 1em;
-      // box-shadow: 0px 0px 10px 10px rgba(216, 245, 250, 0.5);
-      // color: rgba(216, 245, 250, 0.5);
-      // color: rgba(216, 245, 250, 1);
-      // text-shadow: 2px 2px 10px rgba(216, 245, 250, 0.5);
-      // text-shadow: 2px 2px 10px rgba(0, 0, 0, 1);
       text-shadow: 4px 4px 5px rgba(0, 0, 0, 1);
       padding: 0em 0.25em;
-      // margin: 0em 0.25em 0.3em 0em;
       margin: 0em 0.25em 0em 0em;
       white-space: nowrap;
     }
