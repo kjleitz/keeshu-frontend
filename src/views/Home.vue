@@ -5,7 +5,20 @@
     <MainNav vertical/>
     <!-- <MainNav :style="navStyles" vertical/> -->
     <div class="background">
-      <div :style="nightStyles" class="sky night"></div>
+      <div :style="nightStyles" class="sky night">
+        <div
+          v-for="(star, index) in stars"
+          :key="index"
+          :style="{
+            top: `${star.y}px`,
+            left: `${star.x}px`,
+            opacity: star.brightness.toFixed(2),
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+          }"
+          class="star"
+        ></div>
+      </div>
       <div :style="dayStyles" class="sky day"></div>
       <!-- <div class="sun-corona">
         <div class="sun-chromosphere">
@@ -81,6 +94,14 @@ const calcDayElapsed = (): number => {
 
 let syncResize = _.noop;
 let dayElapsedInterval = 0;
+let starTwinkleInterval = 0;
+
+interface Star {
+  x: number;
+  y: number;
+  size: number;
+  brightness: number;
+}
 
 const FONTS = [
   "Glass Antiqua", // first is default
@@ -112,12 +133,19 @@ export default Vue.extend({
   },
 
   data() {
+    const { innerWidth, innerHeight } = window;
     return {
-      clientWidth: window.innerWidth,
-      clientHeight: window.innerHeight,
+      innerWidth,
+      innerHeight,
       dayElapsedPercent: calcDayElapsed(),
       fontIndex: 0,
       debugMode: false,
+      stars: _.range(200).map((): Star => ({
+        x: Math.random() * innerWidth,
+        y: Math.random() * innerHeight,
+        size: Math.floor(Math.random() * 3) + 1,
+        brightness: Math.random(),
+      })),
     };
   },
 
@@ -130,7 +158,7 @@ export default Vue.extend({
       // The star map image rotates, so the element's smallest dimension (width
       // or height) must equal (or exceed) the diameter of the imaginary circle
       // that circumscribes the viewport.
-      return Math.sqrt((this.clientWidth ** 2) + (this.clientHeight ** 2));
+      return Math.sqrt((this.innerWidth ** 2) + (this.innerHeight ** 2));
     },
 
     skyDegrees(): number {
@@ -372,8 +400,8 @@ export default Vue.extend({
       this.removeListeners();
 
       syncResize = _.throttle(() => {
-        this.clientWidth = document.documentElement.clientWidth;
-        this.clientHeight = document.documentElement.clientHeight;
+        this.innerWidth = window.innerWidth;
+        this.innerHeight = window.innerHeight;
       }, 300);
 
       syncResize();
@@ -382,6 +410,7 @@ export default Vue.extend({
 
     removeIntervals(): void {
       window.clearTimeout(dayElapsedInterval);
+      window.clearTimeout(starTwinkleInterval);
     },
 
     addIntervals(): void {
@@ -389,6 +418,16 @@ export default Vue.extend({
       dayElapsedInterval = window.setInterval(() => {
         if (!this.debugMode) this.dayElapsedPercent = calcDayElapsed();
       }, 2000);
+      starTwinkleInterval = window.setInterval(() => {
+        this.stars.forEach((star) => {
+          // if (Math.random() < 0.5) this.$set(star, 'brightness', Math.random());
+          // this.$set(star, 'brightness', Math.random() < 0.3 && star.brightness > 0.5 ? 0 : Math.random());
+          this.$set(star, 'brightness', Math.random() < 0.1 && star.brightness > 0.5 ? 0 : Math.random());
+          // this.$set(star, 'brightness', Math.random() < 0.1 && star.brightness > 0.5 ? 0 : 1);
+          // this.$set(star, 'x', Math.random() < 0. ? star.x : Math.random() * this.innerWidth);
+          // this.$set(star, 'y', Math.random() < 0. ? star.y : Math.random() * this.innerHeight);
+        });
+      }, 500);
     },
 
     sunlightColorValue(atMidnight: number, atNoon: number): number {
@@ -464,6 +503,17 @@ export default Vue.extend({
       background-position: center;
       background-size: cover;
       background-repeat: repeat;
+
+      .star {
+        position: absolute;
+        background-color: white;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        // opacity: 1;
+        transition: opacity 1s;
+        // transition: opacity 0.5s;
+      }
     }
 
     $sun-photosphere-size: min(10vw, 10vh);
