@@ -11,7 +11,9 @@
       <div class="sun-chromosphere"></div>
       <div class="sun-photosphere"></div>
       <div class="moon-aura"></div>
-      <div class="moon-surface"></div>
+      <div class="moon-surface">
+        <!-- <div :style="moonShadowStyles" class="moon-shadow"></div> -->
+      </div>
       <canvas ref="cloudCanvas" id="cloud-canvas"></canvas>
       <div class="painting grass"></div>
       <div class="painting tree"></div>
@@ -518,6 +520,12 @@ export default Vue.extend({
       };
     },
 
+    // moonShadowStyles(): Partial<CSSStyleDeclaration> {
+    //   return {
+    //     transform: `rotateY(76deg)`,
+    //   };
+    // },
+
     titleStyles(): Partial<CSSStyleDeclaration> {
       return {
         fontFamily: `"${this.titleFont}", serif`,
@@ -700,20 +708,7 @@ export default Vue.extend({
         left: 0;
         width: 100%;
         height: 100%;
-        // width: 100vw;
-        // height: 100vw;
       }
-
-      // .star {
-      //   position: absolute;
-      //   background-color: white;
-      //   width: 3px;
-      //   height: 3px;
-      //   border-radius: 50%;
-      //   // opacity: 1;
-      //   transition: opacity 1s;
-      //   // transition: opacity 0.5s;
-      // }
     }
 
     $sun-photosphere-size: min(10vw, 10vh);
@@ -741,7 +736,6 @@ export default Vue.extend({
       height: $sun-chromosphere-size;
       background-color: rgba(255, 255, 250, 0.3);
       border-radius: 50%;
-      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
       box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.3);
       transform: translate(-50%, -50%);
       z-index: 100;
@@ -755,15 +749,12 @@ export default Vue.extend({
       height: $sun-photosphere-size;
       background-color: rgba(255, 255, 250, 1);
       border-radius: 50%;
-      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
       box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.7);
       transform: translate(-50%, -50%);
     }
 
     $moon-surface-size: min(10vw, 10vh);
     $moon-aura-size: calc(1.5 * #{$moon-surface-size});
-    // --moon-position-x: 150px;
-    // --moon-position-y: 250px;
 
     .moon-aura {
       position: absolute;
@@ -771,16 +762,8 @@ export default Vue.extend({
       left: var(--moon-position-x);
       width: $moon-aura-size;
       height: $moon-aura-size;
-      // background-color: rgba(255, 255, 250, 0.3);
-      // background-color: rgba(210, 210, 255, 0.3);
-      // background-color: rgba(210, 210, 255, 0.2);
       background-color: rgba(210, 210, 255, 0.1);
       border-radius: 50%;
-      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
-      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.3);
-      // box-shadow: 0px 0px 10px 10px rgba(240, 240, 255, 0.3);
-      // box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.3);
-      // box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.2);
       box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.1);
       transform: translate(-50%, -50%);
       z-index: 100;
@@ -793,13 +776,28 @@ export default Vue.extend({
       width: $moon-surface-size;
       height: $moon-surface-size;
       background-color: rgba(255, 255, 250, 1);
-      // background-color: rgba(252, 252, 255, 1);
       border-radius: 50%;
-      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
-      // box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.7);
-      // box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.7);
       box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.3);
       transform: translate(-50%, -50%);
+      // transform: translate(-50%, -50%) rotate(45deg);
+      // overflow: hidden;
+
+      // border: calc(#{$moon-surface-size} / 2) solid;
+      // border: calc((#{$moon-surface-size} / 2)) solid;
+      // border-top-color:  rgba(255, 255, 250, 1);
+      // border-right-color:  rgba(255, 255, 250, 1);
+
+      // .moon-shadow {
+      //   position: absolute;
+      //   top: 0;
+      //   left: 0;
+      //   width: 100%;
+      //   height: 100%;
+      //   background-color: rgba(0, 0, 10, 1);
+      //   box-shadow: 0px 0px 1px 1px rgba(0, 0, 10, 1);
+      //   border-radius: 50%;
+      //   transform-style: preserve-3d;
+      // }
     }
 
     .painting {
@@ -837,8 +835,6 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
-    // width: 100vw;
-    // height: 100vw;
   }
 
   .our-names-obviously {

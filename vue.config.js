@@ -14,7 +14,7 @@ module.exports = {
       awsProfile: 'keeshu-deployer', // Specifies the credentials profile to use. For env vars, omit or set to 'default'. (default: default)
       // awsProfile: 'default', // Specifies the credentials profile to use. For env vars, omit or set to 'default'. (default: default)
       bucket: 'keeshu', // The S3 bucket name (required)
-      cacheControl: 'max-age=86400', // Sets cache-control metadata for all uploads, overridden for individual files by pwa settings
+      cacheControl: 'max-age=31536000', // Sets cache-control metadata for all uploads, overridden for individual files by pwa settings
       cloudfrontId: 'E3BWVRMCG6TP4U', // The ID of the distribution to invalidate
       cloudfrontMatchers: '/*', // A comma-separated list of paths to invalidate (default: /*)
       createBucket: false, // Create the bucket if it doesn't exist (default: false)
