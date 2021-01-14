@@ -1,33 +1,12 @@
 <template>
-  <!-- <div tabindex="0" class="home-view" @keyup.left.exact.prevent="fontIndex -= 1" @keyup.right.exact.prevent="fontIndex += 1"> -->
   <div :style="styleVariables" class="home-view">
     <h1 class="sr-only">Home</h1>
     <MainNav vertical/>
-    <!-- <MainNav :style="navStyles" vertical/> -->
     <div class="background">
       <div :style="nightStyles" class="sky night">
-        <!-- <canvas ref="starCanvas" class="star-canvas"></canvas> -->
-        <!-- <canvas class="star-canvas"></canvas> -->
         <canvas ref="starCanvas" id="star-canvas"></canvas>
-        <!-- <div
-          v-for="(star, index) in stars"
-          :key="index"
-          :style="{
-            top: `${star.y}px`,
-            left: `${star.x}px`,
-            opacity: star.brightness.toFixed(2),
-            width: `${star.size}px`,
-            height: `${star.size}px`,
-          }"
-          class="star"
-        ></div> -->
       </div>
       <div :style="dayStyles" class="sky day"></div>
-      <!-- <div class="sun-corona">
-        <div class="sun-chromosphere">
-          <div class="sun-photosphere"></div>
-        </div>
-      </div> -->
       <div class="sun-corona"></div>
       <div class="sun-chromosphere"></div>
       <div class="sun-photosphere"></div>
@@ -109,7 +88,7 @@ const FONTS = [
   // "Macondo",
 ];
 const CLOUD_COUNT = 7;
-const PUFF_MAX_SIZE = 200;
+const PUFF_MAX_RADIUS = 200;
 
 const calcDayElapsed = (): number => {
   const midnight = moment().startOf('day');
@@ -187,27 +166,21 @@ interface Cloud {
 }
 
 const createPuff = (): Puff => ({
-  // x: (Math.random() * 3) - 1.5,
-  // y: Math.random(),
-  // x: ((Math.random() * 3) - 1.5) / 1.5,
-  // y: Math.random() / 1.5,
-  // x: (Math.sin(Math.random() * Math.PI) - 1), // between -0.5 and +0.5
   x: Math.asin(randomBetween(-1, 1)) / Math.PI, // between -0.5 and +0.5 (with most values concentrated around 0.0)
   y: 0.5 * ((Math.random() * 0.75) - 0.5), // between -0.25 and +0.125,
-  radius: (0.25 + (Math.random() * 0.75)) * PUFF_MAX_SIZE,
+  radius: (0.25 + (Math.random() * 0.75)) * PUFF_MAX_RADIUS,
 });
 
 const createCloud = (x: number, y: number): Cloud => {
-  // const puffCount = 10 + Math.floor(Math.random() * 30);
   const puffCount = 20 + Math.floor(Math.random() * 30);
-  const size = puffCount * (PUFF_MAX_SIZE / 20);
+  const size = puffCount * (PUFF_MAX_RADIUS / 10);
   const puffs = _.range(puffCount).map(() => createPuff());
   return {
     x,
-    y: (y * 0.65) - 0.15,
+    y: y * 0.65,
     puffs,
     size,
-    speedPx: 0.25 + (Math.random() * 1.5),
+    speedPx: 0.5 + (Math.random() * 2),
     canvas: null,
     ctx: null,
     rendered: false,
@@ -223,55 +196,34 @@ const updateCloudCanvasSize = (): void => {
   cloudCanvas.height = scale * parseFloat(height.replace(/px$/, ''));
 };
 
-const cloudBoundsX = (cloud: Cloud): [number, number] => {
-  const { width } = cloudCanvas;
-  const cloudX = cloud.x * width;
-  return cloud.puffs.reduce(([minX, maxX], puff) => {
-    const puffX = cloudX + (puff.x * cloud.size);
-    const leftX = puffX - puff.radius;
-    const rightX = puffX + puff.radius;
-    const newMinX = isNaN(minX) || leftX < minX ? leftX : minX;
-    const newMaxX = isNaN(maxX) || rightX > maxX ? rightX : maxX;
-    return [newMinX, newMaxX];
-  }, [NaN, NaN]);
-};
-
-// const cloudBoundsY = (cloud: Cloud): [number, number] => {
-//   const { height } = cloudCanvas;
-//   const cloudY = cloud.y * height;
-//   return cloud.puffs.reduce(([minY, maxY], puff) => {
-//     const puffY = cloudY + (puff.y * cloud.size);
-//     const topY = puffY - puff.radius;
-//     const bottomY = puffY + puff.radius;
-//     const newMinY = isNaN(minY) || topY < minY ? topY : minY;
-//     const newMaxY = isNaN(maxY) || bottomY > maxY ? bottomY : maxY;
-//     return [newMinY, newMaxY];
-//   }, [NaN, NaN]);
-// };
-
 const updateClouds = (_timestamp: number): void => {
   const { width } = cloudCanvas;
 
   // Reversed iteration so I can delete multiple clouds without affecting the index
   for (let i = clouds.length - 1; i >= 0; i--) {
     const cloud = clouds[i];
-    cloud.x += cloud.speedPx / width;
+    if (cloud.rendered) {
+      cloud.x += cloud.speedPx / width;
 
-    const [left, right] = cloudBoundsX(cloud);
-    const leaving = right > width;
-    const gone = left > width;
+      const left = (cloud.x * width) - (cloud.canvas!.width / 2);
+      const right = (cloud.x * width) + (cloud.canvas!.width / 2);
+      const leaving = right > width;
+      const gone = left > width;
 
-    // if (i === 0) {
-    //   console.log(left.toFixed(2), right.toFixed(2), leaving, gone)
-    // }
+      // if (i === 0) {
+      //   // console.log(left.toFixed(2), right.toFixed(2), leaving, gone);
+      //   // console.log(left.toFixed(2), right.toFixed(2), cloud.x.toFixed(2), cloud.y.toFixed(2));
+      // }
 
-    if (gone) {
-      clouds.splice(i, 1);
-    } else if (leaving && clouds.length < CLOUD_COUNT + 1) {
-      const newCloud = createCloud(0, Math.random());
-      const overlap = cloudBoundsX(newCloud)[1];
-      newCloud.x = -1 * (overlap / width);
-      clouds.push(newCloud);
+      if (gone) {
+        clouds.splice(i, 1);
+      } else if (leaving && clouds.length < CLOUD_COUNT + 1) {
+        const newCloud = createCloud(0, Math.random());
+        // const overlap = cloudBoundsX(newCloud)[1];
+        const right = cloud.canvas!.width / window.devicePixelRatio;
+        newCloud.x = -1 * (right / width);
+        clouds.push(newCloud);
+      }
     }
   }
 };
@@ -285,11 +237,13 @@ const renderClouds = (timestamp: number): void => {
   clouds.forEach((cloud, i) => {
     const cloudWidth = cloud.size;
     const cloudHeight = cloud.size;
+    const cloudInnerWidth = cloud.size - (PUFF_MAX_RADIUS); // essentially the bounds of the centers of puffs
+    const cloudInnerHeight = cloud.size - (PUFF_MAX_RADIUS); // essentially the bounds of the centers of puffs
 
     if (!cloud.canvas) {
       cloud.canvas = document.createElement('canvas');
-      cloud.canvas.width = cloudWidth + (PUFF_MAX_SIZE * 2);
-      cloud.canvas.height = cloudHeight + (PUFF_MAX_SIZE * 2);
+      cloud.canvas.width = cloudWidth;
+      cloud.canvas.height = cloudHeight;
     }
 
     if (!cloud.ctx) {
@@ -299,8 +253,8 @@ const renderClouds = (timestamp: number): void => {
     const { canvas, ctx } = cloud;
 
     const cloudCenter = {
-      x: (cloudWidth / 2) + (PUFF_MAX_SIZE / 2),
-      y: (cloudHeight / 2) + (PUFF_MAX_SIZE / 2),
+      x: cloudWidth / 2,
+      y: cloudHeight / 2,
     };
 
     if (!cloud.rendered) {
@@ -308,11 +262,16 @@ const renderClouds = (timestamp: number): void => {
       //   ctx.lineWidth = 1;
       //   ctx.strokeStyle = "red";
       //   ctx.strokeRect(0, 0, cloudWidth, cloudHeight);
+      //   const offsetX = (cloudWidth - cloudInnerWidth) / 2;
+      //   const offsetY = (cloudHeight - cloudInnerHeight) / 2;
+      //   ctx.strokeRect(offsetX, offsetY, cloudInnerWidth, cloudInnerHeight);
+      //   ctx.strokeStyle = "yellow";
+      //   ctx.strokeRect(0, 0, cloud.canvas.width, cloud.canvas.height);
       // }
 
       cloud.puffs.forEach((puff) => {
-        const puffX = cloudCenter.x + (puff.x * cloudWidth);
-        const puffY = cloudCenter.y + (puff.y * cloudHeight);
+        const puffX = cloudCenter.x + (puff.x * cloudInnerWidth);
+        const puffY = cloudCenter.y + (puff.y * cloudInnerHeight);
         const puffGradient = ctx.createRadialGradient(puffX, puffY, 0.25 * puff.radius, puffX, puffY, puff.radius);
         puffGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
         puffGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
