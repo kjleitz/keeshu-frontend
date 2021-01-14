@@ -5,9 +5,10 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "deploy": "yarn build && aws --profile keeshu-deployer s3 sync ./dist s3://keeshu --delete"
+    "deploy": "yarn build && vue-cli-service s3-deploy --mode production",
+    "deploy_old": "yarn build && aws --profile keeshu-deployer s3 sync ./dist s3://keeshu --delete",
+    "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
     "@types/dompurify": "^2.0.4",
@@ -23,6 +24,7 @@
     "moment": "^2.29.1",
     "underscore": "^1.12.0",
     "vue": "^2.6.11",
+    "vue-cli-plugin-s3-deploy": "^4.0.0-rc4",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
   },

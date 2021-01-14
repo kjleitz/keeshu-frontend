@@ -6,7 +6,10 @@
     <!-- <MainNav :style="navStyles" vertical/> -->
     <div class="background">
       <div :style="nightStyles" class="sky night">
-        <div
+        <!-- <canvas ref="starCanvas" class="star-canvas"></canvas> -->
+        <!-- <canvas class="star-canvas"></canvas> -->
+        <canvas ref="starCanvas" id="star-canvas"></canvas>
+        <!-- <div
           v-for="(star, index) in stars"
           :key="index"
           :style="{
@@ -17,7 +20,7 @@
             height: `${star.size}px`,
           }"
           class="star"
-        ></div>
+        ></div> -->
       </div>
       <div :style="dayStyles" class="sky day"></div>
       <!-- <div class="sun-corona">
@@ -30,6 +33,7 @@
       <div class="sun-photosphere"></div>
       <div class="moon-aura"></div>
       <div class="moon-surface"></div>
+      <canvas ref="cloudCanvas" id="cloud-canvas"></canvas>
       <div class="painting grass"></div>
       <div class="painting tree"></div>
       <div class="painting picnic-table"></div>
@@ -81,27 +85,7 @@ import Vue from 'vue';
 import moment from 'moment';
 import MainNav from '@/components/MainNav.vue';
 import _ from 'underscore';
-import { bound } from '@/lib/utils';
-// import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
-
-const calcDayElapsed = (): number => {
-  const midnight = moment().startOf('day');
-  const now = moment();
-  const secondsSinceMidnight = now.diff(midnight, 'seconds');
-  const secondsInDay = 60 * 60 * 24; // it's 86400, but just to be explicit
-  return secondsSinceMidnight / secondsInDay;
-};
-
-let syncResize = _.noop;
-let dayElapsedInterval = 0;
-let starTwinkleInterval = 0;
-
-interface Star {
-  x: number;
-  y: number;
-  size: number;
-  brightness: number;
-}
+import { bound, randomBetween } from '@/lib/utils';
 
 const FONTS = [
   "Glass Antiqua", // first is default
@@ -124,6 +108,238 @@ const FONTS = [
   // "Bellota",
   // "Macondo",
 ];
+const CLOUD_COUNT = 7;
+const PUFF_MAX_SIZE = 200;
+
+const calcDayElapsed = (): number => {
+  const midnight = moment().startOf('day');
+  const now = moment();
+  const secondsSinceMidnight = now.diff(midnight, 'seconds');
+  const secondsInDay = 60 * 60 * 24; // it's 86400, but just to be explicit
+  return secondsSinceMidnight / secondsInDay;
+};
+
+let syncResize = _.noop;
+let dayElapsedInterval = 0;
+let starTwinkleInterval = 0;
+let starCanvas: HTMLCanvasElement;
+let starCtx: CanvasRenderingContext2D;
+let cloudCanvas: HTMLCanvasElement;
+let cloudCtx: CanvasRenderingContext2D;
+let stopFrameLoop = false;
+let lastRenderedStarsAt: number;
+let lastRenderedCloudsAt: number;
+
+const frameLoop = (draw: (timestamp: number) => void, timestamp?: number): void => {
+  if (!stopFrameLoop) requestAnimationFrame(timestamp => frameLoop(draw, timestamp));
+  if (timestamp) draw(timestamp);
+};
+
+interface Star {
+  x: number;
+  y: number;
+  size: number;
+  brightness: number;
+}
+
+const stars = _.range(1000).map((): Star => ({
+  x: Math.random(),
+  y: Math.random(),
+  size: Math.floor(Math.random() * 5) + 1,
+  brightness: Math.random(),
+}));
+
+const updateStarCanvasSize = (): void => {
+  const scale = window.devicePixelRatio;
+  const { width, height } = window.getComputedStyle(starCanvas);
+  starCanvas.width = scale * parseFloat(width.replace(/px$/, ''));
+  starCanvas.height = scale * parseFloat(height.replace(/px$/, ''));
+};
+
+const renderStars = (timestamp: number): void => {
+  if (lastRenderedStarsAt && timestamp - lastRenderedStarsAt < 33) return;
+  lastRenderedStarsAt = timestamp;
+
+  const { width, height } = starCanvas;
+  starCtx.clearRect(0, 0, width, height);
+  stars.forEach((star) => {
+    const { x, y, size, brightness } = star;
+    starCtx.fillStyle = `rgba(255, 255, 255, ${brightness.toFixed(2)})`;
+    starCtx.fillRect(x * width, y * height, size, size);
+  });
+};
+
+interface Puff {
+  x: number; // percent from center of cloud
+  y: number; // percent from center of cloud
+  radius: number;
+}
+
+interface Cloud {
+  x: number;
+  y: number;
+  puffs: Puff[];
+  size: number;
+  speedPx: number;
+  canvas: HTMLCanvasElement | null;
+  ctx: CanvasRenderingContext2D | null;
+  rendered: boolean;
+}
+
+const createPuff = (): Puff => ({
+  // x: (Math.random() * 3) - 1.5,
+  // y: Math.random(),
+  // x: ((Math.random() * 3) - 1.5) / 1.5,
+  // y: Math.random() / 1.5,
+  // x: (Math.sin(Math.random() * Math.PI) - 1), // between -0.5 and +0.5
+  x: Math.asin(randomBetween(-1, 1)) / Math.PI, // between -0.5 and +0.5 (with most values concentrated around 0.0)
+  y: 0.5 * ((Math.random() * 0.75) - 0.5), // between -0.25 and +0.125,
+  radius: (0.25 + (Math.random() * 0.75)) * PUFF_MAX_SIZE,
+});
+
+const createCloud = (x: number, y: number): Cloud => {
+  // const puffCount = 10 + Math.floor(Math.random() * 30);
+  const puffCount = 20 + Math.floor(Math.random() * 30);
+  const size = puffCount * (PUFF_MAX_SIZE / 20);
+  const puffs = _.range(puffCount).map(() => createPuff());
+  return {
+    x,
+    y: (y * 0.65) - 0.15,
+    puffs,
+    size,
+    speedPx: 0.25 + (Math.random() * 1.5),
+    canvas: null,
+    ctx: null,
+    rendered: false,
+  };
+};
+
+const clouds = _.range(CLOUD_COUNT).map((): Cloud => createCloud(Math.random(), Math.random()));
+
+const updateCloudCanvasSize = (): void => {
+  const scale = window.devicePixelRatio;
+  const { width, height } = window.getComputedStyle(cloudCanvas);
+  cloudCanvas.width = scale * parseFloat(width.replace(/px$/, ''));
+  cloudCanvas.height = scale * parseFloat(height.replace(/px$/, ''));
+};
+
+const cloudBoundsX = (cloud: Cloud): [number, number] => {
+  const { width } = cloudCanvas;
+  const cloudX = cloud.x * width;
+  return cloud.puffs.reduce(([minX, maxX], puff) => {
+    const puffX = cloudX + (puff.x * cloud.size);
+    const leftX = puffX - puff.radius;
+    const rightX = puffX + puff.radius;
+    const newMinX = isNaN(minX) || leftX < minX ? leftX : minX;
+    const newMaxX = isNaN(maxX) || rightX > maxX ? rightX : maxX;
+    return [newMinX, newMaxX];
+  }, [NaN, NaN]);
+};
+
+// const cloudBoundsY = (cloud: Cloud): [number, number] => {
+//   const { height } = cloudCanvas;
+//   const cloudY = cloud.y * height;
+//   return cloud.puffs.reduce(([minY, maxY], puff) => {
+//     const puffY = cloudY + (puff.y * cloud.size);
+//     const topY = puffY - puff.radius;
+//     const bottomY = puffY + puff.radius;
+//     const newMinY = isNaN(minY) || topY < minY ? topY : minY;
+//     const newMaxY = isNaN(maxY) || bottomY > maxY ? bottomY : maxY;
+//     return [newMinY, newMaxY];
+//   }, [NaN, NaN]);
+// };
+
+const updateClouds = (_timestamp: number): void => {
+  const { width } = cloudCanvas;
+
+  // Reversed iteration so I can delete multiple clouds without affecting the index
+  for (let i = clouds.length - 1; i >= 0; i--) {
+    const cloud = clouds[i];
+    cloud.x += cloud.speedPx / width;
+
+    const [left, right] = cloudBoundsX(cloud);
+    const leaving = right > width;
+    const gone = left > width;
+
+    // if (i === 0) {
+    //   console.log(left.toFixed(2), right.toFixed(2), leaving, gone)
+    // }
+
+    if (gone) {
+      clouds.splice(i, 1);
+    } else if (leaving && clouds.length < CLOUD_COUNT + 1) {
+      const newCloud = createCloud(0, Math.random());
+      const overlap = cloudBoundsX(newCloud)[1];
+      newCloud.x = -1 * (overlap / width);
+      clouds.push(newCloud);
+    }
+  }
+};
+
+const renderClouds = (timestamp: number): void => {
+  if (lastRenderedCloudsAt && timestamp - lastRenderedCloudsAt < 33) return;
+  lastRenderedCloudsAt = timestamp;
+
+  const { width, height } = cloudCanvas;
+  cloudCtx.clearRect(0, 0, width, height);
+  clouds.forEach((cloud, i) => {
+    const cloudWidth = cloud.size;
+    const cloudHeight = cloud.size;
+
+    if (!cloud.canvas) {
+      cloud.canvas = document.createElement('canvas');
+      cloud.canvas.width = cloudWidth + (PUFF_MAX_SIZE * 2);
+      cloud.canvas.height = cloudHeight + (PUFF_MAX_SIZE * 2);
+    }
+
+    if (!cloud.ctx) {
+      cloud.ctx = cloud.canvas.getContext('2d')!;
+    }
+
+    const { canvas, ctx } = cloud;
+
+    const cloudCenter = {
+      x: (cloudWidth / 2) + (PUFF_MAX_SIZE / 2),
+      y: (cloudHeight / 2) + (PUFF_MAX_SIZE / 2),
+    };
+
+    if (!cloud.rendered) {
+      // if (i === 0) {
+      //   ctx.lineWidth = 1;
+      //   ctx.strokeStyle = "red";
+      //   ctx.strokeRect(0, 0, cloudWidth, cloudHeight);
+      // }
+
+      cloud.puffs.forEach((puff) => {
+        const puffX = cloudCenter.x + (puff.x * cloudWidth);
+        const puffY = cloudCenter.y + (puff.y * cloudHeight);
+        const puffGradient = ctx.createRadialGradient(puffX, puffY, 0.25 * puff.radius, puffX, puffY, puff.radius);
+        puffGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+        puffGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+        puffGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = puffGradient;
+        ctx.beginPath();
+        ctx.arc(puffX, puffY, puff.radius, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+
+      cloud.rendered = true;
+    }
+
+    const cloudX = (cloud.x * width) - cloudCenter.x;
+    const cloudY = (cloud.y * height) - cloudCenter.y;
+    cloudCtx.drawImage(canvas, cloudX, cloudY);
+  });
+
+  updateClouds(timestamp);
+};
+
+const startCelestialObjects = (): void => {
+  frameLoop((timestamp) => {
+    renderStars(timestamp);
+    renderClouds(timestamp);
+  });
+};
 
 export default Vue.extend({
   name: 'Home',
@@ -140,12 +356,6 @@ export default Vue.extend({
       dayElapsedPercent: calcDayElapsed(),
       fontIndex: 0,
       debugMode: false,
-      stars: _.range(200).map((): Star => ({
-        x: Math.random() * innerWidth,
-        y: Math.random() * innerHeight,
-        size: Math.floor(Math.random() * 3) + 1,
-        brightness: Math.random(),
-      })),
     };
   },
 
@@ -370,25 +580,41 @@ export default Vue.extend({
   },
 
   created(): void {
+    stopFrameLoop = false;
     this.addListeners();
     this.addIntervals();
   },
 
   beforeDestroy(): void {
+    stopFrameLoop = true;
     this.removeListeners();
     this.removeIntervals();
   },
 
   beforeRouteUpdate(_to, _from, next): void {
+    stopFrameLoop = false;
     this.addListeners();
     this.addIntervals();
     next();
   },
 
   beforeRouteLeave(_to, _from, next): void {
+    stopFrameLoop = true;
     this.removeListeners();
     this.removeIntervals();
     next();
+  },
+
+  mounted(): void {
+    starCanvas = this.$refs.starCanvas as HTMLCanvasElement;
+    cloudCanvas = this.$refs.cloudCanvas as HTMLCanvasElement;
+    // if someone's using a browser without CanvasRenderingContext2D then wat
+    starCtx = starCanvas.getContext('2d')! || {} as CanvasRenderingContext2D;
+    cloudCtx = cloudCanvas.getContext('2d')! || {} as CanvasRenderingContext2D;
+    updateStarCanvasSize();
+    updateCloudCanvasSize();
+    stopFrameLoop = false;
+    startCelestialObjects();
   },
 
   methods: {
@@ -400,8 +626,12 @@ export default Vue.extend({
       this.removeListeners();
 
       syncResize = _.throttle(() => {
-        this.innerWidth = window.innerWidth;
-        this.innerHeight = window.innerHeight;
+        const { innerWidth, innerHeight } = window;
+        if (this.innerWidth !== innerWidth || this.innerHeight !== innerHeight) {
+          this.innerWidth = innerWidth;
+          this.innerHeight = innerHeight;
+          updateStarCanvasSize();
+        }
       }, 300);
 
       syncResize();
@@ -409,8 +639,8 @@ export default Vue.extend({
     },
 
     removeIntervals(): void {
-      window.clearTimeout(dayElapsedInterval);
-      window.clearTimeout(starTwinkleInterval);
+      window.clearInterval(dayElapsedInterval);
+      window.clearInterval(starTwinkleInterval);
     },
 
     addIntervals(): void {
@@ -419,15 +649,10 @@ export default Vue.extend({
         if (!this.debugMode) this.dayElapsedPercent = calcDayElapsed();
       }, 2000);
       starTwinkleInterval = window.setInterval(() => {
-        this.stars.forEach((star) => {
-          // if (Math.random() < 0.5) this.$set(star, 'brightness', Math.random());
-          // this.$set(star, 'brightness', Math.random() < 0.3 && star.brightness > 0.5 ? 0 : Math.random());
-          this.$set(star, 'brightness', Math.random() < 0.1 && star.brightness > 0.5 ? 0 : Math.random());
-          // this.$set(star, 'brightness', Math.random() < 0.1 && star.brightness > 0.5 ? 0 : 1);
-          // this.$set(star, 'x', Math.random() < 0. ? star.x : Math.random() * this.innerWidth);
-          // this.$set(star, 'y', Math.random() < 0. ? star.y : Math.random() * this.innerHeight);
+        stars.forEach((star) => {
+          if (Math.random() < 0.2) star.brightness = star.brightness < 0.75 ? 1 : 0.5;
         });
-      }, 500);
+      }, 100);
     },
 
     sunlightColorValue(atMidnight: number, atNoon: number): number {
@@ -492,6 +717,7 @@ export default Vue.extend({
   }
 
   .background {
+    // position: relative;
     height: 100%;
     width: 100%;
     z-index: -1000;
@@ -502,22 +728,33 @@ export default Vue.extend({
     // }
 
     .night {
+      position: relative;
       background-color: #222;
       background-image: url("~@/assets/starmap_square.jpg");
       background-position: center;
       background-size: cover;
       background-repeat: repeat;
 
-      .star {
+      #star-canvas {
         position: absolute;
-        background-color: white;
-        width: 3px;
-        height: 3px;
-        border-radius: 50%;
-        // opacity: 1;
-        transition: opacity 1s;
-        // transition: opacity 0.5s;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        // width: 100vw;
+        // height: 100vw;
       }
+
+      // .star {
+      //   position: absolute;
+      //   background-color: white;
+      //   width: 3px;
+      //   height: 3px;
+      //   border-radius: 50%;
+      //   // opacity: 1;
+      //   transition: opacity 1s;
+      //   // transition: opacity 0.5s;
+      // }
     }
 
     $sun-photosphere-size: min(10vw, 10vh);
@@ -633,6 +870,16 @@ export default Vue.extend({
         background-position: center right 45%;
       }
     }
+  }
+
+  #cloud-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    // width: 100vw;
+    // height: 100vw;
   }
 
   .our-names-obviously {
