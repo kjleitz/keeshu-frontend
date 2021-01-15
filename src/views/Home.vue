@@ -6,14 +6,20 @@
       <div :style="nightStyles" class="sky night">
         <canvas ref="starCanvas" id="star-canvas"></canvas>
       </div>
+      <div class="moon-aura"></div>
+      <div class="moon-surface">
+        <div :class="['moon-surface-left-container', { waxing, waning }]">
+          <div class="moon-surface-left"></div>
+        </div>
+        <div :class="['moon-surface-right-container', { waxing, waning }]">
+          <div class="moon-surface-right"></div>
+        </div>
+        <div class="moon-surface-curve"></div>
+      </div>
       <div :style="dayStyles" class="sky day"></div>
       <div class="sun-corona"></div>
       <div class="sun-chromosphere"></div>
       <div class="sun-photosphere"></div>
-      <div class="moon-aura"></div>
-      <div class="moon-surface">
-        <!-- <div :style="moonShadowStyles" class="moon-shadow"></div> -->
-      </div>
       <canvas ref="cloudCanvas" id="cloud-canvas"></canvas>
       <div class="painting grass"></div>
       <div class="painting tree"></div>
@@ -37,9 +43,11 @@
       </div>
     </div>
     <div v-if="debugMode" class="day-control">
-      <!-- <b-form-input v-model.number="dayElapsedPercent" type="range" min="0" max="1" step="0.001"></b-form-input> -->
       <b-form-input v-model.number="dayElapsedPercent" type="range" min="0" max="1" step="0.001"></b-form-input>
       Hours after midnight: {{ Math.floor(dayElapsedPercent * 24) }}h{{ Math.floor(((dayElapsedPercent * 24) % 1) * 60) }}m
+      <br>
+      <b-form-input v-model.number="lunarMonthElapsed" type="range" min="0" max="0.999" step="0.001"></b-form-input>
+      Days after new moon: {{ (lunarMonthElapsed * 29.530588853).toFixed(2) }}
       <br>
       Sunlight color: {{ sunlightRgba }}
       <br>
@@ -91,18 +99,30 @@ const FONTS = [
 ];
 const CLOUD_COUNT = 7;
 const PUFF_MAX_RADIUS = 200;
+// days in a lunar month
+const DAYS_IN_LUNAR_MONTH = 29.530588853;
+// "new moon" reference date
+const NEW_MOON_DATE = moment('2021-01-13 05:02+00:00').toDate();
+const SECONDS_IN_DAY = 86400;
 
 const calcDayElapsed = (): number => {
   const midnight = moment().startOf('day');
   const now = moment();
   const secondsSinceMidnight = now.diff(midnight, 'seconds');
-  const secondsInDay = 60 * 60 * 24; // it's 86400, but just to be explicit
-  return secondsSinceMidnight / secondsInDay;
+  return secondsSinceMidnight / SECONDS_IN_DAY;
+};
+
+const calcLunarMonthElapsed = (): number => {
+  const now = moment();
+  const newMoon = moment(NEW_MOON_DATE);
+  const daysSinceNewMoon = now.diff(newMoon, 'seconds') / SECONDS_IN_DAY;
+  return (daysSinceNewMoon % DAYS_IN_LUNAR_MONTH) / DAYS_IN_LUNAR_MONTH;
 };
 
 let syncResize = _.noop;
 let dayElapsedInterval = 0;
 let starTwinkleInterval = 0;
+let moonPhaseInterval = 0;
 let starCanvas: HTMLCanvasElement;
 let starCtx: CanvasRenderingContext2D;
 let cloudCanvas: HTMLCanvasElement;
@@ -212,11 +232,6 @@ const updateClouds = (_timestamp: number): void => {
       const leaving = right > width;
       const gone = left > width;
 
-      // if (i === 0) {
-      //   // console.log(left.toFixed(2), right.toFixed(2), leaving, gone);
-      //   // console.log(left.toFixed(2), right.toFixed(2), cloud.x.toFixed(2), cloud.y.toFixed(2));
-      // }
-
       if (gone) {
         clouds.splice(i, 1);
       } else if (leaving && clouds.length < CLOUD_COUNT + 1) {
@@ -260,17 +275,6 @@ const renderClouds = (timestamp: number): void => {
     };
 
     if (!cloud.rendered) {
-      // if (i === 0) {
-      //   ctx.lineWidth = 1;
-      //   ctx.strokeStyle = "red";
-      //   ctx.strokeRect(0, 0, cloudWidth, cloudHeight);
-      //   const offsetX = (cloudWidth - cloudInnerWidth) / 2;
-      //   const offsetY = (cloudHeight - cloudInnerHeight) / 2;
-      //   ctx.strokeRect(offsetX, offsetY, cloudInnerWidth, cloudInnerHeight);
-      //   ctx.strokeStyle = "yellow";
-      //   ctx.strokeRect(0, 0, cloud.canvas.width, cloud.canvas.height);
-      // }
-
       cloud.puffs.forEach((puff) => {
         const puffX = cloudCenter.x + (puff.x * cloudInnerWidth);
         const puffY = cloudCenter.y + (puff.y * cloudInnerHeight);
@@ -317,10 +321,27 @@ export default Vue.extend({
       dayElapsedPercent: calcDayElapsed(),
       fontIndex: 0,
       debugMode: false,
+      lunarMonthElapsed: calcLunarMonthElapsed(),
     };
   },
 
   computed: {
+    moonCycle(): number {
+      // waxing: 0.0 at a new moon, 0.99 at near full moon
+      // waning: 0.0 at a full moon, 0.99 at near new moon
+      return (this.lunarMonthElapsed % 0.5) / 0.5;
+    },
+
+    waxing(): boolean {
+      // the lunar month has begun (light is appearing from right to left)
+      return this.lunarMonthElapsed < 0.5;
+    },
+
+    waning(): boolean {
+      // the lunar month is ending (darkness is encroaching from right to left)
+      return !this.waxing;
+    },
+
     nightElapsedPercent(): number {
       return (this.dayElapsedPercent + 0.5) % 1;
     },
@@ -520,12 +541,6 @@ export default Vue.extend({
       };
     },
 
-    // moonShadowStyles(): Partial<CSSStyleDeclaration> {
-    //   return {
-    //     transform: `rotateY(76deg)`,
-    //   };
-    // },
-
     titleStyles(): Partial<CSSStyleDeclaration> {
       return {
         fontFamily: `"${this.titleFont}", serif`,
@@ -534,6 +549,17 @@ export default Vue.extend({
     },
 
     styleVariables(): Record<string, string> {
+      const moonLight = 'rgba(250, 250, 255, 1)';
+      // const moonDark = 'rgba(0, 0, 10, 1)';
+      const moonDark = 'rgba(10, 10, 10, 1)';
+      // const moonDark = 'rgba(0, 0, 0, 1)';
+      const moonLeftColor = this.waxing ? moonDark : moonLight;
+      const moonRightColor = this.waxing ? moonLight : moonDark;
+      const moonCurveScale = Math.abs((this.moonCycle - 0.5) / 0.5);
+      const moonCurveColor = this.waxing
+        ? (this.moonCycle < 0.5 ? moonDark : moonLight)
+        : (this.moonCycle < 0.5 ? moonLight : moonDark);
+
       return {
         '--nav-font-family': `"${this.navLinkFont}", serif`,
         '--nav-font-color': this.navLinkRgba,
@@ -542,6 +568,10 @@ export default Vue.extend({
         '--sun-position-y': `${(this.sunPercentY * 100).toFixed(2)}%`,
         '--moon-position-x': `${(this.moonPercentX * 100).toFixed(2)}%`,
         '--moon-position-y': `${(this.moonPercentY * 100).toFixed(2)}%`,
+        '--moon-surface-left-color': moonLeftColor,
+        '--moon-surface-right-color': moonRightColor,
+        '--moon-surface-curve-color': moonCurveColor,
+        '--moon-surface-curve-scale': moonCurveScale.toFixed(2),
       };
     },
   },
@@ -608,10 +638,12 @@ export default Vue.extend({
     removeIntervals(): void {
       window.clearInterval(dayElapsedInterval);
       window.clearInterval(starTwinkleInterval);
+      window.clearInterval(moonPhaseInterval);
     },
 
     addIntervals(): void {
       this.dayElapsedPercent = calcDayElapsed();
+      this.lunarMonthElapsed = calcLunarMonthElapsed();
       dayElapsedInterval = window.setInterval(() => {
         if (!this.debugMode) this.dayElapsedPercent = calcDayElapsed();
       }, 2000);
@@ -620,6 +652,9 @@ export default Vue.extend({
           if (Math.random() < 0.2) star.brightness = star.brightness < 0.75 ? 1 : 0.5;
         });
       }, 100);
+      moonPhaseInterval = window.setInterval(() => {
+        this.lunarMonthElapsed = calcLunarMonthElapsed();
+      }, 300000);
     },
 
     sunlightColorValue(atMidnight: number, atNoon: number): number {
@@ -786,7 +821,7 @@ export default Vue.extend({
       border-radius: 50%;
       box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.1);
       transform: translate(-50%, -50%);
-      z-index: 100;
+      z-index: -100;
     }
 
     .moon-surface {
@@ -795,29 +830,59 @@ export default Vue.extend({
       left: var(--moon-position-x);
       width: $moon-surface-size;
       height: $moon-surface-size;
-      background-color: rgba(255, 255, 250, 1);
       border-radius: 50%;
       box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.3);
       transform: translate(-50%, -50%);
-      // transform: translate(-50%, -50%) rotate(45deg);
-      // overflow: hidden;
+      z-index: -100;
 
-      // border: calc(#{$moon-surface-size} / 2) solid;
-      // border: calc((#{$moon-surface-size} / 2)) solid;
-      // border-top-color:  rgba(255, 255, 250, 1);
-      // border-right-color:  rgba(255, 255, 250, 1);
+      .moon-surface-left-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        overflow: hidden;
 
-      // .moon-shadow {
-      //   position: absolute;
-      //   top: 0;
-      //   left: 0;
-      //   width: 100%;
-      //   height: 100%;
-      //   background-color: rgba(0, 0, 10, 1);
-      //   box-shadow: 0px 0px 1px 1px rgba(0, 0, 10, 1);
-      //   border-radius: 50%;
-      //   transform-style: preserve-3d;
-      // }
+        .moon-surface-left {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 200%;
+          height: 100%;
+          border-radius: 50%;
+          background-color: var(--moon-surface-left-color);
+        }
+      }
+
+      .moon-surface-right-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        overflow: hidden;
+
+        .moon-surface-right {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 200%;
+          height: 100%;
+          border-radius: 50%;
+          background-color: var(--moon-surface-right-color);
+        }
+      }
+
+      .moon-surface-curve {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        transform: scaleX(var(--moon-surface-curve-scale));
+        background-color: var(--moon-surface-curve-color);
+      }
     }
 
     .painting {
