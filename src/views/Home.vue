@@ -227,8 +227,8 @@ const updateClouds = (_timestamp: number): void => {
     if (cloud.rendered) {
       cloud.x += cloud.speedPx / width;
 
-      const left = (cloud.x * width) - (cloud.canvas!.width / 2);
-      const right = (cloud.x * width) + (cloud.canvas!.width / 2);
+      const left = (cloud.x * width) - (cloud.canvas!.width / 2); // pretty sure this is wrong
+      const right = (cloud.x * width) + (cloud.canvas!.width / 2); // pretty sure this is wrong
       const leaving = right > width;
       const gone = left > width;
 
@@ -237,8 +237,8 @@ const updateClouds = (_timestamp: number): void => {
       } else if (leaving && clouds.length < CLOUD_COUNT + 1) {
         const newCloud = createCloud(0, Math.random());
         // const overlap = cloudBoundsX(newCloud)[1];
-        const right = cloud.canvas!.width / window.devicePixelRatio;
-        newCloud.x = -1 * (right / width);
+        const right = cloud.canvas!.width / window.devicePixelRatio;  // pretty sure this is wrong
+        newCloud.x = -1 * (right / width); // pretty sure this is wrong
         clouds.push(newCloud);
       }
     }
