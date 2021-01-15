@@ -120,7 +120,7 @@ const HOTELS: HotelDeets[] = [
     phone: "1 (508) 765-8000",
     email: "",
     website: "https://www.southbridgehotel.com/",
-    description: "A restored red brick factory six miles from Old Sturbridge Village. We've been assured that, despite the proximity, the butter is pasteurized and pre-churned. Rooms come with free Wi-Fi and a 24,000 ft^2 conference center.",
+    description: "A restored red brick factory six miles from Old Sturbridge Village. We've been assured that, despite the proximity, the butter is pasteurized and pre-churned. Rooms come with free Wi-Fi and a 24,000 ft<sup>2</sup> conference center.",
     minutesAway: 19,
   },
   {
