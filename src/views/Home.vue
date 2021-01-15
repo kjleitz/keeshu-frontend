@@ -632,6 +632,24 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+.no-webp .home-view .background {
+  .night { background-image: url("~@/assets/starmap_square.jpg"); }
+  .painting {
+    &.grass { background-image: url("~@/assets/grass.png"); }
+    &.picnic-table { background-image: url("~@/assets/picnic_table_with_us.png"); }
+    &.tree { background-image: url("~@/assets/tree.png"); }
+  }
+}
+
+.webp .home-view .background {
+  .night { background-image: url("~@/assets/starmap_square_q90_lossy.webp"); }
+  .painting {
+    &.grass { background-image: url("~@/assets/grass_q90_lossy.webp"); }
+    &.picnic-table { background-image: url("~@/assets/picnic_table_with_us_q90_lossy.webp"); }
+    &.tree { background-image: url("~@/assets/tree_q90_lossy.webp"); }
+  }
+}
+
 .home-view {
   position: relative;
   overflow: hidden;
@@ -697,7 +715,9 @@ export default Vue.extend({
     .night {
       position: relative;
       background-color: #222;
-      background-image: url("~@/assets/starmap_square.jpg");
+      // NOTE: see the .webp and .no-webp variants at the top of the styles
+      // background-image: url("~@/assets/starmap_square.jpg");
+      // background-image: url("~@/assets/starmap_square_q90_lossy.webp");
       background-position: center;
       background-size: cover;
       background-repeat: repeat;
@@ -813,17 +833,23 @@ export default Vue.extend({
       background-size: cover;
 
       &.grass {
-        background-image: url("~@/assets/grass.png");
+        // NOTE: see the .webp and .no-webp variants at the top of the styles
+        // background-image: url("~@/assets/grass.png");
+        // background-image: url("~@/assets/grass_q90_lossy.webp");
         background-position: center left 60%;
       }
 
       &.picnic-table {
-        background-image: url("~@/assets/picnic_table_with_us.png");
+        // NOTE: see the .webp and .no-webp variants at the top of the styles
+        // background-image: url("~@/assets/picnic_table_with_us.png");
+        // background-image: url("~@/assets/picnic_table_with_us_q90_lossy.webp");
         background-position: center left 45%;
       }
 
       &.tree {
-        background-image: url("~@/assets/tree.png");
+        // NOTE: see the .webp and .no-webp variants at the top of the styles
+        // background-image: url("~@/assets/tree.png");
+        // background-image: url("~@/assets/tree_q90_lossy.webp");
         background-position: center right 45%;
       }
     }

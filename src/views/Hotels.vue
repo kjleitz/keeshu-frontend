@@ -263,25 +263,23 @@ $nav-area-padding: 1rem;
 $sign-height: 4rem;
 $sign-margin: 0.5rem;
 
+.no-webp .hotels-view .nav-area .no-vacancy-sign {
+  .no-vacancy-neon {
+    background-image: url("~@/assets/vacancy.png");
+    &.no-is-lit { background-image: url("~@/assets/no_vacancy.png"); }
+  }
+}
+
+.webp .hotels-view .nav-area .no-vacancy-sign {
+  .no-vacancy-neon {
+    background-image: url("~@/assets/vacancy_q90_lossy.webp");
+    &.no-is-lit { background-image: url("~@/assets/no_vacancy_q90_lossy.webp"); }
+  }
+}
+
 .hotels-view {
-  // padding-top: 8rem;
   width: 100%;
-  // background-image: repeating-linear-gradient(
-  //   180deg,
-  //   rgba(20, 0, 20, 0.8),
-  //   #FFFEC6 1vh,
-  //   #FFFEC6 5vh,
-  // );
-  // background: repeating-linear-gradient(180deg, rgba(20, 0, 20, 0.8), #FFFEC6 1vh, #FFFEC6 3vh, #FFFFD9 5vh);
   background: repeating-linear-gradient(180deg, rgba(30, 15, 0, 0.8), #FFFEC6 1vh, #FFFEC6 3vh, #FFFFD9 5vh);
-  // border-left: 1vh groove rgba(100, 100, 0, 0.8);
-  // border-right: 1vh ridge rgba(100, 100, 0, 0.8);
-  // border-left: 1vh ridge rgba(100, 100, 0, 0.8);
-  // border-right: 1vh groove rgba(100, 100, 0, 0.8);
-  // border-left: 1vh solid rgba(100, 100, 0, 0.8);
-  // border-right: 1vh solid rgba(100, 100, 0, 0.8);
-  // box-shadow: inset 0 3px 3px rgba(20, 0, 20, 0.8);
-  // box-shadow: inset 0 0 3px rgba(20, 0, 20, 0.8);
   box-shadow: inset 0 0 1vh rgba(30, 15, 0, 0.8);
 
   a {
@@ -324,13 +322,11 @@ $sign-margin: 0.5rem;
       margin: $sign-margin;
       box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.5);
       transform: rotate(-1deg);
-      // @include media-breakpoint-up(sm) {
-      //   position: sticky;
-      //   top: 0;
-      // }
 
       .no-vacancy-neon {
-        background-image: url("~@/assets/vacancy.png");
+        // NOTE: see the .webp and .no-webp variants at the top of the styles
+        // background-image: url("~@/assets/vacancy.png");
+        // background-image: url("~@/assets/vacancy_q90_lossy.webp");
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -338,7 +334,9 @@ $sign-margin: 0.5rem;
         height: 100%;
 
         &.no-is-lit {
-          background-image: url("~@/assets/no_vacancy.png");
+          // NOTE: see the .webp and .no-webp variants at the top of the styles
+          // background-image: url("~@/assets/no_vacancy.png");
+          // background-image: url("~@/assets/no_vacancy_q90_lossy.webp");
         }
       }
     }
@@ -372,7 +370,6 @@ $sign-margin: 0.5rem;
         align-items: center;
 
         @include media-breakpoint-down(sm) {
-          // font-size: 1.25rem;
           font-size: 1em;
 
           a.nav-link {
@@ -394,10 +391,6 @@ $sign-margin: 0.5rem;
           line-height: 1em;
           transform-origin: top right;
           transform: rotate(0deg) translate(0em, 0em);
-          // transition: transform 0.3s;
-          // transition: transform 1s cubic-bezier(0, 1.5, 0.5, 1);
-          // transition: transform 0.2s cubic-bezier(0, 1.5, 0.5, 1);
-          // transition: transform 0.5s cubic-bezier(0, 1.5, 0.5, 1);
           transition: transform 0.2s;
           transition-timing-function: ease-in;
         }
@@ -407,8 +400,6 @@ $sign-margin: 0.5rem;
             transform: rotate(-25deg) translate(-0.1em, -0.1em);
             transition: transform 0.5s;
             transition-timing-function: cubic-bezier(0.5, 3, 0.5, 1);
-            // transform: rotate(25deg) translate(-0.1em, 0em);
-            // transform-origin: bottom left;
           }
         }
       }
@@ -416,7 +407,6 @@ $sign-margin: 0.5rem;
   }
 
   .hotel-item-container {
-    // overflow: hidden;
     display: flex;
     justify-content: stretch;
     align-items: center;

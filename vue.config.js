@@ -1,8 +1,31 @@
+/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/explicit-function-return-type */
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { IgnorePlugin } = require('webpack');
+
+const envToBool = (envVarName, defaultValue = false) => {
+  const rawValue = (process.env[envVarName] || '').toLowerCase();
+  if (!rawValue) return defaultValue;
+  return ['true', 't', 1].includes(rawValue);
+};
+
+const webpackPlugins = [
+  new IgnorePlugin({
+    resourceRegExp: /^\.\/locale$/,
+    contextRegExp: /moment$/,
+  }),
+];
+
+if (envToBool('BUNDLE_ANALYZER')) webpackPlugins.push(new BundleAnalyzerPlugin());
+
 module.exports = {
   lintOnSave: false,
 
   devServer: {
     proxy: "http://localhost:3000",
+  },
+
+  configureWebpack: {
+    plugins: webpackPlugins,
   },
 
   pluginOptions: {

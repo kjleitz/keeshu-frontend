@@ -1,18 +1,13 @@
 import '@/styles/bootstrap_custom.scss';
 import Vue from 'vue';
 
-// Probably don't need all of these, but I'm lazy, so...
 import {
   BootstrapVue,
-  CardPlugin,
-  CollapsePlugin,
-  DropdownPlugin,
-  IconsPlugin,
-  FormPlugin,
-  LayoutPlugin,
-  ModalPlugin,
-  // TablePlugin,
-  NavbarPlugin,
+  BFormInput,
+  BIcon,
+  BIconLink45deg,
+  BNav,
+  BNavItem,
 } from 'bootstrap-vue';
 
 /**
@@ -32,13 +27,9 @@ import {
 
 export default function initBootstrap(): void {
   Vue.use(BootstrapVue);
-  Vue.use(CardPlugin);
-  Vue.use(CollapsePlugin);
-  Vue.use(DropdownPlugin);
-  Vue.use(IconsPlugin);
-  Vue.use(FormPlugin);
-  Vue.use(LayoutPlugin);
-  Vue.use(ModalPlugin);
-  // Vue.use(TablePlugin);
-  Vue.use(NavbarPlugin);
+  Vue.component('BFormInput', BFormInput);
+  Vue.component('BIcon', BIcon);
+  Vue.component('BIconLink45deg', BIconLink45deg);
+  Vue.component('BNav', BNav);
+  Vue.component('BNavItem', BNavItem);
 }
