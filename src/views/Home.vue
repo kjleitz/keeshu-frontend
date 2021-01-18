@@ -6,6 +6,7 @@
       <div :style="nightStyles" class="sky night">
         <canvas ref="starCanvas" id="star-canvas"></canvas>
       </div>
+      <div :style="dayStyles" class="sky day"></div>
       <div class="moon-aura"></div>
       <div class="moon-surface">
         <div :class="['moon-surface-left-container', { waxing, waning }]">
@@ -16,7 +17,6 @@
         </div>
         <div class="moon-surface-curve"></div>
       </div>
-      <div :style="dayStyles" class="sky day"></div>
       <div class="sun-corona"></div>
       <div class="sun-chromosphere"></div>
       <div class="sun-photosphere"></div>
@@ -39,15 +39,18 @@
         Keegan
       </div>
       <div class="tagline">
-        (a marriage)
+        (a wedding)
       </div>
     </div>
     <div v-if="debugMode" class="day-control">
-      <b-form-input v-model.number="dayElapsedPercent" type="range" min="0" max="1" step="0.001"></b-form-input>
       Hours after midnight: {{ Math.floor(dayElapsedPercent * 24) }}h{{ Math.floor(((dayElapsedPercent * 24) % 1) * 60) }}m
+      <b-form-input v-model.number="dayElapsedPercent" type="range" min="0" max="1" step="0.001"></b-form-input>
       <br>
-      <b-form-input v-model.number="lunarMonthElapsed" type="range" min="0" max="0.999" step="0.001"></b-form-input>
-      Days after new moon: {{ (lunarMonthElapsed * 29.530588853).toFixed(2) }}
+      Days after new moon: {{ (lunarMonthElapsedPercent * 29.530588853).toFixed(2) }}
+      <b-form-input v-model.number="lunarMonthElapsedPercent" type="range" min="0" max="0.999" step="0.001"></b-form-input>
+      <br>
+      Days into the year: {{ (yearElapsedPercent * 365).toFixed(2) }}
+      <b-form-input v-model.number="yearElapsedPercent" type="range" min="0" max="0.999" step="0.001"></b-form-input>
       <br>
       Sunlight color: {{ sunlightRgba }}
       <br>
@@ -63,9 +66,9 @@
       <br>
       Night elapsed percent: {{ nightElapsedPercent.toFixed(2) }}
     </div>
-    <div v-if="debugMode" class="title-font">
+    <!-- <div v-if="debugMode" class="title-font">
       Font: {{ titleFont }}
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -104,6 +107,13 @@ const DAYS_IN_LUNAR_MONTH = 29.530588853;
 // "new moon" reference date
 const NEW_MOON_DATE = moment('2021-01-13 05:02+00:00').toDate();
 const SECONDS_IN_DAY = 86400;
+const MOON_TILT_MIN = 10;
+const MOON_TILT_MAX = 70;
+// Using Feb 15th as the date that the moon is at its horniest (when the angle
+// of tilt on the waxing crescent makes it *almost* completely under the rest of
+// the moon, looking like a 'U' or 'horns'). Feb 15th is roughly 12.3% of the
+// way through the year.
+const PERCENT_YEAR_ELAPSED_WHEN_MOON_IS_HORNY = 0.123; // ~Feb 15th
 
 const calcDayElapsed = (): number => {
   const midnight = moment().startOf('day');
@@ -119,8 +129,16 @@ const calcLunarMonthElapsed = (): number => {
   return (daysSinceNewMoon % DAYS_IN_LUNAR_MONTH) / DAYS_IN_LUNAR_MONTH;
 };
 
+const calcYearElapsed = (): number => {
+  const now = moment();
+  const yearStart = moment().startOf('year');
+  const yearEnd = moment().endOf('year');
+  return now.diff(yearStart, 'seconds') / yearEnd.diff(yearStart, 'seconds');
+};
+
 let syncResize = _.noop;
 let dayElapsedInterval = 0;
+let yearElapsedInterval = 0;
 let starTwinkleInterval = 0;
 let moonPhaseInterval = 0;
 let starCanvas: HTMLCanvasElement;
@@ -319,9 +337,10 @@ export default Vue.extend({
       innerWidth,
       innerHeight,
       dayElapsedPercent: calcDayElapsed(),
+      yearElapsedPercent: calcYearElapsed(),
+      lunarMonthElapsedPercent: calcLunarMonthElapsed(),
       fontIndex: 0,
       debugMode: false,
-      lunarMonthElapsed: calcLunarMonthElapsed(),
     };
   },
 
@@ -329,12 +348,21 @@ export default Vue.extend({
     moonCycle(): number {
       // waxing: 0.0 at a new moon, 0.99 at near full moon
       // waning: 0.0 at a full moon, 0.99 at near new moon
-      return (this.lunarMonthElapsed % 0.5) / 0.5;
+      return (this.lunarMonthElapsedPercent % 0.5) / 0.5;
+    },
+
+    moonHornsElapsedPercent(): number {
+      return (1 + (this.yearElapsedPercent - PERCENT_YEAR_ELAPSED_WHEN_MOON_IS_HORNY)) % 1;
+    },
+
+    moonTiltDegrees(): number {
+      const moonTiltPercent = 1 - Math.sin(this.moonHornsElapsedPercent * Math.PI);
+      return MOON_TILT_MIN + (moonTiltPercent * (MOON_TILT_MAX - MOON_TILT_MIN));
     },
 
     waxing(): boolean {
       // the lunar month has begun (light is appearing from right to left)
-      return this.lunarMonthElapsed < 0.5;
+      return this.lunarMonthElapsedPercent < 0.5;
     },
 
     waning(): boolean {
@@ -366,6 +394,7 @@ export default Vue.extend({
 
       // sun is completely down for the first 10% and last 10% of the day
       const sunMinPercent = 0.1;
+      // const sunMinPercent = 0;
 
       // sun is at its highest 50% through the day
       const sunMaxPercent = 0.5;
@@ -402,16 +431,24 @@ export default Vue.extend({
       return this.sunlightPercent;
     },
 
+    sunlightRgbaValues(): [number, number, number, number] {
+      const red = this.sunlightRedValue;
+      const green = this.sunlightGreenValue;
+      const blue = this.sunlightBlueValue;
+      const opacity = this.sunlightOpacity;
+      return [red, green, blue, opacity];
+    },
+
     sunlightRgba(): string {
-      const red = this.sunlightRedValue.toFixed(2);
-      const green = this.sunlightGreenValue.toFixed(2);
-      const blue = this.sunlightBlueValue.toFixed(2);
-      const opacity = this.sunlightOpacity.toFixed(2);
-      return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+      const [red, green, blue, opacity] = this.sunlightRgbaValues;
+      return `rgba(${red.toFixed(2)}, ${green.toFixed(2)}, ${blue.toFixed(2)}, ${opacity.toFixed(2)})`;
     },
 
     sunPercentX(): number {
-      const appearTime = 0.3; // appears `appearTime` after midnight, disappears `appearTime` before midnight
+      // const appearTime = 0.3; // appears `appearTime` after midnight, disappears `appearTime` before midnight
+      // const appearTime = 0.1; // appears `appearTime` after midnight, disappears `appearTime` before midnight
+      // const appearTime = 0.25; // appears `appearTime` after midnight, disappears `appearTime` before midnight
+      const appearTime = 0.2; // appears `appearTime` after midnight, disappears `appearTime` before midnight
       const elapsedAfterAppearance = this.dayElapsedPercent - appearTime;
       const totalTimeInSky = 1 - (2 * appearTime);
       return elapsedAfterAppearance / totalTimeInSky;
@@ -427,8 +464,28 @@ export default Vue.extend({
       return rawY < 0.67 ? rawY : -100;
     },
 
+    moonShadowRgbaValues(): [number, number, number, number] {
+      const moonBaseRed = 10;
+      const moonBaseGreen = 10;
+      const moonBaseBlue = 10;
+      const [sunRed, sunGreen, sunBlue, sunOpacity] = this.sunlightRgbaValues;
+      const moonRed = moonBaseRed + (sunRed * sunOpacity);
+      const moonGreen = moonBaseGreen + (sunGreen * sunOpacity);
+      const moonBlue = moonBaseBlue + (sunBlue * sunOpacity);
+      return [moonRed, moonGreen, moonBlue, 1];
+    },
+
+    moonShadowRgba(): string {
+      const [red, green, blue, opacity] = this.moonShadowRgbaValues;
+      return `rgba(${red.toFixed(2)}, ${green.toFixed(2)}, ${blue.toFixed(2)}, ${opacity.toFixed(2)})`;
+    },
+
     moonPercentX(): number {
-      const appearTime = 0.3; // appears `appearTime` before midnight, disappears `appearTime` after midnight
+      // const appearTime = 0.3; // appears `appearTime` before midnight, disappears `appearTime` after midnight
+      // const appearTime = 0.25; // appears `appearTime` before midnight, disappears `appearTime` after midnight
+      const appearTime = 0.2; // appears `appearTime` before midnight, disappears `appearTime` after midnight
+      // const appearTime = 0; // appears `appearTime` before midnight, disappears `appearTime` after midnight
+      // const appearTime = 0.1; // appears `appearTime` before midnight, disappears `appearTime` after midnight
       const elapsedAfterAppearance = this.nightElapsedPercent - appearTime;
       const totalTimeInSky = 1 - (2 * appearTime);
       return elapsedAfterAppearance / totalTimeInSky;
@@ -549,13 +606,11 @@ export default Vue.extend({
     },
 
     styleVariables(): Record<string, string> {
+      const moonCurveScale = Math.abs((this.moonCycle - 0.5) / 0.5);
       const moonLight = 'rgba(250, 250, 255, 1)';
-      // const moonDark = 'rgba(0, 0, 10, 1)';
-      const moonDark = 'rgba(10, 10, 10, 1)';
-      // const moonDark = 'rgba(0, 0, 0, 1)';
+      const moonDark = this.moonShadowRgba;
       const moonLeftColor = this.waxing ? moonDark : moonLight;
       const moonRightColor = this.waxing ? moonLight : moonDark;
-      const moonCurveScale = Math.abs((this.moonCycle - 0.5) / 0.5);
       const moonCurveColor = this.waxing
         ? (this.moonCycle < 0.5 ? moonDark : moonLight)
         : (this.moonCycle < 0.5 ? moonLight : moonDark);
@@ -572,6 +627,7 @@ export default Vue.extend({
         '--moon-surface-right-color': moonRightColor,
         '--moon-surface-curve-color': moonCurveColor,
         '--moon-surface-curve-scale': moonCurveScale.toFixed(2),
+        '--moon-surface-tilt': `${this.moonTiltDegrees.toFixed(2)}deg`,
       };
     },
   },
@@ -637,24 +693,36 @@ export default Vue.extend({
 
     removeIntervals(): void {
       window.clearInterval(dayElapsedInterval);
+      window.clearInterval(yearElapsedInterval);
       window.clearInterval(starTwinkleInterval);
       window.clearInterval(moonPhaseInterval);
     },
 
     addIntervals(): void {
       this.dayElapsedPercent = calcDayElapsed();
-      this.lunarMonthElapsed = calcLunarMonthElapsed();
+      this.lunarMonthElapsedPercent = calcLunarMonthElapsed();
+      this.yearElapsedPercent = calcYearElapsed();
+
       dayElapsedInterval = window.setInterval(() => {
-        if (!this.debugMode) this.dayElapsedPercent = calcDayElapsed();
-      }, 2000);
+        if (this.debugMode) return;
+        this.dayElapsedPercent = calcDayElapsed();
+      }, 5000);
+
       starTwinkleInterval = window.setInterval(() => {
         stars.forEach((star) => {
           if (Math.random() < 0.2) star.brightness = star.brightness < 0.75 ? 1 : 0.5;
         });
       }, 100);
+
       moonPhaseInterval = window.setInterval(() => {
-        this.lunarMonthElapsed = calcLunarMonthElapsed();
+        if (this.debugMode) return;
+        this.lunarMonthElapsedPercent = calcLunarMonthElapsed();
       }, 300000);
+
+      yearElapsedInterval = window.setInterval(() => {
+        if (this.debugMode) return;
+        this.yearElapsedPercent = calcYearElapsed();
+      }, 600000);
     },
 
     sunlightColorValue(atMidnight: number, atNoon: number): number {
@@ -704,9 +772,9 @@ export default Vue.extend({
     background-color: rgba(255, 255, 255, 0.5);
     z-index: 100000;
     position: absolute;
-    top: 0;
-    left: 10rem;
-    width: calc(100% - 20rem);
+    bottom: 0;
+    left: 10%;
+    width: 80%;
     max-width: 100%;
     overflow: hidden;
     line-height: 0.8rem;
@@ -821,7 +889,6 @@ export default Vue.extend({
       border-radius: 50%;
       box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.1);
       transform: translate(-50%, -50%);
-      z-index: -100;
     }
 
     .moon-surface {
@@ -831,9 +898,8 @@ export default Vue.extend({
       width: $moon-surface-size;
       height: $moon-surface-size;
       border-radius: 50%;
-      box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.3);
-      transform: translate(-50%, -50%);
-      z-index: -100;
+      box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.2);
+      transform: translate(-50%, -50%) rotate(var(--moon-surface-tilt));
 
       .moon-surface-left-container {
         position: absolute;
@@ -882,6 +948,7 @@ export default Vue.extend({
         border-radius: 50%;
         transform: scaleX(var(--moon-surface-curve-scale));
         background-color: var(--moon-surface-curve-color);
+        box-shadow: 0 0 20px 0px var(--moon-surface-curve-color);
       }
     }
 

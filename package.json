@@ -7,8 +7,8 @@
     "build": "vue-cli-service build",
     "build:analyze": "BUNDLE_ANALYZER=true vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "yarn build && vue-cli-service s3-deploy --mode production",
-    "deploy_old": "yarn build && aws --profile keeshu-deployer s3 sync ./dist s3://keeshu --delete",
+    "deploy": "yarn build --mode production && vue-cli-service s3-deploy --mode production",
+    "deploy_old": "yarn build --mode production && aws --profile keeshu-deployer s3 sync ./dist s3://keeshu --delete",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
