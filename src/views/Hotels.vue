@@ -279,7 +279,9 @@ $sign-margin: 0.5rem;
 
 .hotels-view {
   width: 100%;
-  background: repeating-linear-gradient(180deg, rgba(30, 15, 0, 0.8), #FFFEC6 1vh, #FFFEC6 3vh, #FFFFD9 5vh);
+  // background: repeating-linear-gradient(180deg, rgba(30, 15, 0, 0.8), #FFFEC6 1vh, #FFFEC6 3vh, #FFFFD9 5vh);
+  // background: repeating-linear-gradient(180deg, rgba(80, 55, 40, 1), #ffeda7 1vh, #fcf1c5 3vh, #ffffd9 5vh);
+  background: repeating-linear-gradient(180deg, rgba(80, 55, 40, 1), #fcecac 1vh, #fcf1c5 3vh, #ffffd9 5vh);
   box-shadow: inset 0 0 1vh rgba(30, 15, 0, 0.8);
 
   a {

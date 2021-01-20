@@ -77,11 +77,13 @@ const frameLoop = (draw: (timestamp: number) => void, timestamp?: number): void 
 const stars = _.range(1000).map((): Star => ({
   x: Math.random(),
   y: Math.random(),
-  size: Math.floor(Math.random() * 5) + 1,
+  // size: Math.floor(Math.random() * 5) + 1,
+  size: Math.floor(Math.random() * 4) + 1,
   brightness: Math.random(),
 }));
 
 const updateStarCanvasSize = (): void => {
+  if (!starCanvas) return;
   const scale = window.devicePixelRatio;
   const { width, height } = window.getComputedStyle(starCanvas);
   starCanvas.width = scale * parseFloat(width.replace(/px$/, ''));
@@ -126,6 +128,7 @@ const createCloud = (x: number, y: number): Cloud => {
 const clouds = _.range(CLOUD_COUNT).map((): Cloud => createCloud(Math.random(), Math.random()));
 
 const updateCloudCanvasSize = (): void => {
+  if (!cloudCanvas) return;
   const scale = window.devicePixelRatio;
   const { width, height } = window.getComputedStyle(cloudCanvas);
   cloudCanvas.width = scale * parseFloat(width.replace(/px$/, ''));
@@ -399,7 +402,7 @@ export default Vue.extend({
 
     dayStyles(): Partial<CSSStyleDeclaration> {
       return {
-        ...this.skyStyles,
+        // ...this.skyStyles,
         backgroundColor: this.sunlightRgba,
         zIndex: '-99',
       };
@@ -442,15 +445,17 @@ export default Vue.extend({
   },
 
   mounted(): void {
-    starCanvas = this.$refs.starCanvas as HTMLCanvasElement;
-    cloudCanvas = this.$refs.cloudCanvas as HTMLCanvasElement;
-    // if someone's using a browser without CanvasRenderingContext2D then wat
-    starCtx = starCanvas.getContext('2d')! || {} as CanvasRenderingContext2D;
-    cloudCtx = cloudCanvas.getContext('2d')! || {} as CanvasRenderingContext2D;
-    updateStarCanvasSize();
-    updateCloudCanvasSize();
-    stopFrameLoop = false;
-    startCelestialObjects();
+    setTimeout(() => {
+      starCanvas = this.$refs.starCanvas as HTMLCanvasElement;
+      cloudCanvas = this.$refs.cloudCanvas as HTMLCanvasElement;
+      // if someone's using a browser without CanvasRenderingContext2D then wat
+      starCtx = starCanvas.getContext('2d')! || {} as CanvasRenderingContext2D;
+      cloudCtx = cloudCanvas.getContext('2d')! || {} as CanvasRenderingContext2D;
+      updateStarCanvasSize();
+      updateCloudCanvasSize();
+      stopFrameLoop = false;
+      startCelestialObjects();
+    }, 0);
   },
 
   methods: {
@@ -482,9 +487,9 @@ export default Vue.extend({
     },
 
     addIntervals(): void {
-      this.dayElapsedPercent = calcDayElapsed();
-      this.lunarMonthElapsedPercent = calcLunarMonthElapsed();
-      this.yearElapsedPercent = calcYearElapsed();
+      // this.dayElapsedPercent = calcDayElapsed();
+      // this.lunarMonthElapsedPercent = calcLunarMonthElapsed();
+      // this.yearElapsedPercent = calcYearElapsed();
 
       dayElapsedInterval = window.setInterval(() => {
         if (this.debug) return;
@@ -530,10 +535,6 @@ export default Vue.extend({
   // z-index: -1000;
   overflow: hidden;
 
-  // .day {
-  //   background-color: #c8f7ff;
-  // }
-
   .debug-controls {
     background-color: rgba(255, 255, 255, 0.5);
     z-index: 100000;
@@ -546,6 +547,14 @@ export default Vue.extend({
     line-height: 0.8rem;
     font-size: 0.8rem;
     z-index: 1000000;
+  }
+
+  .day {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .night {
