@@ -6,6 +6,7 @@ import {
   BFormInput,
   BIcon,
   BIconLink45deg,
+  // BImg,
   BNav,
   BNavItem,
 } from 'bootstrap-vue';
@@ -30,6 +31,7 @@ export default function initBootstrap(): void {
   Vue.component('BFormInput', BFormInput);
   Vue.component('BIcon', BIcon);
   Vue.component('BIconLink45deg', BIconLink45deg);
+  // Vue.component('BImg', BImg);
   Vue.component('BNav', BNav);
   Vue.component('BNavItem', BNavItem);
 }

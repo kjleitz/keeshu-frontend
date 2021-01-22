@@ -13,6 +13,9 @@
     <b-nav-item :to="{ name: 'Home' }">
       Home
     </b-nav-item>
+    <b-nav-item :to="{ name: 'Info' }">
+      Info
+    </b-nav-item>
     <b-nav-item :to="{ name: 'Hotels' }">
       Hotel<span class="hotels-last-letter">s</span>
     </b-nav-item>

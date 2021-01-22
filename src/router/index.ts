@@ -30,6 +30,11 @@ const routes: RouteConfig[] = [
     name: 'Hotels',
     component: () => import(/* webpackChunkName: "hotels" */ '@/views/Hotels.vue'),
   },
+  {
+    path: '/info',
+    name: 'Info',
+    component: () => import(/* webpackChunkName: "info" */ '@/views/Info.vue'),
+  },
 ];
 
 const router = new VueRouter({
