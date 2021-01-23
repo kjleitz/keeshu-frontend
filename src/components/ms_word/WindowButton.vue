@@ -1,15 +1,28 @@
 <template>
   <div class="window-button">
     <div class="window-button-inner">
-      <slot></slot>
+    <WordIcon :icon="icon" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { MsWordIconName } from '@/lib/ms_word/icons';
+import WordIcon from '@/components/ms_word/WordIcon.vue';
+import Vue, { PropType } from 'vue';
 
-export default Vue.extend({});
+export default Vue.extend({
+  components: {
+    WordIcon,
+  },
+
+  props: {
+    icon: {
+      type: String as PropType<MsWordIconName>,
+      required: true,
+    },
+  },
+});
 </script>
 
 <style lang="scss">

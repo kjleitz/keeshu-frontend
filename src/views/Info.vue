@@ -1,7 +1,135 @@
 <template>
   <div class="info-view">
     <MicrosoftWord class="ms-word">
-      <!-- ... -->
+      <h1>General information</h1>
+      <p>
+        <strong>Dates</strong>
+        <ul>
+          <li>
+            <em>Rehearsal dinner:</em> 8/13/2021
+          </li>
+          <li>
+            <em>Ceremony & reception:</em> 8/14/2021
+          </li>
+          <li>
+            <em>Farewell brunch:</em> 8/15/2021
+          </li>
+        </ul>
+      </p>
+      <p>
+        <strong>Location</strong>
+        <ul>
+          <li>
+            <em>Rehearsal dinner: </em>
+            <a href="http://www.lordthompsonmanor.com/">Lord Thompson Manor</a>
+            -
+            <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>
+          </li>
+          <li>
+            <em>Ceremony & reception: </em>
+            <a href="http://www.lordthompsonmanor.com/">Lord Thompson Manor</a>
+            -
+            <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>
+          </li>
+          <li>
+            <em>Farewell brunch: </em>
+            <a href="http://www.lordthompsonmanor.com/">Lord Thompson Manor</a>
+            -
+            <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>
+          </li>
+        </ul>
+      </p>
+      <!-- hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br>
+      hi<br> -->
     </MicrosoftWord>
   </div>
 </template>
@@ -33,6 +161,15 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      text-align: center;
+    }
   }
 }
 </style>
