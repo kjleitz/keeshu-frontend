@@ -64,6 +64,7 @@ export default Vue.extend({
   a {
     font-weight: bold;
     color: #2c3e50;
+    white-space: nowrap;
 
     &.router-link-exact-active {
       color: #42b983;
