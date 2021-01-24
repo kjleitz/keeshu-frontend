@@ -117,7 +117,7 @@
           <div class="story-img clearfix apple_pick_wall_sit_original"></div>
         </article>
       </section>
-      <section class="story-row">
+      <section class="story-row reversed">
         <article class="story-col">
           <div class="story-img clearfix redbones_corner_original img-wide"></div>
         </article>
@@ -157,7 +157,7 @@
           </p>
         </article>
       </section>
-      <section class="story-row">
+      <section class="story-row reversed">
         <article class="story-col">
           <!-- <div class="story-img clearfix apple_pick_wall_sit_center_original img-wide"></div> -->
           <div class="story-img clearfix redbones_original"></div>
@@ -190,16 +190,16 @@
       <section class="story-row">
         <article class="story-col">
           <p>
-            The apartment entered onto a staircase. Our other friends went up first, then me, then Aishu at the back.
+            The apartment entered into a staircase. Our other friends went up first, then me, then Aishu at the back.
           </p>
-          <p>
+          <!-- <p>
             I already liked her.
-          </p>
+          </p> -->
           <p>
             I remember walking up those stairs practically blind, my head turned back toward Aishu, making stupid jokes and trying to make sure she felt comfortable with the potential roommates she didn't yet know.
           </p>
           <p>
-            I don't know if she really needed that comfort (she definitely didn't need those jokes) but I couldn't help myself.
+            I don't know if she really needed that comfort (she definitely didn't need those jokes) but I couldn't help myself. I already liked her.
           </p>
           <p>
             I haven't stopped talking to her since that moment. It just makes me too happy.
@@ -224,13 +224,14 @@
           <p>
             <!-- I proposed to her in the early summer, six years after that first smile. It didn't take six years for me to know, though. It took until I got to the top of that staircase. -->
             <!-- I proposed to her six years after that first smile. It didn't take six years for me to know, though. It took until I got to the top of that staircase. -->
-            I proposed to her this summer, six years after that first smile.
+            I proposed to her in the summer, six years after that first smile.
           </p>
           <p>
-             It didn't take six years for me to know, though.
+             It didn't take six years for me to know, though...
           </p>
           <p>
-             It took 'til I got to the top of that staircase.
+             ...it took 'til I got to the top of the stairs.
+             <!-- ...it took 'til the top of the stairs. -->
           </p>
         </article>
       </section>
@@ -545,6 +546,17 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
       margin-top: 2rem;
       margin-bottom: 2rem;
 
+      @include media-breakpoint-down(sm) {
+        flex-direction: column;
+        margin: 0;
+      }
+
+      &.reversed {
+        @include media-breakpoint-down(sm) {
+          flex-direction: column-reverse;
+        }
+      }
+
       .story-col {
         position: relative;
         width: 49%;
@@ -554,6 +566,10 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
         justify-content: space-evenly;
         // margin-top: 2rem;
         // margin-bottom: 2rem;
+
+        @include media-breakpoint-down(sm) {
+          width: 100%;
+        }
 
         &.story-col-single {
           width: 100%;
