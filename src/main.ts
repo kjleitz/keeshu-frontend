@@ -5,11 +5,14 @@ import App from '@/App.vue';
 import router from '@/router';
 import store from '@/store';
 import initBootstrap from '@/init/initBootstrap';
+import vanityLog from '@/init/vanityLog';
 import { checkWebpSupport } from '@/lib/browser';
 
 initBootstrap();
 
 Vue.config.productionTip = false;
+
+vanityLog();
 
 checkWebpSupport((supported) => {
   // Follows the same convention as `modernizr`, because I don't care to add
