@@ -14,7 +14,7 @@
           <div class="window-buttons">
             <WindowButton icon="minimizeWindow" />
             <WindowButton icon="unmaximizeWindow" />
-            <WindowButton icon="closeWindow" />
+            <WindowButton icon="closeWindow" @click="$emit('close-window')" />
           </div>
         </div>
         <div class="menu-bar box-chamfer tool-bar">

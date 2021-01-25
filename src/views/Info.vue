@@ -1,6 +1,6 @@
 <template>
   <div class="info-view">
-    <MicrosoftWord class="ms-word">
+    <MicrosoftWord class="ms-word" @close-window="onCloseWordWindow">
       <h1>General information</h1>
       <p>
         <strong>Dates</strong>
@@ -39,97 +39,6 @@
           </li>
         </ul>
       </p>
-      <!-- hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br>
-      hi<br> -->
     </MicrosoftWord>
   </div>
 </template>
@@ -141,6 +50,12 @@ import MicrosoftWord from '@/components/MicrosoftWord.vue';
 export default Vue.extend({
   components: {
     MicrosoftWord,
+  },
+
+  methods: {
+    onCloseWordWindow(): void {
+      this.$router.back();
+    },
   },
 });
 </script>

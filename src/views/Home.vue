@@ -2,7 +2,7 @@
   <div :style="styleVariables" class="home-view">
     <h1 class="sr-only">Home</h1>
     <MainNav vertical/>
-    <Sky :debug="debug" class="background">
+    <Sky :debug="debug" class="background" @day-elapsed-percent-changed="dayElapsedPercent = $event">
       <div class="painting grass"></div>
       <div class="painting tree"></div>
       <div class="painting picnic-table"></div>
@@ -22,6 +22,15 @@
       </div>
       <div class="tagline">
         (a wedding)
+      </div>
+      <div class="info info-date">
+        (happening on August 14<sup>th</sup>, 2021)
+      </div>
+      <div class="info info-location">
+        (at Lord Thompson Manor in Connecticut)
+      </div>
+      <div class="info info-addendum">
+        (for the lazy)
       </div>
     </div>
     <!-- <div v-if="debug" class="title-font">
@@ -60,7 +69,7 @@ const FONTS = [
   // "Macondo",
 ];
 
-let dayElapsedInterval = 0;
+// let dayElapsedInterval = 0;
 
 export default Vue.extend({
   name: 'Home',
@@ -127,6 +136,7 @@ export default Vue.extend({
     },
 
     navLinkActiveGreenValue(): number {
+      console.log(this.sunlightColorValue(0, 255));
       return this.sunlightColorValue(180, 140);
     },
 
@@ -162,41 +172,42 @@ export default Vue.extend({
         '--nav-font-family': `"${this.navLinkFont}", serif`,
         '--nav-font-color': this.navLinkRgba,
         '--nav-font-color-active': this.navLinkActiveRgba,
+        '--nav-link-active-shadow-opacity': `${this.navLinkActiveShadowOpacity}`,
       };
     },
   },
 
   created(): void {
-    this.addIntervals();
+    // this.addIntervals();
   },
 
   beforeDestroy(): void {
-    this.removeIntervals();
+    // this.removeIntervals();
   },
 
   beforeRouteUpdate(_to, _from, next): void {
-    this.addIntervals();
+    // this.addIntervals();
     next();
   },
 
   beforeRouteLeave(_to, _from, next): void {
-    this.removeIntervals();
+    // this.removeIntervals();
     next();
   },
 
   methods: {
-    removeIntervals(): void {
-      window.clearInterval(dayElapsedInterval);
-    },
+    // removeIntervals(): void {
+    //   window.clearInterval(dayElapsedInterval);
+    // },
 
-    addIntervals(): void {
-      this.dayElapsedPercent = calcDayElapsed();
+    // addIntervals(): void {
+    //   this.dayElapsedPercent = calcDayElapsed();
 
-      dayElapsedInterval = window.setInterval(() => {
-        if (this.debug) return;
-        this.dayElapsedPercent = calcDayElapsed();
-      }, 5000);
-    },
+    //   dayElapsedInterval = window.setInterval(() => {
+    //     if (this.debug) return;
+    //     this.dayElapsedPercent = calcDayElapsed();
+    //   }, 5000);
+    // },
 
     sunlightColorValue(atMidnight: number, atNoon: number): number {
       return calcSunlightColorValue(this.dayElapsedPercent, atMidnight, atNoon);
@@ -251,7 +262,10 @@ export default Vue.extend({
       &.router-link-exact-active {
         color: var(--nav-font-color-active);
         font-size: 2em;
-        text-shadow: 0px 0px 1px rgba(150, 240, 255, 1);
+        // text-shadow: 0px 0px 1px rgba(150, 240, 255, 1);
+        // text-shadow: 0px 0px 1px rgba(150, 240, 255, var(--nav-link-active-shadow-opacity));
+        // text-shadow: 0px 0px 1px black;
+        text-shadow: 1px 1px 0px black;
       }
 
       &:hover {
@@ -301,6 +315,22 @@ export default Vue.extend({
     }
   }
 
+  $name-font-size: min(20vh, 20vw);
+  $name-line-height: $name-font-size;
+  $name-and-stuff-padding-x: calc(0.1 * #{$name-font-size});
+
+  $tagline-font-size: min(10vh, 10vw);
+  $tagline-line-height: $tagline-font-size;
+
+  $info-date-font-size: max(1rem, calc(0.5 * #{$tagline-font-size}));
+  $info-date-line-height: max(1rem, calc(1.5 * #{$info-date-font-size}));
+
+  $info-location-font-size: max(1rem, calc(0.65 * #{$info-date-font-size}));
+  $info-location-line-height: max(1rem, calc(1.5 * #{$info-location-font-size}));
+
+  $info-addendum-font-size: max(1rem, calc(0.75 * #{$info-location-font-size}));
+  $info-addendum-line-height: max(1rem, calc(1.5 * #{$info-addendum-font-size}));
+
   .our-names-obviously {
     color: rgb(0, 30, 0);
     position: fixed;
@@ -313,16 +343,16 @@ export default Vue.extend({
     flex-direction: column;
     align-items: flex-end;
     justify-content: flex-end;
-    font-size: min(20vh, 20vw);
-    line-height: 1em;
+    font-size: $name-font-size;
+    line-height: $name-line-height;
     font-family: 'Glass Antiqua', serif;
     outline: none;
 
-    .surprise-its-a-name, .tagline {
+    .surprise-its-a-name, .tagline, .info {
       display: inline-block;
       text-shadow: 4px 4px 5px rgba(0, 0, 0, 1);
-      padding: 0em 0.25em;
-      margin: 0em 0.25em 0em 0em;
+      padding: 0em $name-and-stuff-padding-x;
+      margin: 0em $name-and-stuff-padding-x 0em 0em;
       white-space: nowrap;
     }
 
@@ -331,7 +361,25 @@ export default Vue.extend({
     }
 
     .tagline {
-      font-size: min(10vh, 10vw);
+      font-size: $tagline-font-size;
+      line-height: $tagline-line-height;
+    }
+
+    .info {
+      &.info-date {
+        line-height: $info-date-line-height;
+        font-size: $info-date-font-size;
+      }
+
+      &.info-location {
+        line-height: $info-location-line-height;
+        font-size: $info-location-font-size;
+      }
+
+      &.info-addendum {
+        line-height: $info-addendum-line-height;
+        font-size: $info-addendum-font-size;
+      }
     }
   }
 }

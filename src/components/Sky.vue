@@ -432,8 +432,15 @@ export default Vue.extend({
     },
   },
 
+  watch: {
+    dayElapsedPercent(newVal: number, _oldVal: number): void {
+      this.$emit('day-elapsed-percent-changed', newVal);
+    },
+  },
+
   created(): void {
     stopFrameLoop = false;
+    this.$emit('day-elapsed-percent-changed', this.dayElapsedPercent);
     this.addListeners();
     this.addIntervals();
   },
