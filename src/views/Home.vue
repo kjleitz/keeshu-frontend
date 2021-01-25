@@ -29,9 +29,9 @@
       <div class="info info-location">
         (at Lord Thompson Manor in Connecticut)
       </div>
-      <div class="info info-addendum">
+      <!-- <div class="info info-addendum">
         (for the lazy)
-      </div>
+      </div> -->
     </div>
     <!-- <div v-if="debug" class="title-font">
       Font: {{ titleFont }}
@@ -136,7 +136,6 @@ export default Vue.extend({
     },
 
     navLinkActiveGreenValue(): number {
-      console.log(this.sunlightColorValue(0, 255));
       return this.sunlightColorValue(180, 140);
     },
 
@@ -322,14 +321,17 @@ export default Vue.extend({
   $tagline-font-size: min(10vh, 10vw);
   $tagline-line-height: $tagline-font-size;
 
-  $info-date-font-size: max(1rem, calc(0.5 * #{$tagline-font-size}));
-  $info-date-line-height: max(1rem, calc(1.5 * #{$info-date-font-size}));
+  // $info-date-font-size: max(1rem, calc(0.5 * #{$tagline-font-size}));
+  $info-date-font-size: max(1rem, min(5vh, 5vw)); // apparently the minifier can't handle nesting like above
+  $info-date-line-height: calc(1.5 * #{$info-date-font-size});
 
-  $info-location-font-size: max(1rem, calc(0.65 * #{$info-date-font-size}));
-  $info-location-line-height: max(1rem, calc(1.5 * #{$info-location-font-size}));
+  // $info-location-font-size: max(1rem, calc(0.65 * #{$info-date-font-size}));
+  $info-location-font-size: max(1rem, min(3.25vh, 3.25vw)); // apparently the minifier can't handle nesting like above
+  $info-location-line-height: calc(1.5 * #{$info-location-font-size});
 
-  $info-addendum-font-size: max(1rem, calc(0.75 * #{$info-location-font-size}));
-  $info-addendum-line-height: max(1rem, calc(1.5 * #{$info-addendum-font-size}));
+  // $info-addendum-font-size: max(1rem, calc(0.75 * #{$info-location-font-size}));
+  $info-addendum-font-size: max(1rem, min(2.5vh, 2.5vw)); // apparently the minifier can't handle nesting like above
+  $info-addendum-line-height: calc(1.5 * #{$info-addendum-font-size});
 
   .our-names-obviously {
     color: rgb(0, 30, 0);
