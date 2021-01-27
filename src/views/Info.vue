@@ -2,6 +2,15 @@
   <div class="info-view">
     <MicrosoftWord class="ms-word" @close-window="onCloseWordWindow">
       <h1>General information</h1>
+      <p class="text-center">
+        <router-link :to="{ name: 'Home' }">Home</router-link>
+        -
+        <router-link :to="{ name: 'Hotels' }">Hotels</router-link>
+        -
+        <router-link :to="{ name: 'Us' }">Us</router-link>
+        -
+        <router-link :to="{ name: 'Map' }">Map</router-link>
+      </p>
       <p>
         <strong>Dates</strong>
         <ul>

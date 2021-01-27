@@ -20,7 +20,7 @@
             It started in 2014, in April, on Beacon Street.
           </p>
           <p>
-            Aishu remembers meeting me for the first time on the porch. We were waiting for some mutual friends: our future roommates.
+            Aishu remembers meeting me for the first time on the porch. We were waiting for some mutual friends, our potential roommates.
           </p>
           <p>
             She was already standing there, leaning against the railing, when I arrived at the foot of the steps.
@@ -36,10 +36,10 @@
         </article>
         <article class="story-col">
           <p>
-            I told her my name and she told me hers. She told me, months later, that the shirt I was wearing that day was too small for me, and it made me look ridiculous.
+            I told her my name and she told me hers. She said, months later, that the shirt I was wearing that day was too small for me, and it made me look ridiculous.
           </p>
           <p>
-            Aishu, on the other hand, wore a long, loose cardigan, with black and tan checkers splattered across the fabric in an irregular pattern. She looked like a walking QR code, but she still pulled it off.
+            Aishu, on the other hand, wore a long, loose cardigan, with black and tan checkers splattered across the fabric in no particular pattern. She looked like a walking QR code, but she was pulling it off.
           </p>
           <p>
             (she can pull anything off)
@@ -75,16 +75,16 @@
         </article>
         <article class="story-col">
           <p>
-            It was a triumph for me, the man who's always late. Fate wouldn't allow me the victory, though&mdash;I had no quarters for the meter. The nearest convenience store was about five minutes up the street, so I started on my way.
+            It was a triumph for me, the man who's always late. Sadly, I wasn't allowed the victory... I had no quarters for the meter. The nearest convenience store was about five minutes up the street, so I started walking.
           </p>
           <p>
-            A minute or so later, a girl appeared ahead of me, walking in my direction. She was pretty.
+            A girl appeared ahead of me, coming in my direction. She was pretty.
           </p>
           <p>
             She had these big, dark eyes, wrapped in long lashes. She had a mark on her cheek, flowing black hair, and she walked with purpose.
           </p>
           <p>
-            I smiled and did one of those little head nods, the polite nod of acknowledging a stranger, an acceptable alternative to interrupting her thoughts with what would, inevitably, be an awkward and unnecessary <em>"Hello."</em>
+            I smiled and did a little head nod: the polite nod of acknowledging a stranger, an acceptable alternative to interrupting her thoughts with what would, inevitably, be an awkward and unnecessary <em>"Hello."</em>
           </p>
           <p>
             She smiled back, and we passed.
@@ -104,7 +104,7 @@
             The apartment entered into a staircase. Our other friends went up first, then me, then Aishu at the back.
           </p>
           <p>
-            I remember walking up those stairs practically blind, my head turned back toward Aishu, making stupid jokes and trying to make sure she felt comfortable with the potential roommates she didn't yet know.
+            I remember walking up those stairs practically blind, my head turned back toward Aishu, making stupid jokes, trying to make sure she felt comfortable with the few roommates she didn't yet know.
           </p>
           <p>
             I don't know if she really needed that comfort (she definitely didn't need those jokes) but I couldn't help myself. I already liked her.
@@ -129,7 +129,7 @@
              It didn't take six years for me to know, though...
           </p>
           <p>
-             ...it took 'til I got to the top of the stairs.
+             ...it took 'til I got to the top of those stairs.
           </p>
         </article>
       </section>

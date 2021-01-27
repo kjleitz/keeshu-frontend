@@ -4,7 +4,9 @@
     :style="{ width }"
     tabindex="0"
     @mousedown="onMouseDown"
+    @touchstart="onMouseDown"
     @mouseup="onMouseUp"
+    @touchend="onMouseUp"
   >
     <WordIcon :icon="icon" class="editor-button-icon" />
   </div>

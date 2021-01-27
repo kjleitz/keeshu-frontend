@@ -3,7 +3,9 @@
     :class="['window-button', { pressed: localPressed }]"
     tabindex="0"
     @mousedown="onMouseDown"
+    @touchstart="onMouseDown"
     @mouseup="onMouseUp"
+    @touchend="onMouseUp"
   >
     <div class="window-button-inner">
       <WordIcon :icon="icon" class="window-button-icon"/>
@@ -75,7 +77,9 @@ export default Vue.extend({
   height: 14px;
   margin: 1px;
   position: relative;
+  user-select: none;
   outline: none;
+  cursor: pointer;
 
   &.pressed {
     border-top: 1px solid $ms-bg-window-dark;

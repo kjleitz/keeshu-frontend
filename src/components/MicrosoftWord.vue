@@ -1,5 +1,8 @@
 <template>
-  <div class="microsoft-word">
+  <div
+    class="microsoft-word"
+    @keydown="onKeydown"
+  >
     <div class="window-container">
       <div class="window-inner box-chamfer">
         <div class="title-bar">
@@ -19,7 +22,7 @@
         </div>
         <div class="menu-bar box-chamfer tool-bar">
           <span class="drag-indicator"></span>
-          <span class="menu-item">File</span>
+          <!-- <span class="menu-item">File</span>
           <span class="menu-item">Edit</span>
           <span class="menu-item">View</span>
           <span class="menu-item">Insert</span>
@@ -27,7 +30,16 @@
           <span class="menu-item">Tools</span>
           <span class="menu-item">Table</span>
           <span class="menu-item">Window</span>
-          <span class="menu-item">Help</span>
+          <span class="menu-item">Help</span> -->
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="fileMenuOpen" @mouseenter.native="someMenuOpen && (fileMenuOpen = true)">File</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="editMenuOpen" @mouseenter.native="someMenuOpen && (editMenuOpen = true)">Edit</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="viewMenuOpen" @mouseenter.native="someMenuOpen && (viewMenuOpen = true)">View</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="insertMenuOpen" @mouseenter.native="someMenuOpen && (insertMenuOpen = true)">Insert</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="formatMenuOpen" @mouseenter.native="someMenuOpen && (formatMenuOpen = true)">Format</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="toolsMenuOpen" @mouseenter.native="someMenuOpen && (toolsMenuOpen = true)">Tools</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="tableMenuOpen" @mouseenter.native="someMenuOpen && (tableMenuOpen = true)">Table</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="windowMenuOpen" @mouseenter.native="someMenuOpen && (windowMenuOpen = true)">Window</WindowMenu>
+          <WindowMenu :items="windowMenuItems" :dividers-after="[0]" :menu-open.sync="helpMenuOpen" @mouseenter.native="someMenuOpen && (helpMenuOpen = true)">Help</WindowMenu>
           <div class="close-container">
             <WindowButton icon="closeWindow" />
           </div>
@@ -104,10 +116,58 @@
                     </div>
                   </div>
                 </div>
+                <!-- TODO: extract `.horizontal-ruler` to its own component -->
                 <div class="horizontal-ruler">
-                  <div class="measure measure-left"></div>
-                  <div class="measure measure-center"></div>
-                  <div class="measure measure-right"></div>
+                  <div class="measure measure-left">
+                    <div
+                      v-for="n in range(-0.625, 0, 0.125)"
+                      :key="n"
+                      :class="[
+                        'measure-marker',
+                        {
+                          'inch-eighth': n % 0.125 === 0 && n % 0.5 !== 0,
+                          'inch-half': n % 0.5 === 0 && n % 1 !== 0,
+                          'inch-number': n % 1 === 0,
+                        },
+                      ]"
+                    >
+                      {{ n % 1 === 0 ? n.toFixed(0) : '' }}
+                    </div>
+                    <div class="ruler-tab ruler-tab-start"></div>
+                  </div>
+                  <div class="measure measure-center">
+                    <div
+                      v-for="n in range(0.125, 7, 0.125)"
+                      :key="n"
+                      :class="[
+                        'measure-marker',
+                        {
+                          'inch-eighth': n % 0.125 === 0 && n % 0.5 !== 0,
+                          'inch-half': n % 0.5 === 0 && n % 1 !== 0,
+                          'inch-number': n % 1 === 0,
+                        },
+                      ]"
+                    >
+                      {{ n % 1 === 0 ? n.toFixed(0) : '' }}
+                    </div>
+                    <div class="ruler-tab ruler-tab-stop"></div>
+                  </div>
+                  <div class="measure measure-right">
+                    <div
+                      v-for="n in range(7.125, 7.75, 0.125)"
+                      :key="n"
+                      :class="[
+                        'measure-marker',
+                        {
+                          'inch-eighth': n % 0.125 === 0 && n % 0.5 !== 0,
+                          'inch-half': n % 0.5 === 0 && n % 1 !== 0,
+                          'inch-number': n % 1 === 0,
+                        },
+                      ]"
+                    >
+                      {{ n % 1 === 0 ? n.toFixed(0) : '' }}
+                    </div>
+                  </div>
                 </div>
                 <div class="page-background">
                   <div class="page">
@@ -129,6 +189,8 @@ import WindowButton from '@/components/ms_word/WindowButton.vue';
 import EditorDropdown from '@/components/ms_word/EditorDropdown.vue';
 import EditorButton from '@/components/ms_word/EditorButton.vue';
 import WordIcon from '@/components/ms_word/WordIcon.vue';
+import WindowMenu, { WindowMenuItem } from '@/components/ms_word/WindowMenu.vue';
+import _ from 'underscore';
 
 export default Vue.extend({
   components: {
@@ -136,6 +198,7 @@ export default Vue.extend({
     EditorDropdown,
     EditorButton,
     WordIcon,
+    WindowMenu,
   },
 
   data() {
@@ -144,7 +207,41 @@ export default Vue.extend({
       alignCenterPressed: false,
       alignRightPressed: false,
       justifyPressed: false,
+      fileMenuOpen: false,
+      editMenuOpen: false,
+      viewMenuOpen: false,
+      insertMenuOpen: false,
+      formatMenuOpen: false,
+      toolsMenuOpen: false,
+      tableMenuOpen: false,
+      windowMenuOpen: false,
+      helpMenuOpen: false,
     };
+  },
+
+  computed: {
+    // TODO: extract; this component shouldn't know about the site as a whole
+    windowMenuItems(): WindowMenuItem[] {
+      return [
+        { label: "Home", shortcut: "Alt+H", action: () => this.$router.push({ name: "Home" }) },
+        // { label: "Info", shortcut: "Alt+I", action: () => this.$router.push({ name: "Info" }) },
+        { label: "Hotels", shortcut: "Alt+O", action: () => this.$router.push({ name: "Hotels" }) },
+        { label: "Us", shortcut: "Alt+U", action: () => this.$router.push({ name: "Us" }) },
+        { label: "Map", shortcut: "Alt+M", action: () => this.$router.push({ name: "Map" }) },
+      ];
+    },
+
+    someMenuOpen(): boolean {
+      return this.fileMenuOpen
+        || this.editMenuOpen
+        || this.viewMenuOpen
+        || this.insertMenuOpen
+        || this.formatMenuOpen
+        || this.toolsMenuOpen
+        || this.tableMenuOpen
+        || this.windowMenuOpen
+        || this.helpMenuOpen;
+    },
   },
 
   watch: {
@@ -186,12 +283,87 @@ export default Vue.extend({
       }
     },
 
+    fileMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'file' });
+    },
+
+    editMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'edit' });
+    },
+
+    viewMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'view' });
+    },
+
+    insertMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'insert' });
+    },
+
+    formatMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'format' });
+    },
+
+    toolsMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'tools' });
+    },
+
+    tableMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'table' });
+    },
+
+    windowMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'window' });
+    },
+
+    helpMenuOpen(newVal: boolean, _oldVal: boolean): void {
+      if (newVal) this.closeAllMenus({ except: 'help' });
+    },
+
+  },
+
+  methods: {
+    // TODO: extract; this component shouldn't know about the site as a whole
+    onKeydown(event: KeyboardEvent): void {
+      if (event.altKey) {
+        const shortcuts = {
+          KeyH: "Home",
+          KeyI: "Info",
+          KeyO: "Hotels",
+          KeyU: "Us",
+          KeyM: "Map",
+        };
+        const routeName = shortcuts[event.code as keyof typeof shortcuts];
+        if (routeName) {
+          event.preventDefault();
+          this.$router.push({ name: routeName });
+        }
+      }
+    },
+
+    closeAllMenus({ except }: { except?: 'file' | 'edit' | 'view' | 'insert' | 'format' | 'tools' | 'table' | 'window' | 'help' } = {}): void {
+      if (except !== 'file') this.fileMenuOpen = false;
+      if (except !== 'edit') this.editMenuOpen = false;
+      if (except !== 'view') this.viewMenuOpen = false;
+      if (except !== 'insert') this.insertMenuOpen = false;
+      if (except !== 'format') this.formatMenuOpen = false;
+      if (except !== 'tools') this.toolsMenuOpen = false;
+      if (except !== 'table') this.tableMenuOpen = false;
+      if (except !== 'window') this.windowMenuOpen = false;
+      if (except !== 'help') this.helpMenuOpen = false;
+    },
+
+    range(...args: Parameters<typeof _.range>): number[] {
+      return _.range(...args);
+    },
   },
 });
 </script>
 
 <style lang="scss">
 @import "@/styles/colors";
+@import "@/styles/breakpoints";
+
+$page-max-width: 1024px;
 
 .microsoft-word {
   font-family: Arial, Helvetica, sans-serif;
@@ -223,6 +395,10 @@ export default Vue.extend({
     // line-height: 2em;
     // height: 100%;
 
+    @include media-breakpoint-down(sm) {
+      font-size: 11px;
+    }
+
     &.menu-bar {
       .close-container {
         flex-grow: 1;
@@ -231,6 +407,12 @@ export default Vue.extend({
         align-items: center;
       }
     }
+
+    // &.actions-bar, &.formatting-bar {
+    //   overflow: hidden;
+    //   flex-wrap: wrap;
+    //   height: calc(2em + 0.4em);
+    // }
   }
 
   .drag-indicator {
@@ -258,16 +440,16 @@ export default Vue.extend({
     border-bottom: 1px solid $ms-bg-window-light;
   }
 
-  .menu-item {
-    display: inline-block;
-    padding: 0 0.5em;
-    font-size: 12px;
-    // padding-right: 1em;
+  // .menu-item {
+  //   display: inline-block;
+  //   padding: 0 0.5em;
+  //   font-size: 12px;
+  //   // padding-right: 1em;
 
-    &::first-letter {
-      text-decoration: underline;
-    }
-  }
+  //   &::first-letter {
+  //     text-decoration: underline;
+  //   }
+  // }
 
   .window-container {
     position: absolute;
@@ -317,6 +499,7 @@ export default Vue.extend({
           display: flex;
           justify-content: flex-start;
           align-items: center;
+          white-space: nowrap;
 
           .application-icon {
             margin-right: 0.25em;
@@ -377,6 +560,10 @@ export default Vue.extend({
                 // border-right: 1px solid $ms-bg-window-shadow;
                 border-bottom: 1px solid $ms-bg-window-light;
 
+                @include media-breakpoint-down(sm) {
+                  display: none;
+                }
+
                 .tab-control-inner {
                   position: relative;
                   width: 100%;
@@ -401,33 +588,107 @@ export default Vue.extend({
               .horizontal-ruler {
                 position: absolute;
                 top: 5px;
-                // left: 24px;
-                left: 48px;
+                // left: 48px;
+                left: calc(48px + 50%);
                 height: 13px;
                 line-height: 13px;
                 width: calc(100% - 72px);
-                // background-color: #fff;
+                max-width: $page-max-width;
+                // width: 100%;
+                transform: translateX(calc(-50% - 48px));
+                margin-left: 12px;
+                // margin: 0 auto;
+
+                @include media-breakpoint-down(sm) {
+                  // left: calc(12px + 50%);
+                  left: 50%;
+                  // width: calc(100% - 24px);
+                  width: 100%;
+                  // transform: translateX(calc(-50% - 12px));
+                  transform: translateX(-50%);
+                  margin-left: 0;
+                }
 
                 .measure {
-                  display: inline-block;
+                  // display: inline-block;
+                  position: absolute;
                   height: 100%;
+                  // font-family: Courier, monospace;
+                  font-size: 8px;
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-evenly;
+                  align-items: center;
+                  flex-wrap: nowrap;
 
                   &.measure-left {
+                    left: 0;
                     width: calc(100% * (0.75 / 8.5));
+                    // width: calc((100% * (0.75 / 8.5)) - 24px);
                     background-color: $ms-bg-window-shadow;
                   }
 
                   &.measure-center {
+                    left: calc(100% * (0.75 / 8.5));
                     width: calc(100% * (7 / 8.5));
                     background-color: $ms-bg-window-light;
+                    border-left: 3px solid $ms-bg-window-primary;
+                    border-right: 3px solid $ms-bg-window-primary;
                   }
 
                   &.measure-right {
+                    left: calc(100% * (7.75 / 8.5));
                     width: calc(100% * (0.75 / 8.5));
                     background-color: $ms-bg-window-shadow;
                   }
-                }
 
+                  // @include media-breakpoint-down(sm) {
+                  //   &.measure-left {
+                  //     width: calc((100% * (0.75 / 8.5)) - 24px);
+                  //   }
+                  //   &.measure-center {
+                  //     left: calc((100% * (0.75 / 8.5)) - 24px);
+                  //   }
+                  //   &.measure-right {
+                  //     left: calc((100% * (7.75 / 8.5)) - 24px);
+                  //   }
+                  // }
+
+                  .measure-marker {
+                    text-align: center;
+
+                    &.inch-eighth {
+                      height: 2px;
+                      width: 1px;
+                      border-right: 1px solid $ms-bg-window-dark;
+                    }
+
+                    &.inch-half {
+                      height: 4px;
+                      width: 1px;
+                      border-right: 1px solid $ms-bg-window-dark;
+                    }
+                  }
+
+                  .ruler-tab {
+                    position: absolute;
+                    right: -7px;
+                    width: 11px;
+                    z-index: 100;
+
+                    &.ruler-tab-start {
+                      height: 24px;
+                      top: -4px;
+                      background-image: url('~@/assets/ms_word_icons/ruler_tab_start.png');
+                    }
+
+                    &.ruler-tab-stop {
+                      height: 10px;
+                      bottom: -1px;
+                      background-image: url('~@/assets/ms_word_icons/ruler_tab_stop.png');
+                    }
+                  }
+                }
               }
 
               .page-background {
@@ -438,22 +699,39 @@ export default Vue.extend({
                 height: calc(100% - 24px);
                 background-color: $ms-bg-window-shadow;
                 overflow: scroll;
+                padding: 16px 24px 0px 24px;
+
+                @include media-breakpoint-down(sm) {
+                  padding: 16px 0px 0px 0px;
+                  left: 0px;
+                  width: 100%;
+                }
 
                 .page {
+                  position: relative;
+                  max-width: $page-max-width;
                   font-family: serif;
                   min-height: 100%;
-                  margin: 16px 24px 0 24px;
+                  // margin: 16px 24px 0 24px;
+                  // margin: 16px 24px -24px 24px;
+                  margin: 0 auto -24px auto;
                   background-color: #fff;
                   border: 1px solid $ms-bg-window-dark;
                   border-bottom: 0;
                   box-shadow: 2px 2px 0px 0px $ms-bg-window-dark;
-                  padding-left: calc(100% * (0.75 / 8.5));
-                  padding-right: calc(100% * (0.75 / 8.5));
-                  padding-top: calc((100vw - 72px) * (1 / 8.5));
+                  padding-left: min(calc(#{$page-max-width * (0.75 / 8.5)}), calc(100% * (0.75 / 8.5)));
+                  padding-right: min(calc(#{$page-max-width * (0.75 / 8.5)}), calc(100% * (0.75 / 8.5)));
+                  padding-top: min(calc(#{$page-max-width * (1 / 8.5)}), calc((100vw - 72px) * (1 / 8.5)));
+                  padding-bottom: min(calc(#{$page-max-width * (1 / 8.5)}), calc((100vw - 72px) * (1 / 8.5)));
                   image-rendering: auto;
                   font-smooth: auto;
                   -webkit-font-smoothing: auto;
                   -moz-osx-font-smoothing: auto;
+
+                  @include media-breakpoint-down(sm) {
+                    border-left: 0;
+                    border-right: 0;
+                  }
 
                   a {
                     color: blue;
