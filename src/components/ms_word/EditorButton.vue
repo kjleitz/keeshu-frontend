@@ -3,11 +3,17 @@
     :class="['editor-button', { appended, pressed: localPressed, disabled }]"
     :style="{ width }"
     tabindex="0"
+    @click="onClick"
+  >
+  <!-- <div
+    :class="['editor-button', { appended, pressed: localPressed, disabled }]"
+    :style="{ width }"
+    tabindex="0"
     @mousedown="onMouseDown"
     @touchstart="onMouseDown"
     @mouseup="onMouseUp"
     @touchend="onMouseUp"
-  >
+  > -->
     <WordIcon :icon="icon" class="editor-button-icon" />
   </div>
 </template>
@@ -71,22 +77,27 @@ export default Vue.extend({
   },
 
   methods: {
-    onMouseDown(): void {
-      // if (this.disabled) return;
-      // if (this.toggle) return;
-      // this.localPressed = true;
-      if (this.disabled) return;
-      if (this.toggle) {
-        this.localPressed = !this.localPressed;
-      } else {
-        this.localPressed = true;
-      }
-    },
+    // onMouseDown(): void {
+    //   // if (this.disabled) return;
+    //   // if (this.toggle) return;
+    //   // this.localPressed = true;
+    //   if (this.disabled) return;
+    //   if (this.toggle) {
+    //     this.localPressed = !this.localPressed;
+    //   } else {
+    //     this.localPressed = true;
+    //   }
+    // },
 
-    onMouseUp(): void {
+    // onMouseUp(): void {
+    //   if (this.disabled) return;
+    //   if (this.toggle) return;
+    //   this.localPressed = false;
+    // },
+
+    onClick(): void {
       if (this.disabled) return;
-      if (this.toggle) return;
-      this.localPressed = false;
+      if (this.toggle) this.localPressed = !this.localPressed;
     },
   },
 });
@@ -121,7 +132,7 @@ export default Vue.extend({
     text-align: center;
   }
 
-  &.pressed {
+  &.pressed, &:active:not(.disabled) {
     background-color: #dfdfdf;
     border-top: 1px solid $ms-bg-window-shadow;
     border-left: 1px solid $ms-bg-window-shadow;

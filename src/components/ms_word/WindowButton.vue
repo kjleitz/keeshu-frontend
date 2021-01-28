@@ -1,11 +1,16 @@
 <template>
-  <div
+  <!-- <div
     :class="['window-button', { pressed: localPressed }]"
     tabindex="0"
     @mousedown="onMouseDown"
     @touchstart="onMouseDown"
     @mouseup="onMouseUp"
     @touchend="onMouseUp"
+  > -->
+  <div
+    :class="['window-button', { pressed: localPressed, disabled }]"
+    tabindex="0"
+    @click="$emit('click')"
   >
     <div class="window-button-inner">
       <WordIcon :icon="icon" class="window-button-icon"/>
@@ -33,6 +38,11 @@ export default Vue.extend({
       type: Boolean,
       default: false,
     },
+
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -51,16 +61,16 @@ export default Vue.extend({
     },
   },
 
-  methods: {
-    onMouseDown(): void {
-      this.localPressed = true;
-    },
+  // methods: {
+  //   onMouseDown(): void {
+  //     this.localPressed = true;
+  //   },
 
-    onMouseUp(): void {
-      this.localPressed = false;
-      this.$emit('click');
-    },
-  },
+  //   onMouseUp(): void {
+  //     this.localPressed = false;
+  //     this.$emit('click');
+  //   },
+  // },
 });
 </script>
 
@@ -81,7 +91,7 @@ export default Vue.extend({
   outline: none;
   cursor: pointer;
 
-  &.pressed {
+  &.pressed, &:active:not(.disabled) {
     border-top: 1px solid $ms-bg-window-dark;
     border-left: 1px solid $ms-bg-window-dark;
     border-right: 1px solid $ms-bg-window-light;

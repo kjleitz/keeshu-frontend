@@ -45,59 +45,59 @@
           </div>
         </div>
         <div class="actions-bar box-chamfer tool-bar">
-          <span class="drag-indicator"></span>
+          <div class="drag-indicator"></div>
           <EditorButton icon="new" />
           <EditorButton icon="open" />
           <EditorButton icon="save" />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton icon="print" />
           <EditorButton icon="find" />
           <EditorButton icon="spellCheck" />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton icon="cutDisabled" disabled />
           <EditorButton icon="copyDisabled" disabled />
           <EditorButton icon="paste" />
           <EditorButton icon="paint" />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton icon="undoDisabled" disabled />
           <EditorButton icon="dropdownDisabled" disabled appended />
           <EditorButton icon="redoDisabled" disabled />
           <EditorButton icon="dropdownDisabled" disabled appended />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton icon="link" />
           <EditorButton icon="borders" />
           <EditorButton icon="table" />
           <EditorButton icon="excelTable" />
           <EditorButton icon="columns" />
           <EditorButton icon="wordArt" />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton icon="paragraph" />
           <EditorDropdown value="100%"/>
           <EditorButton icon="help" />
         </div>
         <div class="formatting-bar box-chamfer tool-bar">
-          <span class="drag-indicator"></span>
+          <div class="drag-indicator"></div>
           <EditorDropdown value="Normal" whitespace="3.5em" />
           <EditorDropdown value="Times New Roman" whitespace="0.5em" />
           <EditorDropdown value="12" whitespace="0.75em" />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <!-- <EditorButton icon="bold" width="20px" toggle />
           <EditorButton icon="italic" width="20px" toggle />
           <EditorButton icon="underline" width="20px" toggle /> -->
           <EditorButton icon="bold" width="22px" toggle />
           <EditorButton icon="italic" width="22px" toggle />
           <EditorButton icon="underline" width="22px" toggle />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton :pressed.sync="alignLeftPressed" icon="alignLeft" toggle />
           <EditorButton :pressed.sync="alignCenterPressed" icon="alignCenter" toggle />
           <EditorButton :pressed.sync="alignRightPressed" icon="alignRight" toggle />
           <EditorButton :pressed.sync="justifyPressed" icon="justify" toggle />
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton icon="orderedList"/>
           <EditorButton icon="unorderedList"/>
           <EditorButton icon="outdent"/>
           <EditorButton icon="indent"/>
-          <span class="item-divider"></span>
+          <div class="item-divider"></div>
           <EditorButton icon="borderControl"/>
           <EditorButton icon="dropdown" appended disabled />
           <EditorButton icon="lineColor"/>
@@ -386,37 +386,55 @@ $page-max-width: 1024px;
     font-size: 12px;
     position: relative;
     // padding: 0.2em 0.1em;
-    padding: 0.2em calc(0.2em - 1px) 0.2em 0.2em;
+    // padding: 0.2em calc(0.2em - 1px) 0.2em 0.2em;
     display: flex;
     justify-content: flex-start;
-    align-items: stretch;
+    // align-items: stretch;
+    align-items: center;
+    background-color: $ms-bg-window-primary;
     // width: 100%;
     // height: 2em;
     // line-height: 2em;
     // height: 100%;
+    // height: calc(2em + 0.4em - 2px);
+    height: calc(2em + 0.4em - 2px);
 
-    @include media-breakpoint-down(sm) {
-      font-size: 11px;
-    }
+    // > * {
+    //   margin-top: 0.2em;
+    //   margin-bottom: 0.2em;
+    // }
+    overflow: hidden;
+    flex-wrap: wrap;
 
     &.menu-bar {
+      // @include media-breakpoint-down(sm) {
+      //   font-size: 11px;
+      // }
+      overflow: visible;
+      flex-wrap: nowrap;
+
       .close-container {
         flex-grow: 1;
         display: flex;
         justify-content: flex-end;
         align-items: center;
+        padding-right: 1px;
       }
     }
 
     // &.actions-bar, &.formatting-bar {
     //   overflow: hidden;
     //   flex-wrap: wrap;
-    //   height: calc(2em + 0.4em);
+    //   // margin-bottom: 1rem;
+
+    //   // > * {
+    //   //   margin-bottom: 1em;
+    //   // }
     // }
   }
 
   .drag-indicator {
-    display: inline-block;
+    // display: inline-block;
     // width: 0.2em;
     width: 3px;
     // margin-right: 0.5em;
@@ -427,10 +445,14 @@ $page-max-width: 1024px;
     border-left: 1px solid $ms-bg-window-light;
     border-right: 1px solid $ms-bg-window-shadow;
     border-bottom: 1px solid $ms-bg-window-shadow;
+    flex-shrink: 0;
+    flex-grow: 0;
+    height: calc(100% - 4px);
+    margin: 2px;
   }
 
   .item-divider {
-    display: inline-block;
+    // display: inline-block;
     width: 2px;
     margin: 0 0.25em;
     background-color: $ms-bg-window-primary;
@@ -438,6 +460,9 @@ $page-max-width: 1024px;
     border-left: 1px solid $ms-bg-window-shadow;
     border-right: 1px solid $ms-bg-window-light;
     border-bottom: 1px solid $ms-bg-window-light;
+    flex-shrink: 0;
+    flex-grow: 0;
+    height: calc(100% - 4px);
   }
 
   // .menu-item {

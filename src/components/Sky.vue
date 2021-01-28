@@ -394,7 +394,7 @@ export default Vue.extend({
     nightStyles(): Partial<CSSStyleDeclaration> {
       return {
         ...this.skyStyles,
-        zIndex: '-100',
+        // zIndex: '-100',
         // So that the Milky Way isn't at a regular angle...
         transform: `translate(-50%, -50%) rotate(${this.starMapDegrees.toFixed(2)}deg`,
       };
@@ -404,7 +404,7 @@ export default Vue.extend({
       return {
         // ...this.skyStyles,
         backgroundColor: this.sunlightRgba,
-        zIndex: '-99',
+        // zIndex: '-99',
       };
     },
 
@@ -494,9 +494,9 @@ export default Vue.extend({
     },
 
     addIntervals(): void {
-      // this.dayElapsedPercent = calcDayElapsed();
-      // this.lunarMonthElapsedPercent = calcLunarMonthElapsed();
-      // this.yearElapsedPercent = calcYearElapsed();
+      this.dayElapsedPercent = calcDayElapsed();
+      this.lunarMonthElapsedPercent = calcLunarMonthElapsed();
+      this.yearElapsedPercent = calcYearElapsed();
 
       dayElapsedInterval = window.setInterval(() => {
         if (this.debug) return;
@@ -562,6 +562,7 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
+    // z-index: -99;
   }
 
   .night {
@@ -573,6 +574,7 @@ export default Vue.extend({
     background-position: center;
     background-size: cover;
     background-repeat: repeat;
+    z-index: -100;
 
     #star-canvas {
       position: absolute;
