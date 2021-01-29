@@ -11,7 +11,9 @@
       :style="titleStyles"
       tabindex="0"
       class="our-names-obviously"
-      @keyup.ctrl.d.prevent="debug = !debug"
+      @keyup.ctrl.d.prevent.stop="debug = !debug"
+      @keyup.meta.d.prevent.stop="debug = !debug"
+      @keyup.alt.d.prevent.stop="debug = !debug"
       @keyup.left.exact.prevent="fontIndex -= 1"
       @keyup.right.exact.prevent="fontIndex += 1"
     >
@@ -23,12 +25,16 @@
       <div class="tagline">
         (a wedding)
       </div>
-      <div class="info info-date">
+      <div class="info">
+        August 14<sup>th</sup>, 2021<br>
+        Lord Thompson Manor, Connecticut
+      </div>
+      <!-- <div class="info info-date">
         (happening on August 14<sup>th</sup>, 2021)
       </div>
       <div class="info info-location">
         (at Lord Thompson Manor in Connecticut)
-      </div>
+      </div> -->
       <!-- <div class="info info-addendum">
         (for the lazy)
       </div> -->
@@ -368,20 +374,27 @@ export default Vue.extend({
     }
 
     .info {
-      &.info-date {
-        line-height: $info-date-line-height;
-        font-size: $info-date-font-size;
-      }
+      $info-font-size: max(1rem, min(2.5vh, 2.5vw));
+      font-family: "Montserrat", sans-serif;
+      font-size: $info-font-size;
+      line-height: calc(1.5 * #{$info-font-size});
+      text-align: center;
+      margin: 2rem auto 1rem auto;
 
-      &.info-location {
-        line-height: $info-location-line-height;
-        font-size: $info-location-font-size;
-      }
+      // &.info-date {
+      //   line-height: $info-date-line-height;
+      //   font-size: $info-date-font-size;
+      // }
 
-      &.info-addendum {
-        line-height: $info-addendum-line-height;
-        font-size: $info-addendum-font-size;
-      }
+      // &.info-location {
+      //   line-height: $info-location-line-height;
+      //   font-size: $info-location-font-size;
+      // }
+
+      // &.info-addendum {
+      //   line-height: $info-addendum-line-height;
+      //   font-size: $info-addendum-font-size;
+      // }
     }
   }
 }
