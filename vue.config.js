@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/explicit-function-return-type */
+const path = require("path");
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { IgnorePlugin } = require('webpack');
+const PrerenderSpaPlugin = require('prerender-spa-plugin');
+const Renderer = PrerenderSpaPlugin.PuppeteerRenderer;
 
 const envToBool = (envVarName, defaultValue = false) => {
   const rawValue = (process.env[envVarName] || '').toLowerCase();
@@ -12,6 +15,14 @@ const webpackPlugins = [
   new IgnorePlugin({
     resourceRegExp: /^\.\/locale$/,
     contextRegExp: /moment$/,
+  }),
+  new PrerenderSpaPlugin({
+    staticDir: path.join(__dirname, 'dist'),
+    routes: ['/', '/hotels', '/info', '/map', '/us'],
+    renderer: new Renderer({
+      renderAfterElementExists: '#app',
+      // headless: true,
+    }),
   }),
 ];
 
