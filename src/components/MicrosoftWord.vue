@@ -553,7 +553,9 @@ $page-max-width: 1024px;
         border-right: 1px solid $ms-bg-window-light;
 
         .editor-area-inner {
-          position: relative;
+          position: absolute;
+          top: 0;
+          left: 0;
           height: 100%;
           width: 100%;
           border-top: 1px solid $ms-bg-window-shadow;
