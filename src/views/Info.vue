@@ -14,38 +14,38 @@
       <p>
         <strong>Dates</strong>
         <ul>
-          <li>
+          <!-- <li>
             <em>Rehearsal dinner:</em> 8/13/2021
-          </li>
+          </li> -->
           <li>
             <em>Ceremony & reception:</em> 8/14/2021
           </li>
-          <li>
+          <!-- <li>
             <em>Farewell brunch:</em> 8/15/2021
-          </li>
+          </li> -->
         </ul>
       </p>
       <p>
         <strong>Location</strong>
         <ul>
-          <li>
+          <!-- <li>
             <em>Rehearsal dinner: </em>
             <a href="http://www.lordthompsonmanor.com/">Lord Thompson Manor</a>
             -
             <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>
-          </li>
+          </li> -->
           <li>
             <em>Ceremony & reception: </em>
             <a href="http://www.lordthompsonmanor.com/">Lord Thompson Manor</a>
             -
             <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>
           </li>
-          <li>
+          <!-- <li>
             <em>Farewell brunch: </em>
             <a href="http://www.lordthompsonmanor.com/">Lord Thompson Manor</a>
             -
             <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>
-          </li>
+          </li> -->
         </ul>
       </p>
     </MicrosoftWord>

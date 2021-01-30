@@ -129,7 +129,7 @@
              It didn't take six years for me to know, though...
           </p>
           <p>
-             ...it took 'til I got to the top of those stairs.
+             It took 'til I got to the top of those stairs.
           </p>
         </article>
       </section>
