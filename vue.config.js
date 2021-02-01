@@ -11,19 +11,25 @@ const envToBool = (envVarName, defaultValue = false) => {
   return ['true', 't', 1].includes(rawValue);
 };
 
+const envPlugins = process.env.NODE_ENV !== 'production'
+  ? []
+  : [
+      new PrerenderSpaPlugin({
+        staticDir: path.join(__dirname, 'dist'),
+        routes: ['/', '/hotels', '/info', '/map', '/us'],
+        renderer: new Renderer({
+          renderAfterElementExists: '#app',
+          // headless: true,
+        }),
+      }),
+    ];
+
 const webpackPlugins = [
   new IgnorePlugin({
     resourceRegExp: /^\.\/locale$/,
     contextRegExp: /moment$/,
   }),
-  new PrerenderSpaPlugin({
-    staticDir: path.join(__dirname, 'dist'),
-    routes: ['/', '/hotels', '/info', '/map', '/us'],
-    renderer: new Renderer({
-      renderAfterElementExists: '#app',
-      // headless: true,
-    }),
-  }),
+  ...envPlugins,
 ];
 
 if (envToBool('BUNDLE_ANALYZER')) webpackPlugins.push(new BundleAnalyzerPlugin());

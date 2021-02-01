@@ -12,8 +12,7 @@
       tabindex="0"
       class="our-names-obviously"
       @keyup.ctrl.d.prevent.stop="debug = !debug"
-      @keyup.meta.d.prevent.stop="debug = !debug"
-      @keyup.alt.d.prevent.stop="debug = !debug"
+      @keyup.d.exact="debug = !debug"
       @keyup.left.exact.prevent="fontIndex -= 1"
       @keyup.right.exact.prevent="fontIndex += 1"
     >
@@ -380,6 +379,7 @@ export default Vue.extend({
       line-height: calc(1.5 * #{$info-font-size});
       text-align: center;
       margin: 2rem auto 1rem auto;
+      text-shadow: 2px 1px 3px rgba(0, 0, 0, 1);
 
       // &.info-date {
       //   line-height: $info-date-line-height;

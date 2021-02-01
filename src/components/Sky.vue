@@ -78,6 +78,7 @@ const stars = _.range(1000).map((): Star => ({
   x: Math.random(),
   y: Math.random(),
   // size: Math.floor(Math.random() * 5) + 1,
+  // size: Math.floor(Math.random() * 4) + 1,
   size: Math.floor(Math.random() * 4) + 1,
   brightness: Math.random(),
 }));

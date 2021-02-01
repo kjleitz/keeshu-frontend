@@ -1,7 +1,7 @@
 <template>
   <div class="hotel-item">
     <div class="title-container">
-      <a class="title" :href="hotel.website">
+      <a class="title" :href="hotel.website" target="_blank" rel="noreferrer noopener">
         <b-icon icon="link45deg" class="link-icon"></b-icon>
         {{ hotel.title }}
       </a>

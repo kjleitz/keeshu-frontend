@@ -11,7 +11,11 @@
         <MainNav class="main-nav"/>
       </div>
     </header>
-    <div class="hero"></div>
+    <div class="hero">
+      <div tabindex="0" :class="['scroll-arrow-container', { scrolled }]" @click="scrollDown">
+        <b-icon icon="chevron-compact-down" class="scroll-arrow"></b-icon>
+      </div>
+    </div>
 
     <b-container fluid="lg" class="story pt-4 px-0 pb-4">
       <section class="story-row">
@@ -147,10 +151,43 @@
 <script lang="ts">
 import Vue from 'vue';
 import MainNav from '@/components/MainNav.vue';
+import _ from 'underscore';
+
+let syncScrolled = _.noop;
 
 export default Vue.extend({
   components: {
     MainNav,
+  },
+
+  data() {
+    return {
+      scrolled: false,
+    };
+  },
+
+  mounted(): void {
+    syncScrolled = _.throttle(() => {
+      this.scrolled = window.scrollY > 100;
+    }, 300);
+
+    syncScrolled();
+    window.addEventListener('scroll', syncScrolled);
+  },
+
+  beforeDestroy(): void {
+    window.removeEventListener('scroll', syncScrolled);
+  },
+
+  methods: {
+    scrollDown(): void {
+      // window.scrollTo(0, window.innerHeight);
+      window.scrollTo({
+        left: 0,
+        top: window.innerHeight,
+        behavior: 'smooth',
+      });
+    },
   },
 });
 </script>
@@ -170,14 +207,18 @@ $title-area-font-size-sm: 2rem;
 $title-area-line-height-sm: $title-area-font-size-sm;
 $title-area-height-sm: $title-area-padding-top-sm + $title-area-padding-bottom-sm + $title-area-line-height-sm;
 
-$nav-padding-top: 0.5rem;
-$nav-padding-bottom: 0.5rem;
+// $nav-padding-top: 0.5rem;
+// $nav-padding-bottom: 0.5rem;
+$nav-padding-top: 0.75rem;
+$nav-padding-bottom: 0.75rem;
 $nav-font-size: 1rem;
 $nav-line-height: $nav-font-size;
 $nav-height: $nav-padding-top + $nav-padding-bottom + $nav-line-height;
 
-$nav-padding-top-sm: 0.5rem;
-$nav-padding-bottom-sm: 0.5rem;
+// $nav-padding-top-sm: 0.5rem;
+// $nav-padding-bottom-sm: 0.5rem;
+$nav-padding-top-sm: 0.75rem;
+$nav-padding-bottom-sm: 0.75rem;
 $nav-font-size-sm: 1rem;
 $nav-line-height-sm: $nav-font-size-sm;
 $nav-height-sm: $nav-padding-top-sm + $nav-padding-bottom-sm + $nav-line-height-sm;
@@ -225,7 +266,7 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
     justify-content: flex-end;
     align-items: stretch;
     background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.8);
+    // box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(3px);
     z-index: 100;
 
@@ -293,6 +334,7 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
   }
 
   .hero {
+    position: relative;
     width: 100%;
     height: 100vh;
     margin-top: -1 * $title-and-nav-height;
@@ -303,6 +345,41 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
 
     @include media-breakpoint-down(sm) {
       margin-top: -1 * $title-and-nav-height-sm;
+    }
+
+    .scroll-arrow-container {
+      $scroll-arrow-container-size: max(10vw, 10vh);
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: $scroll-arrow-container-size;
+      height: $scroll-arrow-container-size;
+      line-height: $scroll-arrow-container-size;
+      // color: white;
+      color: rgba(255, 255, 255, 0.8);
+      opacity: 1;
+      transition: opacity 0.5s;
+      outline: none;
+      cursor: pointer;
+
+      &.scrolled {
+        opacity: 0;
+      }
+
+      .scroll-arrow {
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+        // animation-timing-function: cubic-bezier(0.25, 0, 1, 0.75);
+        animation-timing-function: ease-in-out;
+        animation-name: bounce;
+
+        @keyframes bounce {
+          from { transform: translateY(0px); }
+          to { transform: translateY(10px); }
+        }
+      }
     }
   }
 
