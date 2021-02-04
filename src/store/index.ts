@@ -6,6 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     webpSupported: false,
+    inPrerender: !!(window as any).__PRERENDER_INJECTED,
   },
 
   mutations: {

@@ -13,9 +13,9 @@
     <b-nav-item :to="{ name: 'Home' }">
       Home
     </b-nav-item>
-    <!-- <b-nav-item :to="{ name: 'Info' }">
+    <b-nav-item v-if="debug" :to="{ name: 'Info' }">
       Info
-    </b-nav-item> -->
+    </b-nav-item>
     <b-nav-item :to="{ name: 'Hotels' }">
       Hotel<span class="hotels-last-letter">s</span>
     </b-nav-item>
@@ -29,20 +29,25 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import Vue from 'vue';
 
 export default Vue.extend({
-  // props: {
-  //   linkStyles: {
-  //     type: Object as PropType<Partial<CSSStyleDeclaration>>,
-  //     default: (): Partial<CSSStyleDeclaration> => ({}),
-  //   },
+  props: {
+    debug: {
+      type: Boolean,
+      default: false,
+    },
 
-  //   linkActiveStyles: {
-  //     type: Object as PropType<Partial<CSSStyleDeclaration>>,
-  //     default: (): Partial<CSSStyleDeclaration> => ({}),
-  //   },
-  // },
+    // linkStyles: {
+    //   type: Object as PropType<Partial<CSSStyleDeclaration>>,
+    //   default: (): Partial<CSSStyleDeclaration> => ({}),
+    // },
+
+    // linkActiveStyles: {
+    //   type: Object as PropType<Partial<CSSStyleDeclaration>>,
+    //   default: (): Partial<CSSStyleDeclaration> => ({}),
+    // },
+  },
 });
 </script>
 

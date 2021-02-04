@@ -41,6 +41,7 @@ module.exports = {
     "@typescript-eslint/triple-slash-reference": 2,
     "@typescript-eslint/type-annotation-spacing": 0,
     "@typescript-eslint/unbound-method": 0,
+    "node/no-callback-literal": 0,
     "arrow-body-style": 0,
     "class-methods-use-this": 0,
     "comma-dangle": [2, "always-multiline"],

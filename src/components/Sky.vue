@@ -4,8 +4,8 @@
       <canvas ref="starCanvas" id="star-canvas"></canvas>
     </div>
     <div :style="dayStyles" class="day"></div>
-    <div class="moon-aura"></div>
-    <div class="moon-surface">
+    <div :class="['moon-aura', { revealed: celestialReveal }]"></div>
+    <div :class="['moon-surface', { revealed: celestialReveal }]">
       <div :class="['moon-surface-left-container', { waxing, waning }]">
         <div class="moon-surface-left"></div>
       </div>
@@ -14,9 +14,9 @@
       </div>
       <div class="moon-surface-curve"></div>
     </div>
-    <div class="sun-corona"></div>
-    <div class="sun-chromosphere"></div>
-    <div class="sun-photosphere"></div>
+    <div :class="['sun-corona', { revealed: celestialReveal }]"></div>
+    <div :class="['sun-chromosphere', { revealed: celestialReveal }]"></div>
+    <div :class="['sun-photosphere', { revealed: celestialReveal }]"></div>
     <canvas ref="cloudCanvas" id="cloud-canvas"></canvas>
     <slot></slot>
     <div v-if="debug" class="debug-controls">
@@ -43,9 +43,11 @@
 </template>
 
 <script lang="ts">
+import { loadImage } from '@/lib/images';
 import { calcSunlightColorValue, calcSunlightPercent } from '@/lib/sky/chroma';
 import { calcDayElapsed, calcLunarMonthElapsed, calcYearElapsed, PERCENT_YEAR_ELAPSED_WHEN_MOON_IS_HORNY } from '@/lib/sky/chrono';
 import { randomBetween } from '@/lib/utils';
+import store from '@/store';
 import Cloud, { Puff } from '@/types/Cloud';
 import Star from '@/types/Star';
 import _ from 'underscore';
@@ -163,6 +165,8 @@ const updateClouds = (_timestamp: number): void => {
   }
 };
 
+let cloudsRevealed = false;
+
 const renderClouds = (timestamp: number): void => {
   if (lastRenderedCloudsAt && timestamp - lastRenderedCloudsAt < 33) return;
   lastRenderedCloudsAt = timestamp;
@@ -215,6 +219,10 @@ const renderClouds = (timestamp: number): void => {
   });
 
   updateClouds(timestamp);
+  if (!cloudsRevealed && !store.state.inPrerender) {
+    cloudsRevealed = true;
+    cloudCanvas.classList.add('revealed');
+  }
 };
 
 const startCelestialObjects = (): void => {
@@ -240,6 +248,8 @@ export default Vue.extend({
       dayElapsedPercent: calcDayElapsed(),
       yearElapsedPercent: calcYearElapsed(),
       lunarMonthElapsedPercent: calcLunarMonthElapsed(),
+      starMapImageSrc: '',
+      celestialReveal: false,
     };
   },
 
@@ -393,11 +403,19 @@ export default Vue.extend({
     },
 
     nightStyles(): Partial<CSSStyleDeclaration> {
+      const starMapStyles = !this.starMapImageSrc
+        ? {}
+        : {
+            backgroundImage: `url('${this.starMapImageSrc}')`,
+            filter: 'blur(0px)',
+          };
+
       return {
         ...this.skyStyles,
         // zIndex: '-100',
         // So that the Milky Way isn't at a regular angle...
         transform: `translate(-50%, -50%) rotate(${this.starMapDegrees.toFixed(2)}deg`,
+        ...starMapStyles,
       };
     },
 
@@ -463,6 +481,8 @@ export default Vue.extend({
       updateCloudCanvasSize();
       stopFrameLoop = false;
       startCelestialObjects();
+      this.loadStarMapImage();
+      this.celestialReveal = true;
     }, 0);
   },
 
@@ -524,18 +544,28 @@ export default Vue.extend({
     sunlightColorValue(atMidnight: number, atNoon: number): number {
       return calcSunlightColorValue(this.dayElapsedPercent, atMidnight, atNoon);
     },
+
+    loadStarMapImage(): void {
+      const qualityStarMapSrc = store.state.webpSupported
+        ? require('@/assets/starmap_square_q90_lossy.webp')
+        : require('@/assets/starmap_square.jpg');
+
+      loadImage(qualityStarMapSrc).then((image) => {
+        this.starMapImageSrc = image.src;
+      });
+    },
   },
 });
 </script>
 
 <style lang="scss">
-.no-webp .sky {
-  .night { background-image: url("~@/assets/starmap_square.jpg"); }
-}
+// .no-webp .sky {
+//   .night { background-image: url("~@/assets/starmap_square.jpg"); }
+// }
 
-.webp .sky {
-  .night { background-image: url("~@/assets/starmap_square_q90_lossy.webp"); }
-}
+// .webp .sky {
+//   .night { background-image: url("~@/assets/starmap_square_q90_lossy.webp"); }
+// }
 
 .sky {
   height: 100%;
@@ -576,6 +606,9 @@ export default Vue.extend({
     background-size: cover;
     background-repeat: repeat;
     z-index: -100;
+    background-image: url("~@/assets/starmap_square_q00_thumb_100.jpg");
+    filter: blur(10px);
+    transition: filter 0.2s;
 
     #star-canvas {
       position: absolute;
@@ -601,6 +634,12 @@ export default Vue.extend({
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
     transform: translate(-50%, -50%);
     z-index: 100;
+    transition: opacity 0.2s;
+    opacity: 0;
+
+    &.revealed {
+      opacity: 1;
+    }
   }
 
   .sun-chromosphere {
@@ -614,6 +653,12 @@ export default Vue.extend({
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.3);
     transform: translate(-50%, -50%);
     z-index: 100;
+    transition: opacity 0.2s;
+    opacity: 0;
+
+    &.revealed {
+      opacity: 1;
+    }
   }
 
   .sun-photosphere {
@@ -626,6 +671,12 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.7);
     transform: translate(-50%, -50%);
+    transition: opacity 0.2s;
+    opacity: 0;
+
+    &.revealed {
+      opacity: 1;
+    }
   }
 
   $moon-surface-size: min(10vw, 10vh);
@@ -641,6 +692,12 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.1);
     transform: translate(-50%, -50%);
+    transition: opacity 0.2s;
+    opacity: 0;
+
+    &.revealed {
+      opacity: 1;
+    }
   }
 
   .moon-surface {
@@ -652,6 +709,12 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.2);
     transform: translate(-50%, -50%) rotate(var(--moon-surface-tilt));
+    transition: opacity 0.2s;
+    opacity: 0;
+
+    &.revealed {
+      opacity: 1;
+    }
 
     .moon-surface-left-container {
       position: absolute;
@@ -710,6 +773,12 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
+    transition: opacity 0.2s;
+    opacity: 0;
+
+    &.revealed {
+      opacity: 1;
+    }
   }
 }
 </style>

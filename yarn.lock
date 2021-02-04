@@ -1657,6 +1657,11 @@
   dependencies:
     "@types/express" "*"
 
+"@types/css-font-loading-module@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.npmjs.org/@types/css-font-loading-module/-/css-font-loading-module-0.0.4.tgz#94a835e27d1af444c65cba88523533c174463d64"
+  integrity sha512-ENdXf7MW4m9HeDojB2Ukbi7lYMIuQNBHVf98dbzaiG4EEJREBd6oleVAjrLRCrp7dm6CK1mmdmU9tcgF61acbw==
+
 "@types/dompurify@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npmjs.org/@types/dompurify/-/dompurify-2.2.1.tgz#eebf3af8afe2f577a53acab9d98a3a4cb04bbbe7"

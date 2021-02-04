@@ -1,16 +1,16 @@
 <template>
   <div :style="styleVariables" class="home-view">
     <h1 class="sr-only">Home</h1>
-    <MainNav vertical/>
+    <MainNav vertical :debug="debug" :class="{ 'fonts-loaded': fontsLoaded }"/>
     <Sky :debug="debug" class="background" @day-elapsed-percent-changed="dayElapsedPercent = $event">
-      <div class="painting grass"></div>
-      <div class="painting tree"></div>
-      <div class="painting picnic-table"></div>
+      <div :style="grassStyles" class="painting grass"></div>
+      <div :style="treeStyles" class="painting tree"></div>
+      <div :style="picnicTableStyles" class="painting picnic-table"></div>
     </Sky>
     <div
       :style="titleStyles"
       tabindex="0"
-      class="our-names-obviously"
+      :class="['our-names-obviously', { 'fonts-loaded': fontsLoaded }]"
       @keyup.ctrl.d.prevent.stop="debug = !debug"
       @keyup.d.exact="debug = !debug"
       @keyup.left.exact.prevent="fontIndex -= 1"
@@ -51,6 +51,8 @@ import MainNav from '@/components/MainNav.vue';
 import Sky from '@/components/Sky.vue';
 import { calcDayElapsed } from '@/lib/sky/chrono';
 import { calcSunlightColorValue } from '@/lib/sky/chroma';
+import store from '@/store';
+import { loadImage } from '@/lib/images';
 
 const FONTS = [
   "Glass Antiqua", // first is default
@@ -92,6 +94,11 @@ export default Vue.extend({
       dayElapsedPercent: calcDayElapsed(),
       fontIndex: 0,
       debug: false,
+      treeImageSrc: '',
+      picnicTableImageSrc: '',
+      grassImageSrc: '',
+      // fontsLoaded: document.fonts ? document.fonts.status === 'loaded' : true,
+      fontsLoaded: !document.fonts,
     };
   },
 
@@ -171,6 +178,36 @@ export default Vue.extend({
       };
     },
 
+    treeStyles(): Partial<CSSStyleDeclaration> {
+      if (!this.treeImageSrc) return {};
+
+      return {
+        backgroundImage: `url('${this.treeImageSrc}')`,
+        filter: 'blur(0px)',
+        // opacity: '1',
+      };
+    },
+
+    picnicTableStyles(): Partial<CSSStyleDeclaration> {
+      if (!this.picnicTableImageSrc) return {};
+
+      return {
+        backgroundImage: `url('${this.picnicTableImageSrc}')`,
+        filter: 'blur(0px)',
+        // opacity: '1',
+      };
+    },
+
+    grassStyles(): Partial<CSSStyleDeclaration> {
+      if (!this.grassImageSrc) return {};
+
+      return {
+        backgroundImage: `url('${this.grassImageSrc}')`,
+        filter: 'blur(0px)',
+        // opacity: '1',
+      };
+    },
+
     styleVariables(): Record<string, string> {
       return {
         '--nav-font-family': `"${this.navLinkFont}", serif`,
@@ -182,60 +219,79 @@ export default Vue.extend({
   },
 
   created(): void {
-    // this.addIntervals();
+    if (document.fonts) {
+      document.fonts.ready.then(() => {
+        this.fontsLoaded = true;
+      });
+    }
   },
 
-  beforeDestroy(): void {
-    // this.removeIntervals();
-  },
-
-  beforeRouteUpdate(_to, _from, next): void {
-    // this.addIntervals();
-    next();
-  },
-
-  beforeRouteLeave(_to, _from, next): void {
-    // this.removeIntervals();
-    next();
+  mounted(): void {
+    this.loadTreeImage();
+    this.loadGrassImage();
+    this.loadPicnicTableImage();
   },
 
   methods: {
-    // removeIntervals(): void {
-    //   window.clearInterval(dayElapsedInterval);
-    // },
-
-    // addIntervals(): void {
-    //   this.dayElapsedPercent = calcDayElapsed();
-
-    //   dayElapsedInterval = window.setInterval(() => {
-    //     if (this.debug) return;
-    //     this.dayElapsedPercent = calcDayElapsed();
-    //   }, 5000);
-    // },
-
     sunlightColorValue(atMidnight: number, atNoon: number): number {
       return calcSunlightColorValue(this.dayElapsedPercent, atMidnight, atNoon);
+    },
+
+    loadTreeImage(): void {
+      if (store.state.inPrerender) return;
+
+      const qualityTreeSrc = store.state.webpSupported
+        ? require('@/assets/tree_q90_lossy.webp')
+        : require('@/assets/tree.png');
+
+      loadImage(qualityTreeSrc).then((image) => {
+        this.treeImageSrc = image.src;
+      });
+    },
+
+    loadPicnicTableImage(): void {
+      if (store.state.inPrerender) return;
+
+      const qualityPicnicTableSrc = store.state.webpSupported
+        ? require('@/assets/picnic_table_with_us_q90_lossy.webp')
+        : require('@/assets/picnic_table_with_us.png');
+
+      loadImage(qualityPicnicTableSrc).then((image) => {
+        this.picnicTableImageSrc = image.src;
+      });
+    },
+
+    loadGrassImage(): void {
+      if (store.state.inPrerender) return;
+
+      const qualityGrassSrc = store.state.webpSupported
+        ? require('@/assets/grass_q90_lossy.webp')
+        : require('@/assets/grass.png');
+
+      loadImage(qualityGrassSrc).then((image) => {
+        this.grassImageSrc = image.src;
+      });
     },
   },
 });
 </script>
 
 <style lang="scss">
-.no-webp .home-view .background {
-  .painting {
-    &.grass { background-image: url("~@/assets/grass.png"); }
-    &.picnic-table { background-image: url("~@/assets/picnic_table_with_us.png"); }
-    &.tree { background-image: url("~@/assets/tree.png"); }
-  }
-}
+// .no-webp .home-view .background {
+//   .painting {
+//     // &.grass { background-image: url("~@/assets/grass.png"); }
+//     // &.picnic-table { background-image: url("~@/assets/picnic_table_with_us.png"); }
+//     // &.tree { background-image: url("~@/assets/tree.png"); }
+//   }
+// }
 
-.webp .home-view .background {
-  .painting {
-    &.grass { background-image: url("~@/assets/grass_q90_lossy.webp"); }
-    &.picnic-table { background-image: url("~@/assets/picnic_table_with_us_q90_lossy.webp"); }
-    &.tree { background-image: url("~@/assets/tree_q90_lossy.webp"); }
-  }
-}
+// .webp .home-view .background {
+//   .painting {
+//     // &.grass { background-image: url("~@/assets/grass_q90_lossy.webp"); }
+//     // &.picnic-table { background-image: url("~@/assets/picnic_table_with_us_q90_lossy.webp"); }
+//     // &.tree { background-image: url("~@/assets/tree_q90_lossy.webp"); }
+//   }
+// }
 
 .home-view {
   position: relative;
@@ -254,6 +310,13 @@ export default Vue.extend({
 
   .main-nav {
     z-index: 1000;
+    transition: opacity 0.1s;
+    opacity: 0;
+
+    &.fonts-loaded {
+      opacity: 1;
+    }
+
     .nav-link {
       font-size: 2rem;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
@@ -283,6 +346,12 @@ export default Vue.extend({
     // width: 100%;
     z-index: -1000;
     // overflow: hidden;
+    // transition: opacity 10s;
+    // opacity: 0;
+
+    // &.sky-loaded {
+    //   opacity: 1;
+    // }
 
     .painting {
       position: absolute;
@@ -295,12 +364,18 @@ export default Vue.extend({
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+      // transition: all 1s;
+      filter: blur(10px);
+      // opacity: 0;
+      // transition: filter 0.2s;
+      transition: filter 0.2s, opacity 0.1s;
 
       &.grass {
         // NOTE: see the .webp and .no-webp variants at the top of the styles
         // background-image: url("~@/assets/grass.png");
         // background-image: url("~@/assets/grass_q90_lossy.webp");
         background-position: center left 60%;
+        background-image: url("~@/assets/grass_q00_thumb_50.png");
       }
 
       &.picnic-table {
@@ -308,6 +383,7 @@ export default Vue.extend({
         // background-image: url("~@/assets/picnic_table_with_us.png");
         // background-image: url("~@/assets/picnic_table_with_us_q90_lossy.webp");
         background-position: center left 45%;
+        background-image: url("~@/assets/picnic_table_with_us_q00_thumb_50.png");
       }
 
       &.tree {
@@ -315,6 +391,7 @@ export default Vue.extend({
         // background-image: url("~@/assets/tree.png");
         // background-image: url("~@/assets/tree_q90_lossy.webp");
         background-position: center right 45%;
+        background-image: url("~@/assets/tree_q00_thumb_50.png");
       }
     }
   }
@@ -354,6 +431,12 @@ export default Vue.extend({
     line-height: $name-line-height;
     font-family: 'Glass Antiqua', serif;
     outline: none;
+    transition: opacity 0.1s;
+    opacity: 0;
+
+    &.fonts-loaded {
+      opacity: 1;
+    }
 
     .surprise-its-a-name, .tagline, .info {
       display: inline-block;

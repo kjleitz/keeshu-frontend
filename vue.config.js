@@ -19,8 +19,17 @@ const envPlugins = process.env.NODE_ENV !== 'production'
         routes: ['/', '/hotels', '/info', '/map', '/us'],
         renderer: new Renderer({
           renderAfterElementExists: '#app',
-          // headless: true,
+          headless: true,
+          // so we can tell if we're in the prerender step
+          injectProperty: '__PRERENDER_INJECTED',
+          inject: {
+            foo: 'bar',
+          },
         }),
+        postProcess(rendered) {
+          rendered.html = rendered.html.replace(/https?:\/\/localhost:\d+/gi, '');
+          return rendered;
+        },
       }),
     ];
 
@@ -36,6 +45,7 @@ if (envToBool('BUNDLE_ANALYZER')) webpackPlugins.push(new BundleAnalyzerPlugin()
 
 module.exports = {
   lintOnSave: false,
+  publicPath: '/',
 
   devServer: {
     proxy: "http://localhost:3000",

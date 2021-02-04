@@ -11,7 +11,7 @@
         <MainNav class="main-nav"/>
       </div>
     </header>
-    <div class="hero">
+    <div :style="storyImageStyles.hero" class="hero">
       <div tabindex="0" :class="['scroll-arrow-container', { scrolled }]" @click="scrollDown">
         <b-icon icon="chevron-compact-down" class="scroll-arrow"></b-icon>
       </div>
@@ -31,12 +31,12 @@
           </p>
         </article>
         <article class="story-col">
-          <div class="story-img clearfix apple_pick_wall_sit"></div>
+          <div :style="storyImageStyles.apple_pick_wall_sit" class="story-img clearfix apple_pick_wall_sit"></div>
         </article>
       </section>
       <section class="story-row reversed">
         <article class="story-col">
-          <div class="story-img clearfix redbones_corner img-wide"></div>
+          <div :style="storyImageStyles.redbones_corner" class="story-img clearfix redbones_corner img-wide"></div>
         </article>
         <article class="story-col">
           <p>
@@ -63,7 +63,7 @@
           </p>
         </article>
         <article class="story-col">
-          <div class="story-img clearfix apple_pick_hand_hold img-wide"></div>
+          <div :style="storyImageStyles.apple_pick_hand_hold" class="story-img clearfix apple_pick_hand_hold img-wide"></div>
         </article>
       </section>
       <section class="story-row">
@@ -75,7 +75,7 @@
       </section>
       <section class="story-row reversed">
         <article class="story-col">
-          <div class="story-img clearfix redbones"></div>
+          <div :style="storyImageStyles.redbones" class="story-img clearfix redbones"></div>
         </article>
         <article class="story-col">
           <p>
@@ -121,7 +121,7 @@
           </p>
         </article>
         <article class="story-col">
-          <div class="story-img clearfix apple_pick_hand_hold_run"></div>
+          <div :style="storyImageStyles.apple_pick_hand_hold_run" class="story-img clearfix apple_pick_hand_hold_run"></div>
         </article>
       </section>
       <section class="story-row">
@@ -152,6 +152,8 @@
 import Vue from 'vue';
 import MainNav from '@/components/MainNav.vue';
 import _ from 'underscore';
+import store from '@/store';
+import { loadImage } from '@/lib/images';
 
 let syncScrolled = _.noop;
 
@@ -163,7 +165,58 @@ export default Vue.extend({
   data() {
     return {
       scrolled: false,
+      storyImages: {
+        hero: '',
+        apple_pick_wall_sit: '',
+        redbones: '',
+        redbones_corner: '',
+        apple_pick_hand_hold_run: '',
+        apple_pick_hand_hold: '',
+      },
     };
+  },
+
+  computed: {
+    storyImageStyles(): Record<'hero' | 'apple_pick_wall_sit' | 'redbones_corner' | 'apple_pick_hand_hold' | 'redbones' | 'apple_pick_hand_hold_run', Partial<CSSStyleDeclaration>> {
+      return {
+        hero: !this.storyImages.hero
+          ? {}
+          : {
+              backgroundImage: `url('${this.storyImages.hero}')`,
+              filter: 'blur(0px)',
+            },
+        apple_pick_wall_sit: !this.storyImages.apple_pick_wall_sit
+          ? {}
+          : {
+              backgroundImage: `url('${this.storyImages.apple_pick_wall_sit}')`,
+              filter: 'blur(0px)',
+            },
+        redbones: !this.storyImages.redbones
+          ? {}
+          : {
+              backgroundImage: `url('${this.storyImages.redbones}')`,
+              filter: 'blur(0px)',
+            },
+        redbones_corner: !this.storyImages.redbones_corner
+          ? {}
+          : {
+              backgroundImage: `url('${this.storyImages.redbones_corner}')`,
+              filter: 'blur(0px)',
+            },
+        apple_pick_hand_hold_run: !this.storyImages.apple_pick_hand_hold_run
+          ? {}
+          : {
+              backgroundImage: `url('${this.storyImages.apple_pick_hand_hold_run}')`,
+              filter: 'blur(0px)',
+            },
+        apple_pick_hand_hold: !this.storyImages.apple_pick_hand_hold
+          ? {}
+          : {
+              backgroundImage: `url('${this.storyImages.apple_pick_hand_hold}')`,
+              filter: 'blur(0px)',
+            },
+      };
+    },
   },
 
   mounted(): void {
@@ -173,6 +226,7 @@ export default Vue.extend({
 
     syncScrolled();
     window.addEventListener('scroll', syncScrolled);
+    this.loadStoryImages();
   },
 
   beforeDestroy(): void {
@@ -186,6 +240,27 @@ export default Vue.extend({
         left: 0,
         top: window.innerHeight,
         behavior: 'smooth',
+      });
+    },
+
+    loadStoryImages(): void {
+      if (store.state.inPrerender) return;
+
+      const webp = store.state.webpSupported;
+      const qualityImages = {
+        hero: webp ? require('@/assets/us/apple_pick_ladder_sit_q90_lossy.webp') : require('@/assets/us/apple_pick_ladder_sit_original.jpg'),
+        apple_pick_wall_sit: webp ? require('@/assets/us/apple_pick_wall_sit_q90_lossy.webp') : require('@/assets/us/apple_pick_wall_sit_original.jpg'),
+        redbones: webp ? require('@/assets/us/redbones_q90_lossy.webp') : require('@/assets/us/redbones_original.jpg'),
+        redbones_corner: webp ? require('@/assets/us/redbones_corner_q90_lossy.webp') : require('@/assets/us/redbones_corner_original.jpg'),
+        apple_pick_hand_hold_run: webp ? require('@/assets/us/apple_pick_hand_hold_run_q90_lossy.webp') : require('@/assets/us/apple_pick_hand_hold_run_original.jpg'),
+        apple_pick_hand_hold: webp ? require('@/assets/us/apple_pick_hand_hold_q90_lossy.webp') : require('@/assets/us/apple_pick_hand_hold_original.jpg'),
+      };
+
+      (Object.keys(qualityImages) as (keyof typeof qualityImages)[]).forEach((key) => {
+        loadImage(qualityImages[key]).then((image) => {
+          this.$set(this.storyImages, key, image.src);
+          // this.$set(key, image.src);
+        });
       });
     },
   },
@@ -226,29 +301,27 @@ $nav-height-sm: $nav-padding-top-sm + $nav-padding-bottom-sm + $nav-line-height-
 $title-and-nav-height: $title-area-height + $nav-height;
 $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
 
-.no-webp .us-view {
-  .hero { background-image: url('~@/assets/us/apple_pick_ladder_sit_original.jpg'); }
-  .story .story-row .story-col .story-img {
-    &.apple_pick_wall_sit { background-image: url('~@/assets/us/apple_pick_wall_sit_original.jpg'); }
-    &.redbones { background-image: url('~@/assets/us/redbones_original.jpg'); }
-    &.redbones_corner { background-image: url('~@/assets/us/redbones_corner_original.jpg'); }
-    &.apple_pick_wall_sit_center { background-image: url('~@/assets/us/apple_pick_wall_sit_center_original.jpg'); }
-    &.apple_pick_hand_hold_run { background-image: url('~@/assets/us/apple_pick_hand_hold_run_original.jpg'); }
-    &.apple_pick_hand_hold { background-image: url('~@/assets/us/apple_pick_hand_hold_original.jpg'); }
-  }
-}
+// .no-webp .us-view {
+//   .hero { background-image: url('~@/assets/us/apple_pick_ladder_sit_original.jpg'); }
+//   .story .story-row .story-col .story-img {
+//     &.apple_pick_wall_sit { background-image: url('~@/assets/us/apple_pick_wall_sit_original.jpg'); }
+//     &.redbones { background-image: url('~@/assets/us/redbones_original.jpg'); }
+//     &.redbones_corner { background-image: url('~@/assets/us/redbones_corner_original.jpg'); }
+//     &.apple_pick_hand_hold_run { background-image: url('~@/assets/us/apple_pick_hand_hold_run_original.jpg'); }
+//     &.apple_pick_hand_hold { background-image: url('~@/assets/us/apple_pick_hand_hold_original.jpg'); }
+//   }
+// }
 
-.webp .us-view {
-  .hero { background-image: url('~@/assets/us/apple_pick_ladder_sit_q90_lossy.webp'); }
-  .story .story-row .story-col .story-img {
-    &.apple_pick_wall_sit { background-image: url('~@/assets/us/apple_pick_wall_sit_q90_lossy.webp'); }
-    &.redbones { background-image: url('~@/assets/us/redbones_q90_lossy.webp'); }
-    &.redbones_corner { background-image: url('~@/assets/us/redbones_corner_q90_lossy.webp'); }
-    &.apple_pick_wall_sit_center { background-image: url('~@/assets/us/apple_pick_wall_sit_center_q90_lossy.webp'); }
-    &.apple_pick_hand_hold_run { background-image: url('~@/assets/us/apple_pick_hand_hold_run_q90_lossy.webp'); }
-    &.apple_pick_hand_hold { background-image: url('~@/assets/us/apple_pick_hand_hold_q90_lossy.webp'); }
-  }
-}
+// .webp .us-view {
+//   .hero { background-image: url('~@/assets/us/apple_pick_ladder_sit_q90_lossy.webp'); }
+//   .story .story-row .story-col .story-img {
+//     &.apple_pick_wall_sit { background-image: url('~@/assets/us/apple_pick_wall_sit_q90_lossy.webp'); }
+//     &.redbones { background-image: url('~@/assets/us/redbones_q90_lossy.webp'); }
+//     &.redbones_corner { background-image: url('~@/assets/us/redbones_corner_q90_lossy.webp'); }
+//     &.apple_pick_hand_hold_run { background-image: url('~@/assets/us/apple_pick_hand_hold_run_q90_lossy.webp'); }
+//     &.apple_pick_hand_hold { background-image: url('~@/assets/us/apple_pick_hand_hold_q90_lossy.webp'); }
+//   }
+// }
 
 .us-view {
   position: relative;
@@ -338,10 +411,12 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
     width: 100%;
     height: 100vh;
     margin-top: -1 * $title-and-nav-height;
-    // NOTE: see the .webp and .no-webp variants at the top of the styles
-    // background-image: url('~@/assets/us/apple_pick_ladder_sit_original.jpg');
     background-position: center;
     background-size: cover;
+    // NOTE: see the .webp and .no-webp variants at the top of the styles
+    // background-image: url('~@/assets/us/apple_pick_ladder_sit_original.jpg');
+    background-image: url('~@/assets/us/apple_pick_ladder_sit_q90_thumb_100.jpg');
+    filter: blur(10px);
 
     @include media-breakpoint-down(sm) {
       margin-top: -1 * $title-and-nav-height-sm;
@@ -461,34 +536,38 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
           &.apple_pick_wall_sit {
             // NOTE: see the .webp and .no-webp variants at the top of the styles
             // background-image: url('~@/assets/us/apple_pick_wall_sit_original.jpg');
+            background-image: url('~@/assets/us/apple_pick_wall_sit_q90_thumb_100.jpg');
+            filter: blur(10px);
           }
 
           &.redbones {
             // NOTE: see the .webp and .no-webp variants at the top of the styles
             // background-image: url('~@/assets/us/redbones_original.jpg');
+            background-image: url('~@/assets/us/redbones_q90_thumb_100.jpg');
+            filter: blur(10px);
           }
 
           &.redbones_corner {
             // NOTE: see the .webp and .no-webp variants at the top of the styles
             // background-image: url('~@/assets/us/redbones_corner_original.jpg');
+            background-image: url('~@/assets/us/redbones_corner_q90_thumb_100.jpg');
+            filter: blur(10px);
             background-position-x: 40%;
-          }
-
-          &.apple_pick_wall_sit_center {
-            // NOTE: see the .webp and .no-webp variants at the top of the styles
-            // background-image: url('~@/assets/us/apple_pick_wall_sit_center_original.jpg');
-            background-position-x: 45%;
           }
 
           &.apple_pick_hand_hold_run {
             // NOTE: see the .webp and .no-webp variants at the top of the styles
             // background-image: url('~@/assets/us/apple_pick_hand_hold_run_original.jpg');
+            background-image: url('~@/assets/us/apple_pick_hand_hold_run_q90_thumb_100.jpg');
+            filter: blur(10px);
             background-position-x: 80%;
           }
 
           &.apple_pick_hand_hold {
             // NOTE: see the .webp and .no-webp variants at the top of the styles
             // background-image: url('~@/assets/us/apple_pick_hand_hold_original.jpg');
+            background-image: url('~@/assets/us/apple_pick_hand_hold_q90_thumb_100.jpg');
+            filter: blur(10px);
             background-position-x: 80%;
           }
         }
