@@ -151,11 +151,11 @@
 <script lang="ts">
 import Vue from 'vue';
 import MainNav from '@/components/MainNav.vue';
-import _ from 'underscore';
+import _, { noop, throttle } from 'underscore';
 import store from '@/store';
 import { loadImage } from '@/lib/images';
 
-let syncScrolled = _.noop;
+let syncScrolled = noop;
 
 export default Vue.extend({
   components: {
@@ -220,7 +220,7 @@ export default Vue.extend({
   },
 
   mounted(): void {
-    syncScrolled = _.throttle(() => {
+    syncScrolled = throttle(() => {
       this.scrolled = window.scrollY > 100;
     }, 300);
 

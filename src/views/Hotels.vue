@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import _ from 'underscore';
+import { noop, sortBy, throttle } from 'underscore';
 import Vue from 'vue';
 import HotelDeets from '@/types/HotelDeets';
 import HotelItem from '@/components/HotelItem.vue';
@@ -164,7 +164,7 @@ const HOTELS: HotelDeets[] = [
   },
 ];
 
-let syncScrolled = _.noop;
+let syncScrolled = noop;
 let flickerTimeout = 0;
 let toggleTimeout = 0;
 
@@ -184,7 +184,7 @@ export default Vue.extend({
 
   computed: {
     sortedHotels(): HotelDeets[] {
-      return _.sortBy(HOTELS, this.sortField);
+      return sortBy(HOTELS, this.sortField);
     },
   },
 
@@ -219,7 +219,7 @@ export default Vue.extend({
     addListeners(): void {
       this.removeListeners();
 
-      syncScrolled = _.throttle(() => {
+      syncScrolled = throttle(() => {
         // this.scrolled = document.body.scrollTop > 100;
         this.scrolled = window.scrollY > 100;
       }, 300);

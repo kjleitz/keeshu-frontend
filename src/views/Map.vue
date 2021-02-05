@@ -6,7 +6,6 @@
 </template>
 
 <script lang="ts">
-import _ from 'underscore';
 import Vue from 'vue';
 import MainNav from '@/components/MainNav.vue';
 import GoogleMap from '@/components/GoogleMap.vue';

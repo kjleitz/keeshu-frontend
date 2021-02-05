@@ -76,7 +76,7 @@
 import Vue from 'vue';
 import moment from 'moment';
 import MainNav from '@/components/MainNav.vue';
-import _ from 'underscore';
+import { noop, range, throttle } from 'underscore';
 import { bound, randomBetween } from '@/lib/utils';
 
 const FONTS = [
@@ -136,7 +136,7 @@ const calcYearElapsed = (): number => {
   return now.diff(yearStart, 'seconds') / yearEnd.diff(yearStart, 'seconds');
 };
 
-let syncResize = _.noop;
+let syncResize = noop;
 let dayElapsedInterval = 0;
 let yearElapsedInterval = 0;
 let starTwinkleInterval = 0;
@@ -161,7 +161,7 @@ interface Star {
   brightness: number;
 }
 
-const stars = _.range(1000).map((): Star => ({
+const stars = range(1000).map((): Star => ({
   x: Math.random(),
   y: Math.random(),
   size: Math.floor(Math.random() * 5) + 1,
@@ -214,7 +214,7 @@ const createPuff = (): Puff => ({
 const createCloud = (x: number, y: number): Cloud => {
   const puffCount = 20 + Math.floor(Math.random() * 30);
   const size = puffCount * (PUFF_MAX_RADIUS / 10);
-  const puffs = _.range(puffCount).map(() => createPuff());
+  const puffs = range(puffCount).map(() => createPuff());
   return {
     x,
     y: y * 0.65,
@@ -227,7 +227,7 @@ const createCloud = (x: number, y: number): Cloud => {
   };
 };
 
-const clouds = _.range(CLOUD_COUNT).map((): Cloud => createCloud(Math.random(), Math.random()));
+const clouds = range(CLOUD_COUNT).map((): Cloud => createCloud(Math.random(), Math.random()));
 
 const updateCloudCanvasSize = (): void => {
   const scale = window.devicePixelRatio;
@@ -269,7 +269,7 @@ const renderClouds = (timestamp: number): void => {
 
   const { width, height } = cloudCanvas;
   cloudCtx.clearRect(0, 0, width, height);
-  clouds.forEach((cloud, i) => {
+  clouds.forEach((cloud) => {
     const cloudWidth = cloud.size;
     const cloudHeight = cloud.size;
     const cloudInnerWidth = cloud.size - (PUFF_MAX_RADIUS); // essentially the bounds of the centers of puffs
@@ -678,7 +678,7 @@ export default Vue.extend({
     addListeners(): void {
       this.removeListeners();
 
-      syncResize = _.throttle(() => {
+      syncResize = throttle(() => {
         const { innerWidth, innerHeight } = window;
         if (this.innerWidth !== innerWidth || this.innerHeight !== innerHeight) {
           this.innerWidth = innerWidth;

@@ -190,7 +190,7 @@ import EditorDropdown from '@/components/ms_word/EditorDropdown.vue';
 import EditorButton from '@/components/ms_word/EditorButton.vue';
 import WordIcon from '@/components/ms_word/WordIcon.vue';
 import WindowMenu, { WindowMenuItem } from '@/components/ms_word/WindowMenu.vue';
-import _ from 'underscore';
+import { range } from 'underscore';
 
 export default Vue.extend({
   components: {
@@ -352,8 +352,8 @@ export default Vue.extend({
       if (except !== 'help') this.helpMenuOpen = false;
     },
 
-    range(...args: Parameters<typeof _.range>): number[] {
-      return _.range(...args);
+    range(...args: Parameters<typeof range>): number[] {
+      return range(...args);
     },
   },
 });

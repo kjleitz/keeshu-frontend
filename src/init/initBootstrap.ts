@@ -2,7 +2,7 @@ import '@/styles/bootstrap_custom.scss';
 import Vue from 'vue';
 
 import {
-  BootstrapVue,
+  // BootstrapVue,
   BFormInput,
   BIcon,
   BIconLink45deg,
@@ -29,7 +29,7 @@ import {
  */
 
 export default function initBootstrap(): void {
-  Vue.use(BootstrapVue);
+  // Vue.use(BootstrapVue);
   Vue.use(LayoutPlugin);
   Vue.component('BFormInput', BFormInput);
   Vue.component('BIcon', BIcon);

@@ -45,7 +45,6 @@
 </template>
 
 <script lang="ts">
-import _ from 'underscore';
 import Vue from 'vue';
 import MainNav from '@/components/MainNav.vue';
 import Sky from '@/components/Sky.vue';
@@ -98,7 +97,7 @@ export default Vue.extend({
       picnicTableImageSrc: '',
       grassImageSrc: '',
       // fontsLoaded: document.fonts ? document.fonts.status === 'loaded' : true,
-      fontsLoaded: !document.fonts,
+      fontsLoaded: !store.state.inPrerender && !document.fonts as boolean,
     };
   },
 
@@ -219,7 +218,7 @@ export default Vue.extend({
   },
 
   created(): void {
-    if (document.fonts) {
+    if (document.fonts && !store.state.inPrerender) {
       document.fonts.ready.then(() => {
         this.fontsLoaded = true;
       });
@@ -368,7 +367,7 @@ export default Vue.extend({
       filter: blur(10px);
       // opacity: 0;
       // transition: filter 0.2s;
-      transition: filter 0.2s, opacity 0.1s;
+      transition: filter 0.2s;
 
       &.grass {
         // NOTE: see the .webp and .no-webp variants at the top of the styles

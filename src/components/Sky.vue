@@ -4,8 +4,8 @@
       <canvas ref="starCanvas" id="star-canvas"></canvas>
     </div>
     <div :style="dayStyles" class="day"></div>
-    <div :class="['moon-aura', { revealed: celestialReveal }]"></div>
-    <div :class="['moon-surface', { revealed: celestialReveal }]">
+    <div class="moon-aura"></div>
+    <div class="moon-surface">
       <div :class="['moon-surface-left-container', { waxing, waning }]">
         <div class="moon-surface-left"></div>
       </div>
@@ -14,9 +14,9 @@
       </div>
       <div class="moon-surface-curve"></div>
     </div>
-    <div :class="['sun-corona', { revealed: celestialReveal }]"></div>
-    <div :class="['sun-chromosphere', { revealed: celestialReveal }]"></div>
-    <div :class="['sun-photosphere', { revealed: celestialReveal }]"></div>
+    <div class="sun-corona"></div>
+    <div class="sun-chromosphere"></div>
+    <div class="sun-photosphere"></div>
     <canvas ref="cloudCanvas" id="cloud-canvas"></canvas>
     <slot></slot>
     <div v-if="debug" class="debug-controls">
@@ -50,7 +50,7 @@ import { randomBetween } from '@/lib/utils';
 import store from '@/store';
 import Cloud, { Puff } from '@/types/Cloud';
 import Star from '@/types/Star';
-import _ from 'underscore';
+import { noop, range, throttle } from 'underscore';
 import Vue from 'vue';
 
 const MOON_TILT_MIN = 10;
@@ -58,7 +58,7 @@ const MOON_TILT_MAX = 70;
 const CLOUD_COUNT = 7;
 const PUFF_MAX_RADIUS = 200;
 
-let syncResize = _.noop;
+let syncResize = noop;
 let dayElapsedInterval = 0;
 let yearElapsedInterval = 0;
 let starTwinkleInterval = 0;
@@ -76,7 +76,7 @@ const frameLoop = (draw: (timestamp: number) => void, timestamp?: number): void 
   if (timestamp) draw(timestamp);
 };
 
-const stars = _.range(1000).map((): Star => ({
+const stars = range(1000).map((): Star => ({
   x: Math.random(),
   y: Math.random(),
   // size: Math.floor(Math.random() * 5) + 1,
@@ -115,7 +115,7 @@ const createPuff = (): Puff => ({
 const createCloud = (x: number, y: number): Cloud => {
   const puffCount = 20 + Math.floor(Math.random() * 30);
   const size = puffCount * (PUFF_MAX_RADIUS / 10);
-  const puffs = _.range(puffCount).map(() => createPuff());
+  const puffs = range(puffCount).map(() => createPuff());
   return {
     x,
     y: y * 0.65,
@@ -128,7 +128,7 @@ const createCloud = (x: number, y: number): Cloud => {
   };
 };
 
-const clouds = _.range(CLOUD_COUNT).map((): Cloud => createCloud(Math.random(), Math.random()));
+const clouds = range(CLOUD_COUNT).map((): Cloud => createCloud(Math.random(), Math.random()));
 
 const updateCloudCanvasSize = (): void => {
   if (!cloudCanvas) return;
@@ -164,8 +164,6 @@ const updateClouds = (_timestamp: number): void => {
     }
   }
 };
-
-let cloudsRevealed = false;
 
 const renderClouds = (timestamp: number): void => {
   if (lastRenderedCloudsAt && timestamp - lastRenderedCloudsAt < 33) return;
@@ -219,10 +217,6 @@ const renderClouds = (timestamp: number): void => {
   });
 
   updateClouds(timestamp);
-  if (!cloudsRevealed && !store.state.inPrerender) {
-    cloudsRevealed = true;
-    cloudCanvas.classList.add('revealed');
-  }
 };
 
 const startCelestialObjects = (): void => {
@@ -249,7 +243,6 @@ export default Vue.extend({
       yearElapsedPercent: calcYearElapsed(),
       lunarMonthElapsedPercent: calcLunarMonthElapsed(),
       starMapImageSrc: '',
-      celestialReveal: false,
     };
   },
 
@@ -482,7 +475,6 @@ export default Vue.extend({
       stopFrameLoop = false;
       startCelestialObjects();
       this.loadStarMapImage();
-      this.celestialReveal = true;
     }, 0);
   },
 
@@ -494,7 +486,7 @@ export default Vue.extend({
     addListeners(): void {
       this.removeListeners();
 
-      syncResize = _.throttle(() => {
+      syncResize = throttle(() => {
         const { innerWidth, innerHeight } = window;
         if (this.innerWidth !== innerWidth || this.innerHeight !== innerHeight) {
           this.innerWidth = innerWidth;
@@ -634,12 +626,6 @@ export default Vue.extend({
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
     transform: translate(-50%, -50%);
     z-index: 100;
-    transition: opacity 0.2s;
-    opacity: 0;
-
-    &.revealed {
-      opacity: 1;
-    }
   }
 
   .sun-chromosphere {
@@ -653,12 +639,6 @@ export default Vue.extend({
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.3);
     transform: translate(-50%, -50%);
     z-index: 100;
-    transition: opacity 0.2s;
-    opacity: 0;
-
-    &.revealed {
-      opacity: 1;
-    }
   }
 
   .sun-photosphere {
@@ -671,12 +651,6 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.7);
     transform: translate(-50%, -50%);
-    transition: opacity 0.2s;
-    opacity: 0;
-
-    &.revealed {
-      opacity: 1;
-    }
   }
 
   $moon-surface-size: min(10vw, 10vh);
@@ -692,12 +666,6 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.1);
     transform: translate(-50%, -50%);
-    transition: opacity 0.2s;
-    opacity: 0;
-
-    &.revealed {
-      opacity: 1;
-    }
   }
 
   .moon-surface {
@@ -709,12 +677,6 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.2);
     transform: translate(-50%, -50%) rotate(var(--moon-surface-tilt));
-    transition: opacity 0.2s;
-    opacity: 0;
-
-    &.revealed {
-      opacity: 1;
-    }
 
     .moon-surface-left-container {
       position: absolute;
@@ -773,12 +735,6 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
-    transition: opacity 0.2s;
-    opacity: 0;
-
-    &.revealed {
-      opacity: 1;
-    }
   }
 }
 </style>
