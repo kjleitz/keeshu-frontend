@@ -18,7 +18,9 @@
     <div class="sun-chromosphere"></div>
     <div class="sun-photosphere"></div>
     <canvas ref="cloudCanvas" id="cloud-canvas"></canvas>
-    <slot></slot>
+    <div class="slot-area">
+      <slot></slot>
+    </div>
     <div v-if="debug" class="debug-controls">
       Hours after midnight: {{ Math.floor(dayElapsedPercent * 24) }}h{{ Math.floor(((dayElapsedPercent * 24) % 1) * 60) }}m
       <b-form-input v-model.number="dayElapsedPercent" type="range" min="0" max="1" step="0.001"></b-form-input>
@@ -43,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { loadImage } from '@/lib/images';
+import { imageIsLoaded, loadImage } from '@/lib/images';
 import { calcSunlightColorValue, calcSunlightPercent } from '@/lib/sky/chroma';
 import { calcDayElapsed, calcLunarMonthElapsed, calcYearElapsed, PERCENT_YEAR_ELAPSED_WHEN_MOON_IS_HORNY } from '@/lib/sky/chrono';
 import { randomBetween } from '@/lib/utils';
@@ -236,13 +238,19 @@ export default Vue.extend({
 
   data() {
     const { innerWidth, innerHeight } = window;
+
+    const starMapImageSrc = store.state.webpSupported
+      ? require('@/assets/starmap_square_q90_lossy.webp')
+      : require('@/assets/starmap_square.jpg');
+
     return {
       innerWidth,
       innerHeight,
       dayElapsedPercent: calcDayElapsed(),
       yearElapsedPercent: calcYearElapsed(),
       lunarMonthElapsedPercent: calcLunarMonthElapsed(),
-      starMapImageSrc: '',
+      starMapImageSrc,
+      starMapImageLoaded: imageIsLoaded(starMapImageSrc),
     };
   },
 
@@ -396,7 +404,7 @@ export default Vue.extend({
     },
 
     nightStyles(): Partial<CSSStyleDeclaration> {
-      const starMapStyles = !this.starMapImageSrc
+      const starMapStyles = !this.starMapImageLoaded || store.state.inPrerender
         ? {}
         : {
             backgroundImage: `url('${this.starMapImageSrc}')`,
@@ -455,6 +463,7 @@ export default Vue.extend({
     this.$emit('day-elapsed-percent-changed', this.dayElapsedPercent);
     this.addListeners();
     this.addIntervals();
+    this.loadStarMapImage();
   },
 
   beforeDestroy(): void {
@@ -474,7 +483,6 @@ export default Vue.extend({
       updateCloudCanvasSize();
       stopFrameLoop = false;
       startCelestialObjects();
-      this.loadStarMapImage();
     }, 0);
   },
 
@@ -538,12 +546,10 @@ export default Vue.extend({
     },
 
     loadStarMapImage(): void {
-      const qualityStarMapSrc = store.state.webpSupported
-        ? require('@/assets/starmap_square_q90_lossy.webp')
-        : require('@/assets/starmap_square.jpg');
+      if (store.state.inPrerender || this.starMapImageLoaded) return;
 
-      loadImage(qualityStarMapSrc).then((image) => {
-        this.starMapImageSrc = image.src;
+      loadImage(this.starMapImageSrc).then(() => {
+        this.starMapImageLoaded = true;
       });
     },
   },
@@ -562,12 +568,11 @@ export default Vue.extend({
 .sky {
   height: 100%;
   width: 100%;
-  // z-index: -1000;
   overflow: hidden;
+  z-index: 0;
 
   .debug-controls {
     background-color: rgba(255, 255, 255, 0.5);
-    z-index: 100000;
     position: absolute;
     bottom: 0;
     left: 10%;
@@ -585,7 +590,7 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
-    // z-index: -99;
+    z-index: 200;
   }
 
   .night {
@@ -597,7 +602,7 @@ export default Vue.extend({
     background-position: center;
     background-size: cover;
     background-repeat: repeat;
-    z-index: -100;
+    z-index: 100;
     background-image: url("~@/assets/starmap_square_q00_thumb_100.jpg");
     filter: blur(10px);
     transition: filter 0.2s;
@@ -608,6 +613,7 @@ export default Vue.extend({
       left: 0;
       width: 100%;
       height: 100%;
+      z-index: 150;
     }
   }
 
@@ -625,7 +631,7 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 200, 0.3);
     transform: translate(-50%, -50%);
-    z-index: 100;
+    z-index: 400;
   }
 
   .sun-chromosphere {
@@ -638,7 +644,7 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.3);
     transform: translate(-50%, -50%);
-    z-index: 100;
+    z-index: 400;
   }
 
   .sun-photosphere {
@@ -651,6 +657,7 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 250, 0.7);
     transform: translate(-50%, -50%);
+    z-index: 250;
   }
 
   $moon-surface-size: min(10vw, 10vh);
@@ -666,6 +673,7 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.1);
     transform: translate(-50%, -50%);
+    z-index: 175;
   }
 
   .moon-surface {
@@ -677,6 +685,7 @@ export default Vue.extend({
     border-radius: 50%;
     box-shadow: 0px 0px 10px 10px rgba(210, 210, 255, 0.2);
     transform: translate(-50%, -50%) rotate(var(--moon-surface-tilt));
+    z-index: 187;
 
     .moon-surface-left-container {
       position: absolute;
@@ -735,6 +744,16 @@ export default Vue.extend({
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 275;
+  }
+
+  .slot-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 300;
   }
 }
 </style>

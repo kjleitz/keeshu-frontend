@@ -153,7 +153,9 @@ import Vue from 'vue';
 import MainNav from '@/components/MainNav.vue';
 import _, { noop, throttle } from 'underscore';
 import store from '@/store';
-import { loadImage } from '@/lib/images';
+import { imageIsLoaded, loadImage } from '@/lib/images';
+
+type StoryImageName = 'hero' | 'apple_pick_wall_sit' | 'redbones_corner' | 'apple_pick_hand_hold' | 'redbones' | 'apple_pick_hand_hold_run';
 
 let syncScrolled = noop;
 
@@ -163,60 +165,56 @@ export default Vue.extend({
   },
 
   data() {
+    const webp = store.state.webpSupported;
+
+    const storyImageSrc = {
+      hero: webp ? require('@/assets/us/apple_pick_ladder_sit_q90_lossy.webp') : require('@/assets/us/apple_pick_ladder_sit_original.jpg'),
+      apple_pick_wall_sit: webp ? require('@/assets/us/apple_pick_wall_sit_q90_lossy.webp') : require('@/assets/us/apple_pick_wall_sit_original.jpg'),
+      redbones: webp ? require('@/assets/us/redbones_q90_lossy.webp') : require('@/assets/us/redbones_original.jpg'),
+      redbones_corner: webp ? require('@/assets/us/redbones_corner_q90_lossy.webp') : require('@/assets/us/redbones_corner_original.jpg'),
+      apple_pick_hand_hold_run: webp ? require('@/assets/us/apple_pick_hand_hold_run_q90_lossy.webp') : require('@/assets/us/apple_pick_hand_hold_run_original.jpg'),
+      apple_pick_hand_hold: webp ? require('@/assets/us/apple_pick_hand_hold_q90_lossy.webp') : require('@/assets/us/apple_pick_hand_hold_original.jpg'),
+    };
+
+    const storyImageLoaded = {
+      hero: imageIsLoaded(storyImageSrc.hero),
+      apple_pick_wall_sit: imageIsLoaded(storyImageSrc.apple_pick_wall_sit),
+      redbones: imageIsLoaded(storyImageSrc.redbones),
+      redbones_corner: imageIsLoaded(storyImageSrc.redbones_corner),
+      apple_pick_hand_hold_run: imageIsLoaded(storyImageSrc.apple_pick_hand_hold_run),
+      apple_pick_hand_hold: imageIsLoaded(storyImageSrc.apple_pick_hand_hold),
+    };
+
     return {
       scrolled: false,
-      storyImages: {
-        hero: '',
-        apple_pick_wall_sit: '',
-        redbones: '',
-        redbones_corner: '',
-        apple_pick_hand_hold_run: '',
-        apple_pick_hand_hold: '',
-      },
+      storyImageSrc,
+      storyImageLoaded,
     };
   },
 
   computed: {
-    storyImageStyles(): Record<'hero' | 'apple_pick_wall_sit' | 'redbones_corner' | 'apple_pick_hand_hold' | 'redbones' | 'apple_pick_hand_hold_run', Partial<CSSStyleDeclaration>> {
+    storyImageStyles(): Record<StoryImageName, Partial<CSSStyleDeclaration>> {
+      const styleFor = (name: StoryImageName): Partial<CSSStyleDeclaration> => {
+        if (store.state.inPrerender || !this.storyImageLoaded[name]) return {};
+        return {
+          backgroundImage: `url('${this.storyImageSrc[name]}')`,
+          filter: 'blur(0px)',
+        };
+      };
+
       return {
-        hero: !this.storyImages.hero
-          ? {}
-          : {
-              backgroundImage: `url('${this.storyImages.hero}')`,
-              filter: 'blur(0px)',
-            },
-        apple_pick_wall_sit: !this.storyImages.apple_pick_wall_sit
-          ? {}
-          : {
-              backgroundImage: `url('${this.storyImages.apple_pick_wall_sit}')`,
-              filter: 'blur(0px)',
-            },
-        redbones: !this.storyImages.redbones
-          ? {}
-          : {
-              backgroundImage: `url('${this.storyImages.redbones}')`,
-              filter: 'blur(0px)',
-            },
-        redbones_corner: !this.storyImages.redbones_corner
-          ? {}
-          : {
-              backgroundImage: `url('${this.storyImages.redbones_corner}')`,
-              filter: 'blur(0px)',
-            },
-        apple_pick_hand_hold_run: !this.storyImages.apple_pick_hand_hold_run
-          ? {}
-          : {
-              backgroundImage: `url('${this.storyImages.apple_pick_hand_hold_run}')`,
-              filter: 'blur(0px)',
-            },
-        apple_pick_hand_hold: !this.storyImages.apple_pick_hand_hold
-          ? {}
-          : {
-              backgroundImage: `url('${this.storyImages.apple_pick_hand_hold}')`,
-              filter: 'blur(0px)',
-            },
+        hero: styleFor('hero'),
+        apple_pick_wall_sit: styleFor('apple_pick_wall_sit'),
+        redbones: styleFor('redbones'),
+        redbones_corner: styleFor('redbones_corner'),
+        apple_pick_hand_hold_run: styleFor('apple_pick_hand_hold_run'),
+        apple_pick_hand_hold: styleFor('apple_pick_hand_hold'),
       };
     },
+  },
+
+  created(): void {
+    this.loadStoryImages();
   },
 
   mounted(): void {
@@ -226,7 +224,6 @@ export default Vue.extend({
 
     syncScrolled();
     window.addEventListener('scroll', syncScrolled);
-    this.loadStoryImages();
   },
 
   beforeDestroy(): void {
@@ -235,7 +232,8 @@ export default Vue.extend({
 
   methods: {
     scrollDown(): void {
-      // window.scrollTo(0, window.innerHeight);
+      if (this.scrolled) return;
+
       window.scrollTo({
         left: 0,
         top: window.innerHeight,
@@ -246,20 +244,10 @@ export default Vue.extend({
     loadStoryImages(): void {
       if (store.state.inPrerender) return;
 
-      const webp = store.state.webpSupported;
-      const qualityImages = {
-        hero: webp ? require('@/assets/us/apple_pick_ladder_sit_q90_lossy.webp') : require('@/assets/us/apple_pick_ladder_sit_original.jpg'),
-        apple_pick_wall_sit: webp ? require('@/assets/us/apple_pick_wall_sit_q90_lossy.webp') : require('@/assets/us/apple_pick_wall_sit_original.jpg'),
-        redbones: webp ? require('@/assets/us/redbones_q90_lossy.webp') : require('@/assets/us/redbones_original.jpg'),
-        redbones_corner: webp ? require('@/assets/us/redbones_corner_q90_lossy.webp') : require('@/assets/us/redbones_corner_original.jpg'),
-        apple_pick_hand_hold_run: webp ? require('@/assets/us/apple_pick_hand_hold_run_q90_lossy.webp') : require('@/assets/us/apple_pick_hand_hold_run_original.jpg'),
-        apple_pick_hand_hold: webp ? require('@/assets/us/apple_pick_hand_hold_q90_lossy.webp') : require('@/assets/us/apple_pick_hand_hold_original.jpg'),
-      };
-
-      (Object.keys(qualityImages) as (keyof typeof qualityImages)[]).forEach((key) => {
-        loadImage(qualityImages[key]).then((image) => {
-          this.$set(this.storyImages, key, image.src);
-          // this.$set(key, image.src);
+      (Object.keys(this.storyImageSrc) as StoryImageName[]).forEach((name) => {
+        if (this.storyImageLoaded[name]) return;
+        loadImage(this.storyImageSrc[name]).then(() => {
+          this.$set(this.storyImageLoaded, name, true);
         });
       });
     },
@@ -300,28 +288,6 @@ $nav-height-sm: $nav-padding-top-sm + $nav-padding-bottom-sm + $nav-line-height-
 
 $title-and-nav-height: $title-area-height + $nav-height;
 $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
-
-// .no-webp .us-view {
-//   .hero { background-image: url('~@/assets/us/apple_pick_ladder_sit_original.jpg'); }
-//   .story .story-row .story-col .story-img {
-//     &.apple_pick_wall_sit { background-image: url('~@/assets/us/apple_pick_wall_sit_original.jpg'); }
-//     &.redbones { background-image: url('~@/assets/us/redbones_original.jpg'); }
-//     &.redbones_corner { background-image: url('~@/assets/us/redbones_corner_original.jpg'); }
-//     &.apple_pick_hand_hold_run { background-image: url('~@/assets/us/apple_pick_hand_hold_run_original.jpg'); }
-//     &.apple_pick_hand_hold { background-image: url('~@/assets/us/apple_pick_hand_hold_original.jpg'); }
-//   }
-// }
-
-// .webp .us-view {
-//   .hero { background-image: url('~@/assets/us/apple_pick_ladder_sit_q90_lossy.webp'); }
-//   .story .story-row .story-col .story-img {
-//     &.apple_pick_wall_sit { background-image: url('~@/assets/us/apple_pick_wall_sit_q90_lossy.webp'); }
-//     &.redbones { background-image: url('~@/assets/us/redbones_q90_lossy.webp'); }
-//     &.redbones_corner { background-image: url('~@/assets/us/redbones_corner_q90_lossy.webp'); }
-//     &.apple_pick_hand_hold_run { background-image: url('~@/assets/us/apple_pick_hand_hold_run_q90_lossy.webp'); }
-//     &.apple_pick_hand_hold { background-image: url('~@/assets/us/apple_pick_hand_hold_q90_lossy.webp'); }
-//   }
-// }
 
 .us-view {
   position: relative;
@@ -440,6 +406,7 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
 
       &.scrolled {
         opacity: 0;
+        cursor: default;
       }
 
       .scroll-arrow {

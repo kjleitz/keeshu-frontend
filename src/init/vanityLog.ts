@@ -35,6 +35,8 @@ https://github.com/kjleitz/keeshu-frontend
 Submit issues, if you've got issues. I will promptly ignore them. Just kidding! I have no tests, so, uh, yeah that'd be great.
 
 Submit PRs, if you've got REAL issues. I will actually look at them and viciously mock your code before begrudgingly merging them.
+
+ON THE HOMEPAGE, click on the background and press D to activate debug mode. You can change the time of day, the phase of the moon, and the day of the year when you're in this mode. It's kinda fun. Try it out!
 `;
 
 export default function vanityLog(): void {

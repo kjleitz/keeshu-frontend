@@ -13,8 +13,6 @@
       :class="['our-names-obviously', { 'fonts-loaded': fontsLoaded }]"
       @keyup.ctrl.d.prevent.stop="debug = !debug"
       @keyup.d.exact="debug = !debug"
-      @keyup.left.exact.prevent="fontIndex -= 1"
-      @keyup.right.exact.prevent="fontIndex += 1"
     >
       <div class="surprise-its-a-name name-aishu">
         Aishu &amp;
@@ -28,19 +26,7 @@
         August 14<sup>th</sup>, 2021<br>
         Lord Thompson Manor, Connecticut
       </div>
-      <!-- <div class="info info-date">
-        (happening on August 14<sup>th</sup>, 2021)
-      </div>
-      <div class="info info-location">
-        (at Lord Thompson Manor in Connecticut)
-      </div> -->
-      <!-- <div class="info info-addendum">
-        (for the lazy)
-      </div> -->
     </div>
-    <!-- <div v-if="debug" class="title-font">
-      Font: {{ titleFont }}
-    </div> -->
   </div>
 </template>
 
@@ -51,31 +37,7 @@ import Sky from '@/components/Sky.vue';
 import { calcDayElapsed } from '@/lib/sky/chrono';
 import { calcSunlightColorValue } from '@/lib/sky/chroma';
 import store from '@/store';
-import { loadImage } from '@/lib/images';
-
-const FONTS = [
-  "Glass Antiqua", // first is default
-  // "Arima Madurai",
-  // "Lancelot",
-  // "Emilys Candy",
-  // "Neucha",
-  // "Rancho",
-  // "Comic Neue",
-  // "Fredericka the Great",
-  // "Grandstander",
-  // "Averia Serif Libre",
-  // "Life Savers",
-  // "Atma",
-  // "Salsa",
-  // "Ribeye Marrow",
-  // "Ribeye",
-  // "Milonga",
-  // "Henny Penny",
-  // "Bellota",
-  // "Macondo",
-];
-
-// let dayElapsedInterval = 0;
+import { imageIsLoaded, loadImage } from '@/lib/images';
 
 export default Vue.extend({
   name: 'Home',
@@ -87,29 +49,46 @@ export default Vue.extend({
 
   data() {
     const { innerWidth, innerHeight } = window;
+
+    const treeImageSrc = store.state.webpSupported
+      ? require('@/assets/tree_q90_lossy.webp')
+      : require('@/assets/tree.png');
+
+    const picnicTableImageSrc = store.state.webpSupported
+      ? require('@/assets/picnic_table_with_us_q90_lossy.webp')
+      : require('@/assets/picnic_table_with_us.png');
+
+    const grassImageSrc = store.state.webpSupported
+      ? require('@/assets/grass_q90_lossy.webp')
+      : require('@/assets/grass.png');
+
+    const treeImageLoaded = imageIsLoaded(treeImageSrc);
+    const picnicTableImageLoaded = imageIsLoaded(picnicTableImageSrc);
+    const grassImageLoaded = imageIsLoaded(grassImageSrc);
+
+    // Should be:
+    // - false in prerender
+    // - true if document.fonts is not supported
+    // - true if Glass Antiqua is loaded already, false if it isn't
+    const fontsLoaded = !store.state.inPrerender
+      && (document.fonts?.check ? document.fonts.check('12px "Glass Antiqua"') : true);
+
     return {
       innerWidth,
       innerHeight,
       dayElapsedPercent: calcDayElapsed(),
-      fontIndex: 0,
       debug: false,
-      treeImageSrc: '',
-      picnicTableImageSrc: '',
-      grassImageSrc: '',
-      // fontsLoaded: document.fonts ? document.fonts.status === 'loaded' : true,
-      fontsLoaded: !store.state.inPrerender && !document.fonts as boolean,
+      treeImageSrc,
+      picnicTableImageSrc,
+      grassImageSrc,
+      treeImageLoaded,
+      picnicTableImageLoaded,
+      grassImageLoaded,
+      fontsLoaded,
     };
   },
 
   computed: {
-    titleFont(): string {
-      if (!this.debug) return FONTS[0];
-
-      const index = this.fontIndex < 0 ? Math.abs(this.fontIndex) - 1 : this.fontIndex;
-      const list = this.fontIndex < 0 ? [...FONTS].reverse() : FONTS;
-      return list[index % list.length];
-    },
-
     titleRedValue(): number {
       return this.sunlightColorValue(180, 255);
     },
@@ -132,10 +111,6 @@ export default Vue.extend({
       const blue = this.titleBlueValue.toFixed(2);
       const opacity = this.titleOpacity.toFixed(2);
       return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
-    },
-
-    navLinkFont(): string {
-      return this.titleFont;
     },
 
     navLinkRgba(): string {
@@ -166,66 +141,49 @@ export default Vue.extend({
       return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
     },
 
-    navLinkActiveShadowOpacity(): number {
-      return this.sunlightColorValue(0, 100) / 100;
-    },
-
     titleStyles(): Partial<CSSStyleDeclaration> {
       return {
-        fontFamily: `"${this.titleFont}", serif`,
         color: this.titleRgba,
       };
     },
 
     treeStyles(): Partial<CSSStyleDeclaration> {
-      if (!this.treeImageSrc) return {};
+      if (!this.treeImageLoaded || store.state.inPrerender) return {};
 
       return {
         backgroundImage: `url('${this.treeImageSrc}')`,
         filter: 'blur(0px)',
-        // opacity: '1',
       };
     },
 
     picnicTableStyles(): Partial<CSSStyleDeclaration> {
-      if (!this.picnicTableImageSrc) return {};
+      if (!this.picnicTableImageLoaded || store.state.inPrerender) return {};
 
       return {
         backgroundImage: `url('${this.picnicTableImageSrc}')`,
         filter: 'blur(0px)',
-        // opacity: '1',
       };
     },
 
     grassStyles(): Partial<CSSStyleDeclaration> {
-      if (!this.grassImageSrc) return {};
+      if (!this.grassImageLoaded || store.state.inPrerender) return {};
 
       return {
         backgroundImage: `url('${this.grassImageSrc}')`,
         filter: 'blur(0px)',
-        // opacity: '1',
       };
     },
 
     styleVariables(): Record<string, string> {
       return {
-        '--nav-font-family': `"${this.navLinkFont}", serif`,
         '--nav-font-color': this.navLinkRgba,
         '--nav-font-color-active': this.navLinkActiveRgba,
-        '--nav-link-active-shadow-opacity': `${this.navLinkActiveShadowOpacity}`,
       };
     },
   },
 
   created(): void {
-    if (document.fonts && !store.state.inPrerender) {
-      document.fonts.ready.then(() => {
-        this.fontsLoaded = true;
-      });
-    }
-  },
-
-  mounted(): void {
+    this.loadFonts();
     this.loadTreeImage();
     this.loadGrassImage();
     this.loadPicnicTableImage();
@@ -237,61 +195,44 @@ export default Vue.extend({
     },
 
     loadTreeImage(): void {
-      if (store.state.inPrerender) return;
+      if (store.state.inPrerender || this.treeImageLoaded) return;
 
-      const qualityTreeSrc = store.state.webpSupported
-        ? require('@/assets/tree_q90_lossy.webp')
-        : require('@/assets/tree.png');
-
-      loadImage(qualityTreeSrc).then((image) => {
-        this.treeImageSrc = image.src;
+      loadImage(this.treeImageSrc).then(() => {
+        this.treeImageLoaded = true;
       });
     },
 
     loadPicnicTableImage(): void {
-      if (store.state.inPrerender) return;
+      if (store.state.inPrerender || this.picnicTableImageLoaded) return;
 
-      const qualityPicnicTableSrc = store.state.webpSupported
-        ? require('@/assets/picnic_table_with_us_q90_lossy.webp')
-        : require('@/assets/picnic_table_with_us.png');
-
-      loadImage(qualityPicnicTableSrc).then((image) => {
-        this.picnicTableImageSrc = image.src;
+      loadImage(this.picnicTableImageSrc).then(() => {
+        this.picnicTableImageLoaded = true;
       });
     },
 
     loadGrassImage(): void {
-      if (store.state.inPrerender) return;
+      if (store.state.inPrerender || this.grassImageLoaded) return;
 
-      const qualityGrassSrc = store.state.webpSupported
-        ? require('@/assets/grass_q90_lossy.webp')
-        : require('@/assets/grass.png');
-
-      loadImage(qualityGrassSrc).then((image) => {
-        this.grassImageSrc = image.src;
+      loadImage(this.grassImageSrc).then(() => {
+        this.grassImageLoaded = true;
       });
+    },
+
+    loadFonts(): void {
+      if (document.fonts && !store.state.inPrerender && !this.fontsLoaded) {
+        document.fonts.addEventListener('loadingdone', () => {
+          this.fontsLoaded = document.fonts.check('12px "Glass Antiqua"');
+        });
+        document.fonts.ready.then(() => {
+          this.fontsLoaded = document.fonts.check('12px "Glass Antiqua"');
+        });
+      }
     },
   },
 });
 </script>
 
 <style lang="scss">
-// .no-webp .home-view .background {
-//   .painting {
-//     // &.grass { background-image: url("~@/assets/grass.png"); }
-//     // &.picnic-table { background-image: url("~@/assets/picnic_table_with_us.png"); }
-//     // &.tree { background-image: url("~@/assets/tree.png"); }
-//   }
-// }
-
-// .webp .home-view .background {
-//   .painting {
-//     // &.grass { background-image: url("~@/assets/grass_q90_lossy.webp"); }
-//     // &.picnic-table { background-image: url("~@/assets/picnic_table_with_us_q90_lossy.webp"); }
-//     // &.tree { background-image: url("~@/assets/tree_q90_lossy.webp"); }
-//   }
-// }
-
 .home-view {
   position: relative;
   overflow: hidden;
@@ -299,6 +240,11 @@ export default Vue.extend({
   height: 100%;
   min-height: 100%;
   max-height: 100%;
+
+  // NOTE: this needs to be here in order to initiate "early" loading of the
+  //       fonts, so that my hacky font replacement stuff can work.
+  // TODO: Consider a less bullshit strategy in the future.
+  font-family: "Glass Antiqua", Times, serif, "Montserrat";
 
   .title-font {
     position: absolute;
@@ -308,18 +254,28 @@ export default Vue.extend({
   }
 
   .main-nav {
-    z-index: 1000;
-    transition: opacity 0.1s;
-    opacity: 0;
+    z-index: 2000;
+
+    // BEGIN: HACKY FONT-REPLACEMENT NICETIES
+
+    font-family: "Glass Antiqua", Times, serif;
+    transform-origin: left;
+
+    &:not(.fonts-loaded) {
+      font-family: Times, serif;
+      transform: scaleX(0.85);
+    }
 
     &.fonts-loaded {
-      opacity: 1;
+      font-family: "Glass Antiqua", Times, serif;
+      transform: scaleX(1);
     }
+
+    // END: HACKY FONT-REPLACEMENT NICETIES
 
     .nav-link {
       font-size: 2rem;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-      font-family: var(--nav-font-family);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0px 0px 1px black, 0px 0px 10px rgba(0, 0, 0, 0.35);
       color: var(--nav-font-color);
       line-height: 1em;
       padding-left: 1rem;
@@ -328,10 +284,7 @@ export default Vue.extend({
       &.router-link-exact-active {
         color: var(--nav-font-color-active);
         font-size: 2em;
-        // text-shadow: 0px 0px 1px rgba(150, 240, 255, 1);
-        // text-shadow: 0px 0px 1px rgba(150, 240, 255, var(--nav-link-active-shadow-opacity));
-        // text-shadow: 0px 0px 1px black;
-        text-shadow: 1px 1px 0px black;
+        text-shadow: 1px 1px 0px black, 0px 0px 1px black
       }
 
       &:hover {
@@ -341,17 +294,6 @@ export default Vue.extend({
   }
 
   .background {
-    // height: 100%;
-    // width: 100%;
-    z-index: -1000;
-    // overflow: hidden;
-    // transition: opacity 10s;
-    // opacity: 0;
-
-    // &.sky-loaded {
-    //   opacity: 1;
-    // }
-
     .painting {
       position: absolute;
       top: 0;
@@ -363,32 +305,19 @@ export default Vue.extend({
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
-      // transition: all 1s;
       filter: blur(10px);
-      // opacity: 0;
-      // transition: filter 0.2s;
-      transition: filter 0.2s;
 
       &.grass {
-        // NOTE: see the .webp and .no-webp variants at the top of the styles
-        // background-image: url("~@/assets/grass.png");
-        // background-image: url("~@/assets/grass_q90_lossy.webp");
         background-position: center left 60%;
         background-image: url("~@/assets/grass_q00_thumb_50.png");
       }
 
       &.picnic-table {
-        // NOTE: see the .webp and .no-webp variants at the top of the styles
-        // background-image: url("~@/assets/picnic_table_with_us.png");
-        // background-image: url("~@/assets/picnic_table_with_us_q90_lossy.webp");
         background-position: center left 45%;
         background-image: url("~@/assets/picnic_table_with_us_q00_thumb_50.png");
       }
 
       &.tree {
-        // NOTE: see the .webp and .no-webp variants at the top of the styles
-        // background-image: url("~@/assets/tree.png");
-        // background-image: url("~@/assets/tree_q90_lossy.webp");
         background-position: center right 45%;
         background-image: url("~@/assets/tree_q00_thumb_50.png");
       }
@@ -428,18 +357,55 @@ export default Vue.extend({
     justify-content: flex-end;
     font-size: $name-font-size;
     line-height: $name-line-height;
-    font-family: 'Glass Antiqua', serif;
     outline: none;
-    transition: opacity 0.1s;
-    opacity: 0;
+    z-index: 1000;
+
+    // BEGIN: HACKY FONT-REPLACEMENT NICETIES
+
+    font-family: 'Glass Antiqua', Times, serif;
+
+    &:not(.fonts-loaded) {
+      .surprise-its-a-name {
+        font-family: Times, serif;
+        transform: scaleX(0.775);
+        transform-origin: right;
+      }
+
+      .tagline {
+        font-family: Times, serif;
+        transform: scaleX(0.95);
+        transform-origin: right;
+      }
+
+      .info {
+        font-family: Arial, sans-serif;
+        transform: scaleX(1.1);
+        transform-origin: center;
+      }
+    }
 
     &.fonts-loaded {
-      opacity: 1;
+      .surprise-its-a-name {
+        font-family: "Glass Antiqua", Times, serif;
+        transform: scaleX(1);
+      }
+
+      .tagline {
+        font-family: "Glass Antiqua", Times, serif;
+        transform: scaleX(1);
+      }
+
+      .info {
+        font-family: "Montserrat", Arial, sans-serif;
+        transform: scaleX(1);
+      }
     }
+
+    // END: HACKY FONT-REPLACEMENT NICETIES
 
     .surprise-its-a-name, .tagline, .info {
       display: inline-block;
-      text-shadow: 4px 4px 5px rgba(0, 0, 0, 1);
+      text-shadow: 4px 4px 5px black, 0px 0px 1px black, 0px 0px 15px rgba(0, 0, 0, 0.5);
       padding: 0em $name-and-stuff-padding-x;
       margin: 0em $name-and-stuff-padding-x 0em 0em;
       white-space: nowrap;
@@ -455,28 +421,12 @@ export default Vue.extend({
     }
 
     .info {
-      $info-font-size: max(1rem, min(2.5vh, 2.5vw));
-      font-family: "Montserrat", sans-serif;
+      $info-font-size: max(1rem, min(3.5vh, 3.5vw));
       font-size: $info-font-size;
-      line-height: calc(1.5 * #{$info-font-size});
+      line-height: calc(1.25 * #{$info-font-size});
       text-align: center;
       margin: 2rem auto 1rem auto;
-      text-shadow: 2px 1px 3px rgba(0, 0, 0, 1);
-
-      // &.info-date {
-      //   line-height: $info-date-line-height;
-      //   font-size: $info-date-font-size;
-      // }
-
-      // &.info-location {
-      //   line-height: $info-location-line-height;
-      //   font-size: $info-location-font-size;
-      // }
-
-      // &.info-addendum {
-      //   line-height: $info-addendum-line-height;
-      //   font-size: $info-addendum-font-size;
-      // }
+      text-shadow: 2px 1px 3px black, 0px 0px 1px black, 0px 0px 10px rgba(0, 0, 0, 0.5);
     }
   }
 }
