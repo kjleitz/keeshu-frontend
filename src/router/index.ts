@@ -35,6 +35,11 @@ const routes: RouteConfig[] = [
     name: 'Info',
     component: () => import(/* webpackChunkName: "info" */ '@/views/Info.vue'),
   },
+  {
+    path: '/rsvp',
+    name: 'Rsvp',
+    component: () => import(/* webpackChunkName: "rsvp" */ '@/views/Rsvp.vue'),
+  },
 ];
 
 const router = new VueRouter({

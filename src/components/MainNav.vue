@@ -25,6 +25,9 @@
     <b-nav-item :to="{ name: 'Map' }">
       Map
     </b-nav-item>
+    <b-nav-item :to="{ name: 'Rsvp' }">
+      RSVP
+    </b-nav-item>
   </b-nav>
 </template>
 
