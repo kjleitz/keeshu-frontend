@@ -25,13 +25,18 @@
     <b-nav-item :to="{ name: 'Map' }">
       Map
     </b-nav-item>
-    <b-nav-item :to="{ name: 'Rsvp' }">
+    <!-- <b-nav-form v-if="!authorized" @submit.stop.prevent="logIn">
+      <b-form-input v-model="passcode"></b-form-input>
+      <b-button type="submit">yeet</b-button>
+    </b-nav-form> -->
+    <!-- <b-nav-item v-if="authorized" :to="{ name: 'Rsvp' }">
       RSVP
-    </b-nav-item>
+    </b-nav-item> -->
   </b-nav>
 </template>
 
 <script lang="ts">
+import store from '@/store';
 import Vue from 'vue';
 
 export default Vue.extend({
@@ -51,6 +56,25 @@ export default Vue.extend({
     //   default: (): Partial<CSSStyleDeclaration> => ({}),
     // },
   },
+
+  // data() {
+  //   return {
+  //     passcode: "",
+  //   };
+  // },
+
+  computed: {
+    authorized(): boolean {
+      return store.getters.authorized;
+    },
+  },
+
+  // methods: {
+  //   logIn(): void {
+  //     store.commit("authorize", this.passcode);
+  //     this.passcode = "";
+  //   },
+  // },
 });
 </script>
 

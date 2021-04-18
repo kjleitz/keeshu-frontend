@@ -1,13 +1,36 @@
 <template>
   <div id="app">
+    <transition name="fade">
+      <AuthSplash
+        v-if="!$store.getters.authorized && !$store.state.authDeferred"
+        @submit="authorize($event)"
+        @cancel="deferAuth"
+      />
+    </transition>
     <router-view/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import store from '@/store';
+import AuthSplash from '@/components/AuthSplash.vue';
 
-export default Vue.extend({});
+export default Vue.extend({
+  components: {
+    AuthSplash,
+  },
+
+  methods: {
+    authorize(passcode: string): void {
+      store.commit("authorize", passcode);
+    },
+
+    deferAuth(): void {
+      store.commit("deferAuth");
+    },
+  },
+});
 </script>
 
 <style lang="scss">
@@ -39,5 +62,13 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   // color: #2c3e50;
   // color: #2c3e50;
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
+  }
 }
 </style>
