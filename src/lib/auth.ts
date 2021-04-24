@@ -5,6 +5,8 @@ const PASSCODES_TO_USER_TYPES = {
   balaji: "streamer",
   venkateswara: "streamer", // I'm telling you, it's the same guy!
   venkateshwara: "streamer",
+  chootanoofadoofapoopy: "admin",
+  chateauneufdupape: "admin", // I guess _some_ people spell it that way
 } as const;
 
 type PassCode = keyof typeof PASSCODES_TO_USER_TYPES;

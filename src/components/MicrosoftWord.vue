@@ -232,7 +232,7 @@ export default Vue.extend({
         { label: "Hotels", shortcut: "Alt+O", action: () => this.$router.push({ name: "Hotels" }) },
         { label: "Us", shortcut: "Alt+U", action: () => this.$router.push({ name: "Us" }) },
         { label: "Map", shortcut: "Alt+M", action: () => this.$router.push({ name: "Map" }) },
-        ...(store.state.userType === 'irl' ? [rsvpItem] : []),
+        ...(store.getters.authorizedFor('rsvp') ? [rsvpItem] : []),
       ];
     },
 

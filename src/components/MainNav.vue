@@ -40,7 +40,7 @@
       <b-button type="submit">yeet</b-button>
     </b-nav-form> -->
     <transition name="fade" appear>
-      <b-nav-item v-if="debug || $store.state.userType === 'irl'" :to="{ name: 'Rsvp' }">
+      <b-nav-item v-if="$store.getters.authorizedFor('rsvp')" :to="{ name: 'Rsvp' }">
         RSVP
       </b-nav-item>
     </transition>

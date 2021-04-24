@@ -10,7 +10,7 @@
         <router-link :to="{ name: 'Us' }">Us</router-link>
         -
         <router-link :to="{ name: 'Map' }">Map</router-link>
-        <template v-if="$store.state.userType === 'irl'">
+        <template v-if="$store.getters.authorizedFor('rsvp')">
           -
           <router-link :to="{ name: 'Rsvp' }">RSVP</router-link>
         </template>

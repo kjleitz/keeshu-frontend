@@ -42,5 +42,18 @@ export default new Vuex.Store({
     authorized(state): boolean {
       return !!state.userType;
     },
+
+    authorizedFor(state): (page: string) => boolean {
+      return (page: string): boolean => {
+        if (state.userType === "admin") return true;
+
+        switch (page.toLowerCase()) {
+          case "rsvp": return state.userType === "irl";
+          case "registry": return state.userType === "irl";
+          case "stream": return state.userType === "irl" || state.userType === "streamer";
+          default: return true;
+        }
+      };
+    },
   },
 });
