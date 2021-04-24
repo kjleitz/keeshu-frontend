@@ -1,6 +1,7 @@
 <template>
   <div
     class="microsoft-word"
+    tabindex="-1"
     @keydown="onKeydown"
   >
     <div class="window-container">
@@ -191,6 +192,7 @@ import EditorButton from '@/components/ms_word/EditorButton.vue';
 import WordIcon from '@/components/ms_word/WordIcon.vue';
 import WindowMenu, { WindowMenuItem } from '@/components/ms_word/WindowMenu.vue';
 import { range } from 'underscore';
+import store from '@/store';
 
 export default Vue.extend({
   components: {
@@ -222,12 +224,15 @@ export default Vue.extend({
   computed: {
     // TODO: extract; this component shouldn't know about the site as a whole
     windowMenuItems(): WindowMenuItem[] {
+      const rsvpItem = { label: "RSVP", shortcut: "Alt+R", action: () => this.$router.push({ name: "Rsvp" }) };
+
       return [
         { label: "Home", shortcut: "Alt+H", action: () => this.$router.push({ name: "Home" }) },
         // { label: "Info", shortcut: "Alt+I", action: () => this.$router.push({ name: "Info" }) },
         { label: "Hotels", shortcut: "Alt+O", action: () => this.$router.push({ name: "Hotels" }) },
         { label: "Us", shortcut: "Alt+U", action: () => this.$router.push({ name: "Us" }) },
         { label: "Map", shortcut: "Alt+M", action: () => this.$router.push({ name: "Map" }) },
+        ...(store.state.userType === 'irl' ? [rsvpItem] : []),
       ];
     },
 
@@ -318,7 +323,15 @@ export default Vue.extend({
     helpMenuOpen(newVal: boolean, _oldVal: boolean): void {
       if (newVal) this.closeAllMenus({ except: 'help' });
     },
+  },
 
+  mounted(): void {
+    (this.$el as HTMLElement).focus();
+  },
+
+  beforeRouteUpdate(_to, _from, next): void {
+    (this.$el as HTMLElement).focus();
+    next();
   },
 
   methods: {
@@ -331,6 +344,7 @@ export default Vue.extend({
           KeyO: "Hotels",
           KeyU: "Us",
           KeyM: "Map",
+          KeyR: "Rsvp",
         };
         const routeName = shortcuts[event.code as keyof typeof shortcuts];
         if (routeName) {
@@ -374,6 +388,7 @@ $page-max-width: 1024px;
   font-smooth: never;
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: none;
+  // outline: none;
 
   .box-chamfer {
     border-top: 1px solid $ms-bg-window-light;

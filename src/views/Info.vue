@@ -10,6 +10,10 @@
         <router-link :to="{ name: 'Us' }">Us</router-link>
         -
         <router-link :to="{ name: 'Map' }">Map</router-link>
+        <template v-if="$store.state.userType === 'irl'">
+          -
+          <router-link :to="{ name: 'Rsvp' }">RSVP</router-link>
+        </template>
       </p>
       <p>
         <strong>Dates</strong>
@@ -18,7 +22,7 @@
             <em>Rehearsal dinner:</em> 8/13/2021
           </li> -->
           <li>
-            <em>Ceremony & reception:</em> 8/14/2021
+            <em>Ceremony &amp; reception:</em> 8/14/2021
           </li>
           <!-- <li>
             <em>Farewell brunch:</em> 8/15/2021
@@ -35,7 +39,7 @@
             <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>
           </li> -->
           <li>
-            <em>Ceremony & reception: </em>
+            <em>Ceremony &amp; reception: </em>
             <a href="http://www.lordthompsonmanor.com/">Lord Thompson Manor</a>
             -
             <a href="https://www.google.com/maps/search/Lord+Thompson+Manor,+Thompson+Hill+Road,+Thompson,+CT">(map)</a>

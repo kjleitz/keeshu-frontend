@@ -4,6 +4,7 @@
     frameborder="0"
     allowfullscreen
     class="google-map"
+    v-on="$listeners"
   ></iframe>
 </template>
 

@@ -114,7 +114,7 @@ export default Vue.extend({
           this.submitted = true;
           window.setTimeout(() => {
             this.$emit("submit", passcode);
-          }, 500);
+          }, 1000);
         } else {
           this.$nextTick(() => {
             this.$refs.passcodeInput.focus();

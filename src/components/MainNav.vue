@@ -29,9 +29,9 @@
       <b-form-input v-model="passcode"></b-form-input>
       <b-button type="submit">yeet</b-button>
     </b-nav-form> -->
-    <!-- <b-nav-item v-if="authorized" :to="{ name: 'Rsvp' }">
+    <b-nav-item v-if="debug || $store.state.userType === 'irl'" :to="{ name: 'Rsvp' }">
       RSVP
-    </b-nav-item> -->
+    </b-nav-item>
   </b-nav>
 </template>
 

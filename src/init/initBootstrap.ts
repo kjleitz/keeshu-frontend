@@ -9,9 +9,11 @@ import {
   BFormInput,
   BIcon,
   BIconChevronCompactDown,
+  BIconEnvelope,
   BIconKey,
   BIconLink45deg,
   BIconLockFill,
+  BIconMap,
   BIconUnlockFill,
   BImg,
   BInputGroup,
@@ -45,9 +47,11 @@ export default function initBootstrap(): void {
   Vue.component('BFormInput', BFormInput);
   Vue.component('BIcon', BIcon);
   Vue.component('BIconChevronCompactDown', BIconChevronCompactDown);
+  Vue.component('BIconEnvelope', BIconEnvelope);
   Vue.component('BIconKey', BIconKey);
   Vue.component('BIconLink45deg', BIconLink45deg);
   Vue.component('BIconLockFill', BIconLockFill);
+  Vue.component('BIconMap', BIconMap);
   Vue.component('BIconUnlockFill', BIconUnlockFill);
   Vue.component('BImg', BImg);
   Vue.component('BInputGroup', BInputGroup);

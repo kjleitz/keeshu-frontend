@@ -1,7 +1,12 @@
 <template>
   <div class="map-view">
     <MainNav/>
-    <GoogleMap class="map"/>
+    <GoogleMap :class="['map', { loaded }]" @load="onMapFrameLoaded"/>
+    <transition name="fade" appear>
+      <div v-if="loading" class="loading-indicator">
+        <b-icon-map animation="spin" scale="10"/>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -14,6 +19,24 @@ export default Vue.extend({
   components: {
     MainNav,
     GoogleMap,
+  },
+
+  data() {
+    return {
+      loaded: false,
+    };
+  },
+
+  computed: {
+    loading(): boolean {
+      return !this.loaded;
+    },
+  },
+
+  methods: {
+    onMapFrameLoaded(): void {
+      this.loaded = true;
+    },
   },
 });
 </script>
@@ -49,6 +72,21 @@ export default Vue.extend({
     width: 100%;
     // height: calc(100% - 20px);
     height: calc(100% - 2.5rem - 10px);
+    opacity: 0;
+    transition: opacity 0.5s;
+
+    &.loaded {
+      opacity: 1;
+    }
+  }
+
+  .loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: 1000;
+    color: rgba(0, 0, 0, 0.25);
   }
 }
 </style>

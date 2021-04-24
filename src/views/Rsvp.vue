@@ -3,10 +3,18 @@
     <div class="nav-area">
       <MainNav class="main-nav"/>
     </div>
-    <div class="rsvp-envelope">
-      <div class="rsvp-card">
-        <iframe class="rsvpify-form" src="/rsvpify.html" frameborder="0"></iframe>
-      </div>
+    <div class="rsvp-area">
+      <iframe
+        :class="['rsvpify-frame', { loaded }]"
+        src="/rsvpify.html"
+        frameborder="0"
+        @load="onRsvpifyFrameLoaded"
+      ></iframe>
+      <transition name="fade" appear>
+        <div v-if="loading" class="loading-indicator">
+          <b-icon-envelope animation="spin" scale="10"/>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -20,109 +28,118 @@ export default Vue.extend({
     MainNav,
   },
 
-  // data() {
-  //   return {
-  //     sunlightColor: "",
-  //   };
-  // },
-
-  mounted(): void {
-    document.body.classList.add("rsvp-page");
+  data() {
+    return {
+      loaded: false,
+    };
   },
 
-  beforeDestroy(): void {
-    document.body.classList.remove("rsvp-page");
+  computed: {
+    loading(): boolean {
+      return !this.loaded;
+    },
   },
 
-  beforeRouteUpdate(_to, _from, next): void {
-    document.body.classList.add("rsvp-page");
-    next();
-  },
-
-  beforeRouteLeave(_to, _from, next): void {
-    document.body.classList.remove("rsvp-page");
-    next();
+  methods: {
+    onRsvpifyFrameLoaded(): void {
+      this.loaded = true;
+    },
   },
 });
 </script>
 
 <style lang="scss">
-$navy-light: rgb(0, 0, 175);
-$navy: rgb(0, 0, 128);
-$usps: rgb(51, 49, 99);
-$usps-dark: rgb(26, 24, 75);
-
-body.rsvp-page {
-  // background-color: #333163;
-  // background: linear-gradient(135deg, white 0%, #333163 75%, #333163 100%);
-  // background: linear-gradient(135deg, navy 0%, #333163 75%, #333163 100%);
-  // background: linear-gradient(135deg, navy 0%, #333163 100%);
-  // background: linear-gradient(135deg, navy 0%, rgb(51, 49, 99) 100%);
-  // background: linear-gradient(135deg, navy 0%, rgb(25, 25, 75) 100%);
-  // background: linear-gradient(135deg, rgb(0, 0, 128) 0%, rgb(25, 25, 75) 100%);
-  background: linear-gradient(135deg, $navy-light 0%, $navy 25%, $usps 75%, $usps-dark 100%);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  // border-top-left-radius: 5rem;
-}
+// These are an attempt to clone the top bar on RSVPify's preview mode, for
+// style consistency
+$navbar-height: 3.5rem;
+$navbar-font-family: "Open Sans", sans-serif;
+$navbar-font-size: 1rem;
+$navbar-font-weight: 600;
+$navbar-color: rgb(69, 40, 107);
+$navbar-color-hover: rgb(106, 83, 137);
+$navbar-color-active: rgb(235, 58, 74);
+$navbar-background-color: #ffffff;
+$navbar-border-bottom: 4px solid rgb(255, 184, 117);
+$navbar-box-shadow:
+  rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+  rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+  rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+  rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
 
 .rsvp-view {
-  // background-color: #184A9D;
-  // background-color: #333163;
-  min-height: fit-content;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: blue;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
 
   .nav-area {
-    position: sticky;
-    top: 0px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: $navbar-height;
+    border-bottom: $navbar-border-bottom;
+    box-shadow: $navbar-box-shadow;
+    background-color: $navbar-background-color;
 
     .main-nav {
       position: relative;
-      text-align: center;
-      padding-left: 0;
-      padding-right: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      font-weight: $navbar-font-weight;
+      font-family: $navbar-font-family;
+      font-size: $navbar-font-size;
+      color: $navbar-color;
 
       a {
-        color: white;
-        font-style: italic;
-        font-weight: bold;
-        font-size: 2rem;
-        text-transform: uppercase;
+        color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        transition: color 0.15s;
 
         &.router-link-exact-active {
-          color: #E60030;
+          color: $navbar-color-active;
+        }
+
+        &:hover {
+          color: $navbar-color-hover;
         }
       }
-      // top: 0;
-      // left: 50%;
-      // transform: translateX(-50%);
     }
   }
 
-  .rsvp-envelope {
-    margin: 0 auto;
-    // max-width: 640px; // TODO
-    // max-height: 640px; // TODO
-    width: min(95vw, 640px); // TODO
-    height: 640px; // TODO
-    background-color: #fffff0; // TODO
-    border: 1px solid rgba(0, 0, 0, 0.125);
-    padding: 1rem;
+  .rsvp-area {
+    background-color: #ffffff; // TODO
+    flex-grow: 1;
 
-    .rsvp-card {
-      position: relative;
+    .rsvpify-frame {
       width: 100%;
       height: 100%;
-      background-color: #ffffff;
-      box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      transition: opacity 0.5s;
 
-      .rsvpify-form {
-        width: 100%;
-        // height: 2000px;
-        height: 100%;
+      &.loaded {
+        opacity: 1;
       }
+    }
+
+    .loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      z-index: 1000;
+      color: rgba(0, 0, 0, 0.25);
     }
   }
 }

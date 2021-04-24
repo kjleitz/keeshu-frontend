@@ -1,5 +1,5 @@
 <template>
-  <div :style="styleVariables" class="home-view">
+  <div :style="styleVariables" class="home-view" tabindex="-1" @keyup.d="debug = !debug">
     <h1 class="sr-only">Home</h1>
     <MainNav vertical :debug="debug" :class="{ 'fonts-loaded': fontsLoaded }"/>
     <Sky :debug="debug" class="background" @day-elapsed-percent-changed="dayElapsedPercent = $event">
@@ -9,10 +9,7 @@
     </Sky>
     <div
       :style="titleStyles"
-      tabindex="0"
       :class="['our-names-obviously', { 'fonts-loaded': fontsLoaded }]"
-      @keyup.ctrl.d.prevent.stop="debug = !debug"
-      @keyup.d.exact="debug = !debug"
     >
       <div class="surprise-its-a-name name-aishu">
         Aishu &amp;
@@ -187,6 +184,15 @@ export default Vue.extend({
     this.loadTreeImage();
     this.loadGrassImage();
     this.loadPicnicTableImage();
+  },
+
+  mounted(): void {
+    (this.$el as HTMLElement).focus();
+  },
+
+  beforeRouteUpdate(_to, _from, next): void {
+    (this.$el as HTMLElement).focus();
+    next();
   },
 
   methods: {
