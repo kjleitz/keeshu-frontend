@@ -1,5 +1,6 @@
 <template>
   <div class="auth-splash">
+    <div class="auth-modal-backdrop" @click="onCancel"></div>
     <div class="auth-modal pt-4 pb-2 px-2">
       <header class="title mb-2">
         Hey!
@@ -142,8 +143,13 @@ $discord-dark: rgb(47, 48, 54);
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   z-index: 100000;
+
+  .auth-modal-backdrop {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 
   .auth-modal {
     position: absolute;

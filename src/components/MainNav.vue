@@ -10,28 +10,51 @@
     :class="['main-nav', $route.name]"
     v-on="$listeners"
   >
-    <b-nav-item :to="{ name: 'Home' }">
-      Home
-    </b-nav-item>
-    <b-nav-item v-if="debug" :to="{ name: 'Info' }">
-      Info
-    </b-nav-item>
-    <b-nav-item :to="{ name: 'Hotels' }">
-      Hotel<span class="hotels-last-letter">s</span>
-    </b-nav-item>
-    <b-nav-item :to="{ name: 'Us' }">
-      Us
-    </b-nav-item>
-    <b-nav-item :to="{ name: 'Map' }">
-      Map
-    </b-nav-item>
+    <transition name="fade" appear>
+      <b-nav-item :to="{ name: 'Home' }">
+        Home
+      </b-nav-item>
+    </transition>
+    <transition name="fade" appear>
+      <b-nav-item v-if="debug" :to="{ name: 'Info' }">
+        Info
+      </b-nav-item>
+    </transition>
+    <transition name="fade" appear>
+      <b-nav-item :to="{ name: 'Hotels' }">
+        Hotel<span class="hotels-last-letter">s</span>
+      </b-nav-item>
+    </transition>
+    <transition name="fade" appear>
+      <b-nav-item :to="{ name: 'Us' }">
+        Us
+      </b-nav-item>
+    </transition>
+    <transition name="fade" appear>
+      <b-nav-item :to="{ name: 'Map' }">
+        Map
+      </b-nav-item>
+    </transition>
     <!-- <b-nav-form v-if="!authorized" @submit.stop.prevent="logIn">
       <b-form-input v-model="passcode"></b-form-input>
       <b-button type="submit">yeet</b-button>
     </b-nav-form> -->
-    <b-nav-item v-if="debug || $store.state.userType === 'irl'" :to="{ name: 'Rsvp' }">
-      RSVP
-    </b-nav-item>
+    <transition name="fade" appear>
+      <b-nav-item v-if="debug || $store.state.userType === 'irl'" :to="{ name: 'Rsvp' }">
+        RSVP
+      </b-nav-item>
+    </transition>
+    <transition name="fade" appear>
+      <b-nav-item
+        v-if="!$store.getters.authorized"
+        @click="showAuthSplash"
+      >
+        More
+        <span class="passcode-required">
+          (passcode required)
+        </span>
+      </b-nav-item>
+    </transition>
   </b-nav>
 </template>
 
@@ -45,23 +68,7 @@ export default Vue.extend({
       type: Boolean,
       default: false,
     },
-
-    // linkStyles: {
-    //   type: Object as PropType<Partial<CSSStyleDeclaration>>,
-    //   default: (): Partial<CSSStyleDeclaration> => ({}),
-    // },
-
-    // linkActiveStyles: {
-    //   type: Object as PropType<Partial<CSSStyleDeclaration>>,
-    //   default: (): Partial<CSSStyleDeclaration> => ({}),
-    // },
   },
-
-  // data() {
-  //   return {
-  //     passcode: "",
-  //   };
-  // },
 
   computed: {
     authorized(): boolean {
@@ -69,16 +76,17 @@ export default Vue.extend({
     },
   },
 
-  // methods: {
-  //   logIn(): void {
-  //     store.commit("authorize", this.passcode);
-  //     this.passcode = "";
-  //   },
-  // },
+  methods: {
+    showAuthSplash(): void {
+      store.commit("showAuth");
+    },
+  },
 });
 </script>
 
 <style lang="scss">
+@import "@/styles/breakpoints";
+
 .main-nav {
   font-family: 'Jacques Francois Shadow', sans-serif;
   position: fixed;
@@ -105,6 +113,14 @@ export default Vue.extend({
     // &.active {
     //   color: #42b983;
     // }
+
+    .passcode-required {
+      display: none;
+
+      @include media-breakpoint-up(sm) {
+        display: inline;
+      }
+    }
   }
 
   // .top-nav-link {

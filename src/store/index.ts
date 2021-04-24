@@ -32,6 +32,10 @@ export default new Vuex.Store({
     deferAuth(state): void {
       state.authDeferred = true;
     },
+
+    showAuth(state): void {
+      state.authDeferred = false;
+    },
   },
 
   getters: {
