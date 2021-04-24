@@ -45,6 +45,11 @@
       </b-nav-item>
     </transition>
     <transition name="fade" appear>
+      <b-nav-item v-if="$store.getters.authorizedFor('stream')" :to="{ name: 'Stream' }">
+        Stream
+      </b-nav-item>
+    </transition>
+    <transition name="fade" appear>
       <b-nav-item
         v-if="!$store.getters.authorized"
         @click="showAuthSplash"
@@ -96,15 +101,44 @@ export default Vue.extend({
   padding: 30px;
   z-index: 1000;
   font-size: 1.5rem;
+  align-items: center;
+
+  &.nav {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
 
   // &:not(.vertical) {
-  //   position: sticky;
+  //   align-items: center;
+
+  //   a {
+  //     padding-top: 0;
+  //     padding-bottom: 0;
+  //     padding-left: 2rem;
+  //     padding-right: 2rem;
+
+  //     @include media-breakpoint-down(sm) {
+  //       padding-left: 0.35rem;
+  //       padding-right: 0.35rem;
+  //       font-size: 0.8em;
+  //     }
+  //   }
   // }
 
   a {
     font-weight: bold;
     color: #2c3e50;
     white-space: nowrap;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    @include media-breakpoint-down(sm) {
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+      font-size: 0.75em;
+    }
 
     &.router-link-exact-active {
       color: #42b983;

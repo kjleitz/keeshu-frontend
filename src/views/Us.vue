@@ -4,7 +4,7 @@
       <h1 class="sr-only">Us</h1>
       <div class="title-area">
         <span class="title">
-          Aishu & Keegan
+          Aishu &amp; Keegan
         </span>
       </div>
       <div class="nav-area">
@@ -274,7 +274,7 @@ $title-area-height-sm: $title-area-padding-top-sm + $title-area-padding-bottom-s
 // $nav-padding-bottom: 0.5rem;
 $nav-padding-top: 0.75rem;
 $nav-padding-bottom: 0.75rem;
-$nav-font-size: 1rem;
+$nav-font-size: 1.25rem;
 $nav-line-height: $nav-font-size;
 $nav-height: $nav-padding-top + $nav-padding-bottom + $nav-line-height;
 
@@ -354,14 +354,14 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
 
         @include media-breakpoint-down(sm) {
           padding: $nav-padding-top-sm 2rem $nav-padding-bottom-sm 2rem;
-          font-size: $nav-font-size-sm;
+          // font-size: $nav-font-size-sm;
           line-height: $nav-line-height-sm;
         }
 
         a {
           font-weight: 400;
           color: #2c3e50;
-          padding: 0 1rem;
+          // padding: 0 1rem;
 
           &.router-link-exact-active {
             font-weight: 700;

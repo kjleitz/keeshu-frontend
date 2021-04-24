@@ -40,6 +40,11 @@ const routes: RouteConfig[] = [
     name: 'Rsvp',
     component: () => import(/* webpackChunkName: "rsvp" */ '@/views/Rsvp.vue'),
   },
+  {
+    path: '/stream',
+    name: 'Stream',
+    component: () => import(/* webpackChunkName: "stream" */ '@/views/Stream.vue'),
+  },
 ];
 
 const router = new VueRouter({

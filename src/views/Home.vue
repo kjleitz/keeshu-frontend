@@ -263,6 +263,7 @@ export default Vue.extend({
 
   .main-nav {
     z-index: 2000;
+    align-items: flex-start;
 
     // BEGIN: HACKY FONT-REPLACEMENT NICETIES
 
@@ -286,7 +287,8 @@ export default Vue.extend({
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0px 0px 1px black, 0px 0px 10px rgba(0, 0, 0, 0.35);
       color: var(--nav-font-color);
       line-height: 1em;
-      padding-left: 1rem;
+      padding: 0.5rem 1rem;
+      // padding-left: 1rem;
       transition: padding 0.3s;
 
       &.router-link-exact-active {

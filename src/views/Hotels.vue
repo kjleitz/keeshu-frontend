@@ -252,9 +252,14 @@ $sign-margin: 0.5rem;
 
         a.nav-link {
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+
           &.router-link-exact-active {
             color: #182D3E;
             font-size: 1.25em;
+
+            @include media-breakpoint-down(sm) {
+              font-size: 1.1em;
+            }
           }
         }
 

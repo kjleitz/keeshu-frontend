@@ -1,7 +1,7 @@
 <template>
   <div class="map-view">
     <MainNav/>
-    <GoogleMap :class="['map', { loaded }]" @load="onMapFrameLoaded"/>
+    <GoogleMap :class="['map-frame', { loaded }]" @load="onMapFrameLoaded"/>
     <transition name="fade" appear>
       <div v-if="loading" class="loading-indicator">
         <b-icon-map animation="spin" scale="10"/>
@@ -42,6 +42,8 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+@import "@/styles/breakpoints";
+
 .map-view {
   position: absolute;
   top: 0;
@@ -51,11 +53,14 @@ export default Vue.extend({
   background-color: #F8F9FA;
 
   .main-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     position: absolute;
     left: 0;
     top: 0;
     height: 2.5rem;
-    font-size: 1rem;
+    font-size: 1.25rem;
     padding: 0;
     // padding: 1rem 2rem;
     width: calc(100% - 20px);
@@ -63,10 +68,13 @@ export default Vue.extend({
     box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3);
     border-radius: 2px;
     margin: 10px;
-    justify-content: center;
+
+    // @include media-breakpoint-down(sm) {
+    //   font-size: 0.8rem;
+    // }
   }
 
-  .map {
+  .map-frame {
     position: absolute;
     top: calc(2.5rem + 10px);
     width: 100%;
