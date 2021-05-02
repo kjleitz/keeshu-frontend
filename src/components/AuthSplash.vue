@@ -95,7 +95,8 @@ export default Vue.extend({
   computed: {
     cancelButtons(): string[] {
       return [
-        "I don't have one",
+        // "I don't have one",
+        "Don't have one yet",
         "I'm just visiting",
         "I'll do it later",
         "Where am I?",
