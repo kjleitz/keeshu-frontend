@@ -24,6 +24,14 @@ export default Vue.extend({
   methods: {
     authorize(passcode: string): void {
       store.commit("authorize", passcode);
+      const { intendedDestination } = store.state;
+      if (
+        intendedDestination
+        && intendedDestination !== this.$route.name
+        && store.getters.authorizedFor(intendedDestination)
+      ) {
+        this.$router.push({ name: intendedDestination });
+      }
     },
 
     deferAuth(): void {

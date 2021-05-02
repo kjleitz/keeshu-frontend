@@ -10,6 +10,7 @@ export default new Vuex.Store({
     inPrerender: !!(window as any).__PRERENDER_INJECTED,
     userType: localStorage.getItem("keeshu:userType") as UserType,
     authDeferred: false,
+    intendedDestination: "",
   },
 
   mutations: {
@@ -37,6 +38,14 @@ export default new Vuex.Store({
 
     showAuth(state): void {
       state.authDeferred = false;
+    },
+
+    setIntendedDestination(state, routeName: string): void {
+      state.intendedDestination = routeName || "";
+    },
+
+    clearIntendedDestination(state): void {
+      state.intendedDestination = "";
     },
   },
 

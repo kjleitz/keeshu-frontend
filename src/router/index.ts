@@ -1,54 +1,74 @@
-import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
-import Home from '../views/Home.vue';
+import store from "@/store";
+import Vue from "vue";
+import VueRouter, { NavigationGuard, RouteConfig } from "vue-router";
+import Home from "@/views/Home.vue";
 
 Vue.use(VueRouter);
 
+const youDontEvenGoHere: NavigationGuard = (to, from, next): void => {
+  if (store.getters.authorizedFor(to.name)) {
+    store.commit("clearIntendedDestination", to.name);
+    console.log("allowed:", to.name)
+    next();
+  } else {
+    store.commit("setIntendedDestination", to.name);
+    console.log("denied:", to.name)
+    next({ name: "Home" });
+  }
+};
+
 const routes: RouteConfig[] = [
   {
-    path: '/',
-    name: 'Home',
+    path: "/",
+    name: "Home",
     component: Home,
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue'),
+    path: "/about",
+    name: "About",
+    component: () => import(/* webpackChunkName: "about" */ "@/views/About.vue"),
+    beforeEnter: youDontEvenGoHere,
   },
   {
-    path: '/us',
-    name: 'Us',
-    component: () => import(/* webpackChunkName: "us" */ '@/views/Us.vue'),
+    path: "/us",
+    name: "Us",
+    component: () => import(/* webpackChunkName: "us" */ "@/views/Us.vue"),
+    beforeEnter: youDontEvenGoHere,
   },
   {
-    path: '/map',
-    name: 'Map',
-    component: () => import(/* webpackChunkName: "map" */ '@/views/Map.vue'),
+    path: "/map",
+    name: "Map",
+    component: () => import(/* webpackChunkName: "map" */ "@/views/Map.vue"),
+    beforeEnter: youDontEvenGoHere,
   },
   {
-    path: '/hotels',
-    name: 'Hotels',
-    component: () => import(/* webpackChunkName: "hotels" */ '@/views/Hotels.vue'),
+    path: "/hotels",
+    name: "Hotels",
+    component: () => import(/* webpackChunkName: "hotels" */ "@/views/Hotels.vue"),
+    beforeEnter: youDontEvenGoHere,
   },
   {
-    path: '/info',
-    name: 'Info',
-    component: () => import(/* webpackChunkName: "info" */ '@/views/Info.vue'),
+    path: "/info",
+    name: "Info",
+    component: () => import(/* webpackChunkName: "info" */ "@/views/Info.vue"),
+    beforeEnter: youDontEvenGoHere,
   },
   {
-    path: '/rsvp',
-    name: 'Rsvp',
-    component: () => import(/* webpackChunkName: "rsvp" */ '@/views/Rsvp.vue'),
+    path: "/rsvp",
+    name: "Rsvp",
+    component: () => import(/* webpackChunkName: "rsvp" */ "@/views/Rsvp.vue"),
+    beforeEnter: youDontEvenGoHere,
   },
   {
-    path: '/stream',
-    name: 'Stream',
-    component: () => import(/* webpackChunkName: "stream" */ '@/views/Stream.vue'),
+    path: "/stream",
+    name: "Stream",
+    component: () => import(/* webpackChunkName: "stream" */ "@/views/Stream.vue"),
+    beforeEnter: youDontEvenGoHere,
   },
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
   routes,
   scrollBehavior(_to, _from, _savedPosition) {
