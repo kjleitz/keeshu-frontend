@@ -60,6 +60,11 @@
         </span>
       </b-nav-item>
     </transition>
+    <transition name="fade" appear>
+      <b-nav-item v-if="debug && $route.name === 'Home'" @click="forgetMe">
+        Forget me
+      </b-nav-item>
+    </transition>
   </b-nav>
 </template>
 
@@ -84,6 +89,11 @@ export default Vue.extend({
   methods: {
     showAuthSplash(): void {
       store.commit("showAuth");
+    },
+
+    forgetMe(): void {
+      localStorage.clear();
+      window.location.reload();
     },
   },
 });
