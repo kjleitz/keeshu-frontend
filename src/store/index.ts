@@ -1,4 +1,4 @@
-import auth, { UserType } from '@/lib/auth';
+import fakeAuth, { UserType } from '@/lib/fakeAuth';
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -17,8 +17,10 @@ export default new Vuex.Store({
       state.webpSupported = supported;
     },
 
+    // NB: This does not imply "real" auth; it's just for UX. See the comment
+    //     above the `fakeAuth()` function in `src/lib/fakeAuth.ts` for details.
     authorize(state, passcode: string): void {
-      const userType = auth(passcode);
+      const userType = fakeAuth(passcode);
       state.userType = userType;
 
       if (userType) {
@@ -39,10 +41,14 @@ export default new Vuex.Store({
   },
 
   getters: {
+    // NB: This does not imply "real" auth; it's just for UX. See the comment
+    //     above the `fakeAuth()` function in `src/lib/fakeAuth.ts` for details.
     authorized(state): boolean {
       return !!state.userType;
     },
 
+    // NB: This does not imply "real" auth; it's just for UX. See the comment
+    //     above the `fakeAuth()` function in `src/lib/fakeAuth.ts` for details.
     authorizedFor(state): (page: string) => boolean {
       return (page: string): boolean => {
         if (state.userType === "admin") return true;

@@ -3,6 +3,8 @@ const PASSCODES_TO_USER_TYPES = {
   lotis: "irl",
   iotus: "irl", // lowercase L or capital I? doesn't matter!
   balaji: "streamer",
+  balajee: "streamer",
+  balagi: "streamer",
   venkateswara: "streamer", // I'm telling you, it's the same guy!
   venkateshwara: "streamer",
   chootanoofadoofapoopy: "admin",
@@ -20,8 +22,8 @@ export type UserType = (typeof PASSCODES_TO_USER_TYPES)[PassCode] | null;
 // invitation will see the streaming option instead. The only reason we're
 // hiding stuff for the latter is so they don't feel obligated to get us a gift
 // or think they need to respond to the RSVP. If they (or you, our dear reader)
-// end up seeing the other stuff... welp, no harm done!1
-export default function auth(rawPasscode: string): UserType {
+// end up seeing the other stuff... welp, no harm done!
+export default function fakeAuth(rawPasscode: string): UserType {
   const passcode = `${rawPasscode}`.replace(/[^A-Za-z]/g, '').toLowerCase() as PassCode;
   return PASSCODES_TO_USER_TYPES[passcode] || null;
 }

@@ -1,10 +1,13 @@
 <template>
-  <div class="auth-splash">
-    <div class="auth-modal-backdrop" @click="onCancel"></div>
-    <div class="auth-modal pt-4 pb-2 px-2">
-      <header class="title mb-2">
-        Hey!
-      </header>
+  <Splash
+    v-if="!$store.getters.authorized && !$store.state.authDeferred"
+    class="auth-splash"
+    @close="onCancel"
+  >
+    <template #header>
+      Hey!
+    </template>
+    <template #body>
       <p>
         What's the passcode on your invitation?
       </p>
@@ -52,6 +55,8 @@
           </b-input-group>
         </b-form-group>
       </p>
+    </template>
+    <template #footer>
       <p class="passcode-actions-area">
         <b-button
           v-for="cancelButton in cancelButtons"
@@ -64,15 +69,20 @@
           {{ cancelButton }}
         </b-button>
       </p>
-    </div>
-  </div>
+    </template>
+  </Splash>
 </template>
 
 <script lang="ts">
-import auth from '@/lib/auth';
+import fakeAuth from '@/lib/fakeAuth';
 import Vue from 'vue';
+import Splash from '@/components/Splash.vue';
 
 export default Vue.extend({
+  components: {
+    Splash,
+  },
+
   data() {
     return {
       passcode: "",
@@ -109,7 +119,7 @@ export default Vue.extend({
 
       window.setTimeout(() => {
         this.fakeLoading = false;
-        this.passcodeValid = !!auth(passcode);
+        this.passcodeValid = !!fakeAuth(passcode);
 
         if (this.passcodeValid) {
           this.submitted = true;
@@ -132,74 +142,31 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-// what, I like the color
-$discord: rgb(54, 56, 63);
-$discord-light: rgb(64, 67, 75);
-$discord-dark: rgb(47, 48, 54);
-
 .auth-splash {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 100000;
+  .passcode-form-area {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
 
-  .auth-modal-backdrop {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    .passcode-form-group {
+      width: 450px;
+      max-width: 90%;
+
+      &.not-yet-validated {
+        margin-bottom: 44px;
+      }
+    }
   }
 
-  .auth-modal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    max-width: 96%;
-    width: 640px;
-    background-color: $discord;
-    border: 2px solid $discord-light;
-    border-radius: 1rem;
-    color: rgb(220, 220, 220);
-    padding: 2rem;
-    text-align: center;
-    font-size: 1.25rem;
-    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.25);
+  .passcode-actions-area {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
 
-    .title {
-      font-size: 2rem;
-    }
-
-    .passcode-form-area {
-      display: flex;
-      flex-wrap: nowrap;
-      justify-content: center;
-
-      .passcode-form-group {
-        width: 450px;
-        max-width: 90%;
-
-        &.not-yet-validated {
-          margin-bottom: 44px;
-        }
-      }
-    }
-
-    .passcode-actions-area {
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      flex-wrap: wrap;
-
-      .action-button {
-        white-space: nowrap;
-      }
+    .action-button {
+      white-space: nowrap;
     }
   }
 }
 </style>
- mb-4
- mb-4
- mb-4
- mb-4

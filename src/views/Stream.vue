@@ -1,5 +1,30 @@
 <template>
   <div class="stream-view">
+    <transition name="fade">
+      <Splash v-if="splashOpen" @close="onCloseSplash">
+        <template #header>
+          All right, so...
+        </template>
+        <template #body>
+          <p>
+            This is where the wedding will be streamed! There's no stream yet,
+            obviously, but feel free to watch this video over and over until the
+            stream starts ({{ humanDuration }}).
+          </p>
+        </template>
+        <template #footer>
+          <p>
+            <b-button
+              size="lg"
+              variant="primary"
+              @click="onCloseSplash"
+            >
+              Cool, thanks
+            </b-button>
+          </p>
+        </template>
+      </Splash>
+    </transition>
     <div class="nav-area">
       <div class="color-ribbon"></div>
       <MainNav class="main-nav"/>
@@ -7,7 +32,7 @@
     <div class="stream-area">
       <iframe
         :class="['stream-frame', { loaded }]"
-        src="https://player.vimeo.com/video/8132302?autoplay=1"
+        src="https://player.vimeo.com/video/82650753"
         width="640"
         height="360"
         frameborder="0"
@@ -27,15 +52,19 @@
 <script lang="ts">
 import Vue from 'vue';
 import MainNav from '@/components/MainNav.vue';
+import Splash from '@/components/Splash.vue';
+import moment from 'moment';
 
 export default Vue.extend({
   components: {
     MainNav,
+    Splash,
   },
 
   data() {
     return {
       loaded: false,
+      splashOpen: false,
     };
   },
 
@@ -43,11 +72,22 @@ export default Vue.extend({
     loading(): boolean {
       return !this.loaded;
     },
+
+    humanDuration(): string {
+      const nowMoment = moment();
+      const ceremonyMoment = moment("2021-08-14T22:00:00.000Z");
+      return nowMoment.to(ceremonyMoment);
+    },
   },
 
   methods: {
     onStreamFrameLoaded(): void {
       this.loaded = true;
+      this.splashOpen = true;
+    },
+
+    onCloseSplash(): void {
+      this.splashOpen = false;
     },
   },
 });

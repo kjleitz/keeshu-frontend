@@ -4,9 +4,16 @@
       <MainNav class="main-nav"/>
     </div>
     <div class="rsvp-area">
-      <iframe
+      <!-- <iframe
         :class="['rsvpify-frame', { loaded }]"
         src="/rsvpify.html"
+        frameborder="0"
+        @load="onRsvpifyFrameLoaded"
+      ></iframe> -->
+      <iframe
+        ref="rsvpifyFrame"
+        :class="['rsvpify-frame', { loaded }]"
+        src="https://keeshu.rsvpify.com/"
         frameborder="0"
         @load="onRsvpifyFrameLoaded"
       ></iframe>
@@ -43,6 +50,9 @@ export default Vue.extend({
   methods: {
     onRsvpifyFrameLoaded(): void {
       this.loaded = true;
+      this.$nextTick(() => {
+        (this.$refs.rsvpifyFrame as HTMLIFrameElement).focus();
+      });
     },
   },
 });
