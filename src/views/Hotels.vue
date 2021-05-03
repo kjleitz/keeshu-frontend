@@ -154,6 +154,7 @@ $sign-margin: 0.5rem;
   // background: repeating-linear-gradient(180deg, rgba(80, 55, 40, 1), #ffeda7 1vh, #fcf1c5 3vh, #ffffd9 5vh);
   background: repeating-linear-gradient(180deg, rgba(80, 55, 40, 1), #fcecac 1vh, #fcf1c5 3vh, #ffffd9 5vh);
   box-shadow: inset 0 0 1vh rgba(30, 15, 0, 0.8);
+  // overflow-x: hidden;
 
   a {
     color: rgb(0, 75, 170);
@@ -167,6 +168,7 @@ $sign-margin: 0.5rem;
     flex-wrap: wrap;
     padding: $nav-area-padding;
     z-index: 1000;
+    // overflow-x: hidden;
 
     @include media-breakpoint-up(md) {
       justify-content: space-evenly;

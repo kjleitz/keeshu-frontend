@@ -752,7 +752,8 @@ $page-max-width: 1024px;
                 .page {
                   position: relative;
                   max-width: $page-max-width;
-                  font-family: serif;
+                  font-family: "Times New Roman", serif;
+                  // font-family: sans-serif;
                   min-height: 100%;
                   // margin: 16px 24px 0 24px;
                   // margin: 16px 24px -24px 24px;

@@ -299,7 +299,7 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
     left: 0;
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
+    // overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;

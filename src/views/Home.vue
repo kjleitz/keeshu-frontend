@@ -1,7 +1,12 @@
 <template>
   <div :style="styleVariables" class="home-view" tabindex="-1" @keyup.d="debug = !debug">
     <h1 class="sr-only">Home</h1>
-    <MainNav vertical :debug="debug" :class="{ 'fonts-loaded': fontsLoaded }"/>
+    <MainNav
+      :debug="debug"
+      :class="{ 'fonts-loaded': fontsLoaded }"
+      :main-items="['hotels', 'info']"
+      vertical
+    />
     <Sky :debug="debug" class="background" @day-elapsed-percent-changed="dayElapsedPercent = $event">
       <div :style="grassStyles" class="painting grass"></div>
       <div :style="treeStyles" class="painting tree"></div>

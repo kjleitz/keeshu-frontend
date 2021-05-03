@@ -2,8 +2,8 @@ import '@/styles/bootstrap_custom.scss';
 import Vue from 'vue';
 
 import {
-  // BootstrapVue,
   BButton,
+  BDropdownItem,
   BForm,
   BFormGroup,
   BFormInput,
@@ -19,8 +19,8 @@ import {
   BImg,
   BInputGroup,
   BNav,
-  // BNavForm,
   BNavItem,
+  BNavItemDropdown,
   LayoutPlugin,
 } from 'bootstrap-vue';
 
@@ -40,9 +40,9 @@ import {
  */
 
 export default function initBootstrap(): void {
-  // Vue.use(BootstrapVue);
   Vue.use(LayoutPlugin);
   Vue.component('BButton', BButton);
+  Vue.component('BDropdownItem', BDropdownItem);
   Vue.component('BForm', BForm);
   Vue.component('BFormGroup', BFormGroup);
   Vue.component('BFormInput', BFormInput);
@@ -58,6 +58,6 @@ export default function initBootstrap(): void {
   Vue.component('BImg', BImg);
   Vue.component('BInputGroup', BInputGroup);
   Vue.component('BNav', BNav);
-  // Vue.component('BNavForm', BNavForm);
   Vue.component('BNavItem', BNavItem);
+  Vue.component('BNavItemDropdown', BNavItemDropdown);
 }

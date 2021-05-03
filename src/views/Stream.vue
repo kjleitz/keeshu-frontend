@@ -167,8 +167,11 @@ $navbar-background-image: linear-gradient(
         font-size: inherit;
         font-weight: inherit;
         transition: color 0.15s;
-        height: 40px;
-        line-height: 40px;
+
+        &:not(.more-nav-items-list-item-link) {
+          height: 40px;
+          line-height: 40px;
+        }
         // padding: 0 10px;
         // margin: 0 10px;
 

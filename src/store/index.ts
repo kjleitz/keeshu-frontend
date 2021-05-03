@@ -66,6 +66,7 @@ export default new Vuex.Store({
           case "rsvp": return state.userType === "irl";
           case "registry": return state.userType === "irl";
           case "stream": return state.userType === "irl" || state.userType === "streamer";
+          case "faq": return state.userType === "irl" || state.userType === "streamer";
           default: return true;
         }
       };
