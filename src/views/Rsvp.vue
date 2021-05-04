@@ -131,7 +131,8 @@ $navbar-box-shadow:
     position: relative;
     background-color: #ffffff; // TODO
     flex-grow: 1;
-    height: calc(100vh - #{$navbar-height});
+    min-height: calc(100vh - #{$navbar-height});
+    min-height: -webkit-fill-available;
     // min-height: calc(100vh - $navbar-height);
 
     .rsvpify-frame {
