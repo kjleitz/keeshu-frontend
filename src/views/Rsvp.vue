@@ -82,10 +82,10 @@ $navbar-box-shadow:
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: flex-start;
+  // align-items: stretch;
 
   .nav-area {
     position: relative;
@@ -130,14 +130,16 @@ $navbar-box-shadow:
   .rsvp-area {
     position: relative;
     background-color: #ffffff; // TODO
-    flex-grow: 1;
-    min-height: calc(100vh - #{$navbar-height});
-    min-height: -webkit-fill-available;
-    // min-height: calc(100vh - $navbar-height);
+    // flex-grow: 1;
+    // min-height: calc(100vh - #{$navbar-height});
+    // min-height: -webkit-fill-available;
+    height: calc(100% - #{$navbar-height});
+    // min-height: -webkit-fill-available;
 
     .rsvpify-frame {
       width: 100%;
       height: 100%;
+      // height: calc(100% - #{$navbar-height});
       opacity: 0;
       transition: opacity 0.5s;
 
