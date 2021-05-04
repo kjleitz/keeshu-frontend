@@ -128,8 +128,11 @@ $navbar-box-shadow:
   }
 
   .rsvp-area {
+    position: relative;
     background-color: #ffffff; // TODO
     flex-grow: 1;
+    // height: calc(100vh - #{$navbar-height});
+    // min-height: calc(100vh - $navbar-height);
 
     .rsvpify-frame {
       width: 100%;
