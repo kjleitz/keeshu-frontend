@@ -127,10 +127,10 @@ $navbar-background-image: linear-gradient(
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: flex-start;
+  // align-items: stretch;
 
   .nav-area {
     position: relative;
@@ -194,6 +194,15 @@ $navbar-background-image: linear-gradient(
   .stream-area {
     flex-grow: 1;
     background-color: black;
+    // // This bullshit is because of iOS
+    // // This bullshit is because of iOS
+    // // This bullshit is because of iOS
+    // // This bullshit is because of iOS
+    // flex-grow: 1;
+    // min-height: calc(100vh - #{$navbar-height});
+    // min-height: -webkit-fill-available;
+    height: calc(100% - #{$navbar-height});
+    // min-height: -webkit-fill-available;
 
     .stream-frame {
       width: 100%;
