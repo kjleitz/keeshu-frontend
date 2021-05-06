@@ -55,7 +55,7 @@ export default Vue.extend({
   .main-nav {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-evenly;
     position: absolute;
     left: 0;
     top: 0;

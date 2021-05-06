@@ -37,21 +37,25 @@
     >
       More
       <!-- <ul v-if="showMoreNavItemsList" :class="['more-nav-items-list', { show: showMoreNavItemsList }]"> -->
-      <ul v-if="showMoreNavItemsList" class="more-nav-items-list">
-        <li
-          v-for="navItem in moreNavItems"
-          :key="navItem.labelHtml"
-          class="more-nav-items-list-item"
-        >
-          <router-link
-            :to="{ name: navItem.routeName }"
-            class="more-nav-items-list-item-link"
-            @click="leaving = true"
-          >
-            <span v-html="navItem.labelHtml"></span>
-          </router-link>
-        </li>
-      </ul>
+      <transition name="fade-fast">
+        <div v-if="showMoreNavItemsList" class="more-nav-items-list-wrapper">
+          <ul class="more-nav-items-list">
+            <li
+              v-for="navItem in moreNavItems"
+              :key="navItem.labelHtml"
+              class="more-nav-items-list-item"
+            >
+              <router-link
+                :to="{ name: navItem.routeName }"
+                class="more-nav-items-list-item-link"
+                @click="leaving = true"
+              >
+                <span v-html="navItem.labelHtml"></span>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+      </transition>
     </b-nav-item>
     <b-nav-item v-if="debug && atHome" @click="forgetMe">
       Forget me
@@ -341,7 +345,7 @@ export default Vue.extend({
     @include media-breakpoint-down(sm) {
       padding-left: 0.25rem;
       padding-right: 0.25rem;
-      font-size: 0.75em;
+      font-size: 0.75rem;
     }
 
     &.router-link-exact-active {
@@ -364,35 +368,61 @@ export default Vue.extend({
   .more-nav-items-dropdown {
     position: relative;
 
-    a {
-      background-color: white;
-      line-height: 1.5em;
-    }
-
-    .more-nav-items-list {
+    .more-nav-items-list-wrapper {
       position: absolute;
       z-index: 100;
-      top: 100%;
-      right: 0;
-      background-color: white;
-      list-style: none;
-      margin: 0;
-      padding: 0;
+      top: calc(100% + 1rem);
+      right: -1rem;
       border-radius: 0.25rem;
-      line-height: 1.5em;
+      background-color: white;
+      box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.25);
 
-      .more-nav-items-list-item {
+      &::before {
+        position: absolute;
+        left: calc(50% + 0.5rem);
+        top: -0.25rem;
+        transform-origin: center;
+        transform: rotate(45deg);
+        border-top: 0.25rem solid white;
+        border-left: 0.25rem solid white;
+        border-right: 0.25rem solid transparent;
+        border-bottom: 0.25rem solid transparent;
+        box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.25);
+        content: "";
+        width: 0.5rem;
+        height: 0.5rem;
+        z-index: -1;
+      }
+
+      .more-nav-items-list {
+        list-style: none;
         margin: 0;
-        padding: 0.25rem 0;
-        text-align: right;
+        padding: 0 1rem 0 1rem;
+        border-radius: 0.25rem;
+        // line-height: 1.5em;
         line-height: 1.5em;
+        background-color: white;
+        z-index: 100;
 
-        &:first-of-type {
-          padding-top: 0.5rem;
+        a {
+          // background-color: white;
+          line-height: 1.5em;
         }
 
-        &:last-of-type {
-          padding-bottom: 0.5rem;
+        .more-nav-items-list-item {
+          margin: 0;
+          // padding: 0.25rem 0;
+          padding: 0.5rem 0;
+          text-align: right;
+          line-height: 1.5em;
+
+          &:first-of-type {
+            padding-top: 1rem;
+          }
+
+          &:last-of-type {
+            padding-bottom: 1rem;
+          }
         }
       }
     }

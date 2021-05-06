@@ -361,11 +361,33 @@ $title-and-nav-height-sm: $title-area-height-sm + $nav-height-sm;
         a {
           font-weight: 400;
           color: #2c3e50;
-          // padding: 0 1rem;
 
           &.router-link-exact-active {
             font-weight: 700;
             color: #2c3e50;
+          }
+        }
+
+        .more-nav-items-dropdown {
+          .more-nav-items-list-wrapper {
+            background-color: rgba(255, 255, 255, 0.8);
+            top: $nav-height;
+
+            @include media-breakpoint-down(sm) {
+              top: $nav-height-sm;
+            }
+
+            &::before {
+              border-top: 0.25rem solid rgba(255, 255, 255, 0.8);
+              border-left: 0.25rem solid rgba(255, 255, 255, 0.8);
+              border-right: 0.25rem solid transparent;
+              border-bottom: 0.25rem solid transparent;
+              box-shadow: none;
+            }
+
+            .more-nav-items-list {
+              background-color: transparent;
+            }
           }
         }
       }

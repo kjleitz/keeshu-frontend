@@ -102,7 +102,7 @@ $navbar-box-shadow:
       padding: 0;
       display: flex;
       flex-direction: row;
-      justify-content: center;
+      justify-content: space-evenly;
       align-items: center;
       font-weight: $navbar-font-weight;
       font-family: $navbar-font-family;

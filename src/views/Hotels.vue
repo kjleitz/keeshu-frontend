@@ -184,6 +184,7 @@ $sign-margin: 0.5rem;
       top: -1 * ($sign-height + (2 * $sign-margin) + $nav-area-padding);
       flex-wrap: nowrap;
       flex-direction: column;
+      padding: $nav-area-padding 0.25rem;
     }
 
     .no-vacancy-sign {
@@ -233,6 +234,7 @@ $sign-margin: 0.5rem;
         position: sticky;
         top: 0;
         padding: 0 0;
+        width: 100%;
       }
 
       .main-nav {
@@ -243,12 +245,17 @@ $sign-margin: 0.5rem;
         text-transform: uppercase;
         display: flex;
         align-items: center;
+        justify-content: space-evenly;
 
         @include media-breakpoint-down(sm) {
-          font-size: 1em;
+          // font-size: 1rem;
+          padding: 0rem;
+          width: 100%;
 
-          a.nav-link {
-            padding: 0.25rem 0.5rem;
+          a.nav-link, .more-nav-items-list a {
+            // padding: 0.25rem 0.25rem;
+            padding: 0;
+            font-size: 0.8rem;
           }
         }
 
@@ -260,7 +267,7 @@ $sign-margin: 0.5rem;
             font-size: 1.25em;
 
             @include media-breakpoint-down(sm) {
-              font-size: 1.1em;
+              font-size: 1rem;
             }
           }
         }

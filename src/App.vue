@@ -78,5 +78,13 @@ html, body {
   .fade-enter, .fade-leave-to {
     opacity: 0;
   }
+
+  .fade-fast-enter-active, .fade-fast-leave-active {
+    transition: opacity .25s;
+  }
+
+  .fade-fast-enter, .fade-fast-leave-to {
+    opacity: 0;
+  }
 }
 </style>

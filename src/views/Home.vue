@@ -246,6 +246,8 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+@import "@/styles/breakpoints";
+
 .home-view {
   position: relative;
   overflow: hidden;
@@ -295,6 +297,11 @@ export default Vue.extend({
       padding: 0.5rem 1rem;
       // padding-left: 1rem;
       transition: padding 0.3s;
+
+      @include media-breakpoint-down(sm) {
+        // padding: 0.25rem 1rem;
+        font-size: 1.75rem;
+      }
 
       &.router-link-exact-active {
         color: var(--nav-font-color-active);
