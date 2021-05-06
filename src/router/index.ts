@@ -1,4 +1,4 @@
-import store from "@/store";
+// import store from "@/store";
 import Vue from "vue";
 import VueRouter, { NavigationGuard, RouteConfig } from "vue-router";
 import Home from "@/views/Home.vue";
@@ -6,15 +6,16 @@ import Home from "@/views/Home.vue";
 Vue.use(VueRouter);
 
 const youDontEvenGoHere: NavigationGuard = (to, from, next): void => {
-  if (store.getters.authorizedFor(to.name)) {
-    store.commit("clearIntendedDestination", to.name);
-    console.log("allowed:", to.name)
-    next();
-  } else {
-    store.commit("setIntendedDestination", to.name);
-    console.log("denied:", to.name)
-    next({ name: "Home" });
-  }
+  next();
+  // if (store.getters.authorizedFor(to.name)) {
+  //   store.commit("clearIntendedDestination", to.name);
+  //   console.log("allowed:", to.name)
+  //   next();
+  // } else {
+  //   store.commit("setIntendedDestination", to.name);
+  //   console.log("denied:", to.name)
+  //   next({ name: "Home" });
+  // }
 };
 
 const routes: RouteConfig[] = [

@@ -1,10 +1,4 @@
 <template>
-  <!-- <b-nav
-    v-bind="$attrs"
-    :vertical="vertical"
-    :class="['main-nav', $route.name, { vertical }]"
-    v-on="$listeners"
-  > -->
   <b-nav
     v-bind="$attrs"
     :class="['main-nav', $route.name]"
@@ -35,21 +29,20 @@
         Map
       </b-nav-item>
     </transition>
-    <!-- <b-nav-form v-if="!authorized" @submit.stop.prevent="logIn">
-      <b-form-input v-model="passcode"></b-form-input>
-      <b-button type="submit">yeet</b-button>
-    </b-nav-form> -->
     <transition name="fade" appear>
       <b-nav-item v-if="$store.getters.authorizedFor('rsvp')" :to="{ name: 'Rsvp' }">
         RSVP
       </b-nav-item>
     </transition>
     <transition name="fade" appear>
-      <b-nav-item v-if="$store.getters.authorizedFor('stream')" :to="{ name: 'Stream' }">
+      <!-- <b-nav-item v-if="$store.getters.authorizedFor('stream')" :to="{ name: 'Stream' }">
+        Stream
+      </b-nav-item> -->
+      <b-nav-item :to="{ name: 'Stream' }">
         Stream
       </b-nav-item>
     </transition>
-    <transition name="fade" appear>
+    <!-- <transition name="fade" appear>
       <b-nav-item
         v-if="!$store.getters.authorized"
         @click="showAuthSplash"
@@ -59,7 +52,7 @@
           (passcode required)
         </span>
       </b-nav-item>
-    </transition>
+    </transition> -->
     <transition name="fade" appear>
       <b-nav-item v-if="debug && $route.name === 'Home'" @click="forgetMe">
         Forget me
