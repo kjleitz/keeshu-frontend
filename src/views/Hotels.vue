@@ -272,6 +272,34 @@ $sign-margin: 0.5rem;
           }
         }
 
+        .more-nav-items-dropdown {
+          .more-nav-items-list-wrapper {
+            // top: calc(100% + 1.5rem);
+            // top: calc(100% + (0.5 * #{$sign-height}));
+            top: calc(50% + 0.5 * #{$sign-height});
+            // background: repeating-linear-gradient(180deg, #ddc 0.1rem, #ffe 0.2rem, #fefefe 0.4rem);
+            border: 0.25rem ridge rgba(200, 100, 0, 0.8);
+            border-radius: 0.5rem;
+
+            &::before {
+              display: none;
+              // top: -0.5rem;
+              // border-top: 0.5rem ridge rgba(200, 100, 0, 0.8);
+              // border-left: 0.5rem ridge rgba(200, 100, 0, 0.8);
+              // border-right: 0.5rem solid transparent;
+              // border-bottom: 0.5rem solid transparent;
+              // width: 1rem;
+              // height: 1rem;
+            }
+
+            .more-nav-items-list {
+              background: repeating-linear-gradient(180deg, #ddc 0.1rem, #ffe 0.2rem, #fefefe 0.4rem);
+              border-radius: 0.5rem;
+              // border-radius: 0.5rem;
+            }
+          }
+        }
+
         .hotels-last-letter {
           display: inline-block;
           height: 1em;
