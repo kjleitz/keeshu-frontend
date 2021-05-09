@@ -20,7 +20,8 @@
         (a wedding)
       </div>
       <transition name="fade" appear>
-        <div class="info" v-if="$store.getters.authorized">
+        <!-- <div class="info" v-if="$store.getters.authorized"> -->
+        <div class="info">
           August 14<sup>th</sup>, 2021<br>
           Lord Thompson Manor, Connecticut
         </div>
