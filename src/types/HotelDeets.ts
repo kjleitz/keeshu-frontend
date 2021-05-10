@@ -75,7 +75,7 @@ export const HOTELS: HotelDeets[] = [
     website: "https://www.hilton.com/en/hotels/orhmahx-hampton-auburn/",
     description: "Normally, guests have access to a pool. Unfortunately, it's currently closed for _\"renovation.\"_ They promise a hefty 60-65% reduction in urine content when it opens back up, placing the Hampton Inn just a _hair_ ahead of the nearby Holiday Inn Express in the regional hotel-pool-cleanliness championship. You can do it, Hampton Inn!",
     minutesAway: 18,
-    callout: "",
+    callout: "A limited number of rooms are blocked off here at a discounted rate. Call and ask for the \"Aishu Keegan Wedding\" group block (or use the code \"AKW\") by July 14th to reserve a room.",
     problem: "",
   },
   {
