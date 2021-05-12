@@ -43,3 +43,9 @@ export function hexToRgba(hexColor: string): [number, number, number, number] {
   const [_f, red, green, blue] = match;
   return [parseInt(red, 16), parseInt(green, 16), parseInt(blue, 16), 1];
 }
+
+export function partition<T>(list: T[], shouldGoFirst: (item: T) => boolean): [T[], T[]] {
+  return list.reduce<[T[], T[]]>((memo, item) => {
+    return shouldGoFirst(item) ? [[...memo[0], item], memo[1]] : [memo[0], [...memo[1], item]];
+  }, [[], []]);
+}

@@ -24,11 +24,12 @@
 </template>
 
 <script lang="ts">
-import { noop, sortBy, throttle } from 'underscore';
+import { flatten, noop, sortBy, throttle } from 'underscore';
 import Vue from 'vue';
 import HotelDeets, { HOTELS } from '@/types/HotelDeets';
 import HotelItem from '@/components/HotelItem.vue';
 import MainNav from '@/components/MainNav.vue';
+import { partition } from '@/lib/utils';
 
 let syncScrolled = noop;
 let flickerTimeout = 0;
@@ -50,7 +51,9 @@ export default Vue.extend({
 
   computed: {
     sortedHotels(): HotelDeets[] {
-      return sortBy(HOTELS, this.sortField);
+      const sorted = sortBy(HOTELS, this.sortField);
+      const promoted = partition(sorted, hotel => !!hotel.callout);
+      return flatten(promoted);
     },
   },
 
@@ -274,28 +277,28 @@ $sign-margin: 0.5rem;
 
         .more-nav-items-dropdown {
           .more-nav-items-list-wrapper {
-            // top: calc(100% + 1.5rem);
-            // top: calc(100% + (0.5 * #{$sign-height}));
-            top: calc(50% + 0.5 * #{$sign-height});
-            // background: repeating-linear-gradient(180deg, #ddc 0.1rem, #ffe 0.2rem, #fefefe 0.4rem);
+            top: calc(50% + 0.5 * #{$sign-height + 1rem});
             border: 0.25rem ridge rgba(200, 100, 0, 0.8);
             border-radius: 0.5rem;
+            box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.5);
 
             &::before {
-              display: none;
-              // top: -0.5rem;
-              // border-top: 0.5rem ridge rgba(200, 100, 0, 0.8);
-              // border-left: 0.5rem ridge rgba(200, 100, 0, 0.8);
-              // border-right: 0.5rem solid transparent;
-              // border-bottom: 0.5rem solid transparent;
-              // width: 1rem;
-              // height: 1rem;
+              top: calc(-1rem - 0.125rem);
+              left: calc(50% - 1rem);
+              border-top: 0.15rem solid rgba(50, 25, 0, 0.75);
+              border-left: 0.15rem solid rgba(50, 25, 0, 0.75);
+              border-right: 0.15rem solid transparent;
+              border-bottom: 0.15rem solid transparent;
+              border-top-left-radius: 5px;
+              box-shadow: none;
+              background-color: transparent;
+              width: 2rem;
+              height: 2rem;
             }
 
             .more-nav-items-list {
               background: repeating-linear-gradient(180deg, #ddc 0.1rem, #ffe 0.2rem, #fefefe 0.4rem);
               border-radius: 0.5rem;
-              // border-radius: 0.5rem;
             }
           }
         }

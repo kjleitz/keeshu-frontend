@@ -124,6 +124,28 @@ $navbar-box-shadow:
           color: $navbar-color-hover;
         }
       }
+
+      .more-nav-items-dropdown {
+        .more-nav-items-list-wrapper {
+          // box-shadow: none;
+          border-top: $navbar-border-bottom;
+          border-bottom: $navbar-border-bottom;
+          box-shadow: $navbar-box-shadow;
+          background-color: $navbar-background-color;
+          top: calc(100% + 1.5rem);
+
+          &::before {
+            top: -0.5rem;
+            left: calc(50% + 0.0rem);
+            border-top: $navbar-border-bottom;
+            border-left: $navbar-border-bottom;
+            box-shadow: none;
+            width: 1rem;
+            height: 1rem;
+            background-color: white;
+          }
+        }
+      }
     }
   }
 

@@ -6,7 +6,6 @@ import Home from "@/views/Home.vue";
 Vue.use(VueRouter);
 
 const youDontEvenGoHere: NavigationGuard = (to, from, next): void => {
-  next();
   if (store.getters.authorizedFor(to.name)) {
     store.commit("clearIntendedDestination", to.name);
     next();

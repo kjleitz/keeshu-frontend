@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <!-- <transition name="fade">
+    <transition name="fade">
       <AuthSplash
         v-if="!$store.getters.authorized && !$store.state.authDeferred"
         @submit="authorize($event)"
         @cancel="deferAuth"
       />
-    </transition> -->
+    </transition>
     <router-view/>
   </div>
 </template>
@@ -14,12 +14,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import store from '@/store';
-// import AuthSplash from '@/components/AuthSplash.vue';
+import AuthSplash from '@/components/AuthSplash.vue';
 
 export default Vue.extend({
-  // components: {
-  //   AuthSplash,
-  // },
+  components: {
+    AuthSplash,
+  },
 
   methods: {
     authorize(passcode: string): void {

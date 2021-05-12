@@ -72,6 +72,16 @@ export default Vue.extend({
     // @include media-breakpoint-down(sm) {
     //   font-size: 0.8rem;
     // }
+
+    .more-nav-items-dropdown {
+      .more-nav-items-list-wrapper {
+        box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3);
+
+        &::before {
+          box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3);
+        }
+      }
+    }
   }
 
   .map-frame {
