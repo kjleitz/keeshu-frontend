@@ -200,8 +200,8 @@ export default Vue.extend({
 
   data() {
     return {
-      // showMoreNavItemsList: false,
-      showMoreNavItemsList: true,
+      showMoreNavItemsList: false,
+      // showMoreNavItemsList: true,
       leaving: false,
     };
   },
@@ -378,6 +378,7 @@ export default Vue.extend({
       box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.25);
 
       &::before {
+        content: "";
         position: absolute;
         left: calc(50% + 0.5rem);
         top: -0.25rem;
@@ -388,7 +389,6 @@ export default Vue.extend({
         border-right: 0.25rem solid transparent;
         border-bottom: 0.25rem solid transparent;
         box-shadow: 2px 3px 5px 2px rgba(0, 0, 0, 0.25);
-        content: "";
         width: 0.5rem;
         height: 0.5rem;
         z-index: -1;
