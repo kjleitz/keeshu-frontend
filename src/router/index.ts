@@ -63,12 +63,6 @@ const routes: RouteConfig[] = [
     component: () => import(/* webpackChunkName: "stream" */ "@/views/Stream.vue"),
     beforeEnter: youDontEvenGoHere,
   },
-  {
-    path: "/faq",
-    name: "Faq",
-    component: () => import(/* webpackChunkName: "faq" */ "@/views/Faq.vue"),
-    beforeEnter: youDontEvenGoHere,
-  },
 ];
 
 const router = new VueRouter({
