@@ -79,9 +79,11 @@ import Vue from 'vue';
 import MicrosoftWord from '@/components/MicrosoftWord.vue';
 import { noop, throttle } from 'underscore';
 
-async function * makeTextFileLineIterator(fileURL: string): any {
+// adapted from https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+// TODO: refactor
+async function * fetchHtmlLinesFromUrl(url: string): any {
   const utf8Decoder = new TextDecoder('utf-8');
-  const response = await fetch(fileURL);
+  const response = await fetch(url);
   const reader = response.body!.getReader();
   let { value: chunk, done: readerDone } = await reader.read();
   let chunkStr = chunk ? utf8Decoder.decode(chunk) : '';
@@ -91,30 +93,33 @@ async function * makeTextFileLineIterator(fileURL: string): any {
 
   for (;;) {
     const result = re.exec(chunkStr);
+
     if (!result) {
-      if (readerDone) {
-        break;
-      }
+      if (readerDone) break;
+
       const remainder = chunkStr.substr(startIndex);
       ({ value: chunk, done: readerDone } = await reader.read());
       chunkStr = remainder + (chunk ? utf8Decoder.decode(chunk) : '');
       startIndex = re.lastIndex = 0;
       continue;
     }
+
     yield chunkStr.substring(startIndex, result.index);
     startIndex = re.lastIndex;
   }
-  if (startIndex < chunkStr.length) {
-    // last line didn't end in a newline char
-    yield chunkStr.substr(startIndex);
-  }
+
+  if (startIndex < chunkStr.length) yield chunkStr.substr(startIndex);
 }
 
-async function getHtml(urlOfFile: string): Promise<string> {
+// adapted from https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+// TODO: refactor
+async function getHtml(url: string): Promise<string> {
   let html = "";
-  for await (const line of makeTextFileLineIterator(urlOfFile)) {
+
+  for await (const line of fetchHtmlLinesFromUrl(url)) {
     html = html + line;
   }
+
   return html;
 }
 
@@ -127,8 +132,8 @@ export default Vue.extend({
 
   data() {
     return {
-      // loaded: false,
-      loaded: true,
+      loaded: false,
+      // loaded: true,
       faqFrameHeight: 0,
     };
   },
@@ -158,6 +163,7 @@ export default Vue.extend({
         el.target = "_blank";
         el.rel = "noopener noreferrer";
       });
+      this.loaded = true;
     }).then(() => {
       this.syncFaqFrameHeight();
     });
