@@ -4,7 +4,7 @@
     <MainNav
       :debug="debug"
       :class="{ 'fonts-loaded': fontsLoaded }"
-      :main-items="['hotels', 'info']"
+      :main-items="['hotels', 'faq']"
       vertical
     />
     <Sky :debug="debug" class="background" @day-elapsed-percent-changed="dayElapsedPercent = $event">

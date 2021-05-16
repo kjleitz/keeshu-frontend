@@ -46,9 +46,9 @@ const routes: RouteConfig[] = [
     beforeEnter: youDontEvenGoHere,
   },
   {
-    path: "/info",
-    name: "Info",
-    component: () => import(/* webpackChunkName: "info" */ "@/views/Info.vue"),
+    path: "/faq",
+    name: "Faq",
+    component: () => import(/* webpackChunkName: "faq" */ "@/views/Faq.vue"),
     beforeEnter: youDontEvenGoHere,
   },
   {

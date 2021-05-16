@@ -114,8 +114,8 @@
               Stream
             </b-dropdown-item>
           </template>
-          <b-dropdown-item v-if="authorizedFor('Info')" :to="{ name: 'Info' }">
-            Info
+          <b-dropdown-item v-if="authorizedFor('Faq')" :to="{ name: 'Faq' }">
+            FAQ
           </b-dropdown-item>
           <b-dropdown-item v-if="authorizedFor('Hotels')" :to="{ name: 'Hotels' }">
             Hotels
@@ -131,8 +131,8 @@
     </template>
     <template v-else>
       <transition name="fade" appear>
-        <b-nav-item v-if="authorizedFor('Info')" :to="{ name: 'Info' }">
-          Info
+        <b-nav-item v-if="authorizedFor('Faq')" :to="{ name: 'Faq' }">
+          FAQ
         </b-nav-item>
       </transition>
       <transition name="fade" appear>
@@ -223,12 +223,11 @@ export default Vue.extend({
       return [
         { routeName: "Home", labelHtml: "Home" },
         { routeName: "Us", labelHtml: "Us" },
-        { routeName: "Info", labelHtml: "Info" },
+        { routeName: "Faq", labelHtml: "FAQ" },
         { routeName: "Hotels", labelHtml: 'Hotel<span class="hotels-last-letter">s</span>' },
         { routeName: "Map", labelHtml: "Map" },
         { routeName: "Rsvp", labelHtml: "RSVP" },
         { routeName: "Stream", labelHtml: "Stream" },
-        { routeName: "Faq", labelHtml: "FAQ" },
       ];
     },
 
@@ -239,7 +238,6 @@ export default Vue.extend({
         faq: true,
         rsvp: this.$route.name === "Rsvp" || store.state.userType === "irl",
         stream: this.$route.name === "Stream" || store.state.userType === "streamer",
-        info: this.$route.name === "Info" || false,
         hotels: this.$route.name === "Hotels" || false,
         map: this.$route.name === "Map" || false,
       };

@@ -16,7 +16,7 @@ const envPlugins = process.env.NODE_ENV !== 'production'
   : [
       new PrerenderSpaPlugin({
         staticDir: path.join(__dirname, 'dist'),
-        routes: ['/', '/hotels', '/info', '/map', '/us'],
+        routes: ['/', '/hotels', '/faq', '/map', '/us'],
         renderer: new Renderer({
           renderAfterElementExists: '#app',
           headless: true,

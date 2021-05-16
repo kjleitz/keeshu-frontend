@@ -98,6 +98,7 @@ export default Vue.extend({
     onClick(): void {
       if (this.disabled) return;
       if (this.toggle) this.localPressed = !this.localPressed;
+      this.$emit("click");
     },
   },
 });

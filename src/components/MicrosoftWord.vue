@@ -10,14 +10,14 @@
           <div class="title-stuff">
             <img src="~@/assets/ms_word_icons/application.png" alt="Microsoft Word" class="application-icon">
             <!-- <span class="application-icon"></span> -->
-            <span class="document-title">WEDDING_INFO.DOC</span>
+            <span class="document-title">{{ fileName }}</span>
             -
             <span class="application-title">Microsoft Word</span>
           </div>
 
           <div class="window-buttons">
-            <WindowButton icon="minimizeWindow" />
-            <WindowButton icon="unmaximizeWindow" />
+            <WindowButton icon="minimizeWindow" @click="$emit('close-window')" />
+            <WindowButton icon="unmaximizeWindow" @click="$emit('close-window')" />
             <WindowButton icon="closeWindow" @click="$emit('close-window')" />
           </div>
         </div>
@@ -51,7 +51,8 @@
           <EditorButton icon="open" />
           <EditorButton icon="save" />
           <div class="item-divider"></div>
-          <EditorButton icon="print" />
+          <!-- <EditorButton icon="print" @click="onClickPrint"/> -->
+          <EditorButton icon="print" @click="$emit('print')"/>
           <EditorButton icon="find" />
           <EditorButton icon="spellCheck" />
           <div class="item-divider"></div>
@@ -171,7 +172,7 @@
                   </div>
                 </div>
                 <div class="page-background">
-                  <div class="page">
+                  <div class="page printable">
                     <slot></slot>
                   </div>
                 </div>
@@ -203,6 +204,13 @@ export default Vue.extend({
     WindowMenu,
   },
 
+  props: {
+    fileName: {
+      type: String,
+      default: "Document1",
+    },
+  },
+
   data() {
     return {
       alignLeftPressed: true,
@@ -228,7 +236,7 @@ export default Vue.extend({
 
       return [
         { label: "Home", shortcut: "Alt+H", action: () => this.$router.push({ name: "Home" }) },
-        // { label: "Info", shortcut: "Alt+I", action: () => this.$router.push({ name: "Info" }) },
+        // { label: "FAQ", shortcut: "Alt+I", action: () => this.$router.push({ name: "Faq" }) },
         { label: "Hotels", shortcut: "Alt+O", action: () => this.$router.push({ name: "Hotels" }) },
         { label: "Us", shortcut: "Alt+U", action: () => this.$router.push({ name: "Us" }) },
         { label: "Map", shortcut: "Alt+M", action: () => this.$router.push({ name: "Map" }) },
@@ -340,7 +348,7 @@ export default Vue.extend({
       if (event.altKey) {
         const shortcuts = {
           KeyH: "Home",
-          KeyI: "Info",
+          KeyI: "Faq",
           KeyO: "Hotels",
           KeyU: "Us",
           KeyM: "Map",
@@ -369,6 +377,10 @@ export default Vue.extend({
     range(...args: Parameters<typeof range>): number[] {
       return range(...args);
     },
+
+    // onClickPrint(): void {
+    //   window.print();
+    // },
   },
 });
 </script>
@@ -378,6 +390,23 @@ export default Vue.extend({
 @import "@/styles/breakpoints";
 
 $page-max-width: 1024px;
+
+@media print {
+  .microsoft-word {
+    visibility: hidden;
+
+    .page.printable {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+
+      * {
+        visibility: visible;
+      }
+    }
+  }
+}
 
 .microsoft-word {
   font-family: Arial, Helvetica, sans-serif;
