@@ -75,7 +75,7 @@ export const HOTELS: HotelDeets[] = [
     website: "https://www.hilton.com/en/hotels/orhmahx-hampton-auburn/",
     description: "Normally, guests have access to a pool. Unfortunately, it's currently closed for _\"renovation.\"_ They promise a hefty 60-65% reduction in urine content when it opens back up, placing the Hampton Inn just a _hair_ ahead of the nearby Holiday Inn Express in the regional hotel-pool-cleanliness championship. You can do it, Hampton Inn!",
     minutesAway: 18,
-    callout: "A limited number of rooms are blocked off here at a discounted rate. Call and ask for the \"Aishu Keegan Wedding\" group block (or use the code \"AKW\") by July 14th to reserve a room.",
+    callout: "A limited number of rooms are blocked off here at a discounted rate. Call and ask for the \"Aishu Keegan Wedding\" group block, use the code \"AKW\", or [click this link](https://nam02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.hilton.com%2Fen%2Fbook%2Freservation%2Fdeeplink%2F%3F%26ctyhocn%3DORHMAHX%26groupCode%3DCHHAKW%26arrival%3D20210813%26departure%3D20210815%26cid%3DOM%2CWW%2CHILTONLINK%2Cen%2CDirectLink%26fromId%3DHILTONLINKDIRECT&data=04%7C01%7C%7C37cf5cea2bb94ea6870008d910026fd6%7C660292d2cfd54a3db7a7e8f7ee458a0a%7C0%7C0%7C637558424927021429%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&sdata=FJSr%2FLx%2FiQR6ATAtcZ7iS%2BipfOta9X5O0KzO%2FGMmTCY%3D&reserved=0) by July 14th to reserve a room.",
     problem: "",
   },
   {
