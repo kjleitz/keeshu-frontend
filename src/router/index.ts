@@ -63,6 +63,13 @@ const routes: RouteConfig[] = [
     component: () => import(/* webpackChunkName: "stream" */ "@/views/Stream.vue"),
     beforeEnter: youDontEvenGoHere,
   },
+  {
+    path: "/registry",
+    name: "Registry",
+    beforeEnter(_to, _from, _next): void {
+      window.location.assign("https://www.williams-sonoma.com/registry/w66hm9rwbd/registry-list.html");
+    },
+  },
 ];
 
 const router = new VueRouter({

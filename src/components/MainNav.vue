@@ -227,6 +227,7 @@ export default Vue.extend({
         { routeName: "Hotels", labelHtml: 'Hotel<span class="hotels-last-letter">s</span>' },
         { routeName: "Map", labelHtml: "Map" },
         { routeName: "Rsvp", labelHtml: "RSVP" },
+        { routeName: "Registry", labelHtml: "Registry" },
         { routeName: "Stream", labelHtml: "Stream" },
       ];
     },
