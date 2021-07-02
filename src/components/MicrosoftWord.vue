@@ -49,7 +49,7 @@
           <div class="drag-indicator"></div>
           <EditorButton icon="new" />
           <EditorButton icon="open" />
-          <EditorButton icon="save" />
+          <EditorButton icon="save" @click="$emit('save')"/>
           <div class="item-divider"></div>
           <!-- <EditorButton icon="print" @click="onClickPrint"/> -->
           <EditorButton icon="print" @click="$emit('print')"/>

@@ -5,6 +5,7 @@
       file-name="WEDDING_FAQ.DOC"
       @close-window="onCloseWordWindow"
       @print="onPrint"
+      @save="onSave"
     >
       <h1>Frequently Asked Questions</h1>
       <p class="text-center">
@@ -193,6 +194,10 @@ export default Vue.extend({
     },
 
     onPrint(): void {
+      (this.$refs.faqFrame as HTMLIFrameElement).contentWindow!.print();
+    },
+
+    onSave(): void {
       (this.$refs.faqFrame as HTMLIFrameElement).contentWindow!.print();
     },
   },
