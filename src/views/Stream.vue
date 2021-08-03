@@ -1,7 +1,7 @@
 <template>
   <div class="stream-view">
     <transition name="fade">
-      <Splash v-if="splashOpen" @close="onCloseSplash">
+      <Splash v-if="splashOpen && !showRealStream" @close="onCloseSplash">
         <template #header>
           All right, so...
         </template>
@@ -31,6 +31,18 @@
     </div>
     <div class="stream-area">
       <iframe
+        v-if="showRealStream"
+        :class="['stream-frame', { loaded }]"
+        src="https://vimeo.com/event/1008542/embed"
+        width="640"
+        height="360"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+        @load="onStreamFrameLoaded"
+      ></iframe>
+      <iframe
+        v-else
         :class="['stream-frame', { loaded }]"
         src="https://player.vimeo.com/video/82650753"
         width="640"
@@ -55,6 +67,9 @@ import MainNav from '@/components/MainNav.vue';
 import Splash from '@/components/Splash.vue';
 import moment from 'moment';
 
+let realStreamCheckerTimeout = 0;
+const CEREMONY_DATE = moment("2021-08-14T21:00:00.000Z").toDate();
+
 export default Vue.extend({
   components: {
     MainNav,
@@ -65,6 +80,7 @@ export default Vue.extend({
     return {
       loaded: false,
       splashOpen: false,
+      showRealStream: this.$route.query.no_the_real_stream === "please",
     };
   },
 
@@ -75,19 +91,63 @@ export default Vue.extend({
 
     humanDuration(): string {
       const nowMoment = moment();
-      const ceremonyMoment = moment("2021-08-14T22:00:00.000Z");
+      const ceremonyMoment = moment(CEREMONY_DATE);
       return nowMoment.to(ceremonyMoment);
     },
+  },
+
+  created(): void {
+    const checkIfItsTimeForTheRealStream = (): void => {
+      window.clearTimeout(realStreamCheckerTimeout);
+
+      if (this.itsTimeForTheRealStreamGuys()) {
+        this.showRealStream = true;
+      } else {
+        realStreamCheckerTimeout = window.setTimeout(() => {
+          checkIfItsTimeForTheRealStream();
+        }, 5000);
+      }
+    };
+
+    checkIfItsTimeForTheRealStream();
+  },
+
+  beforeDestroy(): void {
+    window.clearTimeout(realStreamCheckerTimeout);
   },
 
   methods: {
     onStreamFrameLoaded(): void {
       this.loaded = true;
-      this.splashOpen = true;
+      if (!this.showRealStream) this.splashOpen = true;
     },
 
     onCloseSplash(): void {
       this.splashOpen = false;
+    },
+
+    itsTimeForTheRealStreamGuys(): boolean {
+      if (this.showRealStream) return true;
+
+      const nowMoment = moment();
+      const dayBeforeCeremonyMoment = moment(CEREMONY_DATE).subtract(1, "day");
+      return nowMoment.isAfter(dayBeforeCeremonyMoment);
+    },
+
+    startCheckingToSeeIfItsTimeForTheRealStreamWhewThatsALongMethodName(): void {
+      const checkIfItsTimeForTheRealStream = (): void => {
+        window.clearTimeout(realStreamCheckerTimeout);
+
+        if (this.itsTimeForTheRealStreamGuys()) {
+          this.showRealStream = true;
+        } else {
+          realStreamCheckerTimeout = window.setTimeout(() => {
+            checkIfItsTimeForTheRealStream();
+          }, 5000);
+        }
+      };
+
+      checkIfItsTimeForTheRealStream();
     },
   },
 });
